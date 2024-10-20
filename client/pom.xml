@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.motomachi-hifuka</groupId>
     <artifactId>open.dolphin.client</artifactId>
-    <version>1.3.0.17</version>
+    <version>1.3.0.21</version>
     <packaging>jar</packaging>
 
     <name>client</name>
@@ -17,8 +17,8 @@
         <hydraulic.conveyor.output.dir>${basedir}/output</hydraulic.conveyor.output.dir>
 
         <!-- versions -->
-        <java.version>17</java.version>
-        <version.openjfx>17.0.11-ea+2</version.openjfx>
+        <java.version>21</java.version>
+        <version.openjfx>21.0.5</version.openjfx>
         <version.jakarta.platform>10.0.0</version.jakarta.platform>
         <version.org.jboss.resteasy>6.2.3.Final</version.org.jboss.resteasy>
         <version.org.hibernate>6.1.5.Final</version.org.hibernate>
