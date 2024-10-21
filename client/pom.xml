@@ -58,7 +58,7 @@
                 <jfx.platform>mac-aarch64</jfx.platform>
                 <hydraulic.conveyor.machine>mac.aarch64</hydraulic.conveyor.machine>
                 <hydraulic.convayor.target>mac-app</hydraulic.convayor.target>
-                <java.module.path>/Library/Java/JavaVirtualMachines/graalvm-jdk-17/Contents/Home/jmods</java.module.path>
+                <java.module.path>/Library/Java/JavaVirtualMachines/graalvm-jdk-21/Contents/Home/jmods</java.module.path>
                 <java.jre.dir>${basedir}/appRuntimeImage/jre-graal</java.jre.dir>
                 <java.jpackage.resource.dir>${basedir}/resources</java.jpackage.resource.dir>
                 <java.jpackage.type>dmg</java.jpackage.type>
@@ -268,7 +268,7 @@
                                     <arg value="--no-header-files" />
                                     <arg value="--no-man-pages" />
                                     <arg value="--strip-debug" />
-                                    <arg value="--compress=2" />
+                                    <arg value="--compress=zip-6" />
                                     <arg line="--module-path ${java.module.path}" />
                                     <arg line="--add-modules java.base,java.desktop,java.datatransfer,java.naming,java.prefs,java.xml,java.management,jdk.unsupported" />
                                     <arg line="--output ${java.jre.dir}" />
@@ -286,7 +286,7 @@
                                 <echo>making dist folder using jpackage</echo>
                                 <delete dir="${workdir}" />
                                 <copy tofile="${workdir}/opendolphin.jar">
-                                    <fileset file="${targetdir}/open.dolphin.client-1.3.0.17-jar-with-dependencies.jar" />
+                                    <fileset file="${targetdir}/open.dolphin.client-${version}-jar-with-dependencies.jar" />
                                 </copy>
                                 <copy todir="${workdir}/schema">
                                     <fileset dir="${basedir}/schema"/>
