@@ -286,7 +286,7 @@
                                 <echo>making dist folder using jpackage</echo>
                                 <delete dir="${workdir}" />
                                 <copy tofile="${workdir}/opendolphin.jar">
-                                    <fileset file="${targetdir}/open.dolphin.client-${version}-jar-with-dependencies.jar" />
+                                    <fileset file="${targetdir}/open.dolphin.client-${project.version}-jar-with-dependencies.jar" />
                                 </copy>
                                 <copy todir="${workdir}/schema">
                                     <fileset dir="${basedir}/schema"/>
@@ -318,6 +318,8 @@
                                 <delete dir="${hydraulic.conveyor.output.dir}" />
                                 <exec executable="${hydraulic.conveyor}">
                                     <arg line="-KbuildDate=${buildDate}" />
+                                    <arg line="-Kproject.version=${project.version}" />
+                                    <arg line="-Kjava.version=${java.version}" />
                                     <arg line="-Kapp.machines=${hydraulic.conveyor.machine}" />
                                     <arg line="make ${hydraulic.convayor.target}" />
                                 </exec>
