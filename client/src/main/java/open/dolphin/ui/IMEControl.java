@@ -30,21 +30,17 @@ import java.util.prefs.Preferences;
 public class IMEControl {
     private static String JAPANESE = Preferences.userNodeForPackage(Dolphin.class).get(Project.ATOK_JAPANESE_KEY, "com.justsystems.inputmethod.atok34.Japanese");
     private static String ROMAN = Preferences.userNodeForPackage(Dolphin.class).get(Project.ATOK_ROMAN_KEY, "com.justsystems.inputmethod.atok34.Roman");
-
-    private String toSet = ROMAN;
     private final Logger logger = LoggerFactory.getLogger(IMEControl.class);
 
     public IMEControl() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
-            if (Objects.nonNull(e.getNewValue())) {
-                if (e.getNewValue() instanceof JPasswordField) {
-                    toSet = ROMAN;
-                } else if (e.getNewValue() instanceof JTextComponent c) {
-                    toSet = Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY)) ? ROMAN : JAPANESE;
-                } else {
-                    toSet = ROMAN;
-                }
-                ScriptExecutor.imSelect(toSet);
+            if (Objects.nonNull(e.getNewValue())
+                && e.getNewValue() instanceof JTextComponent c
+                && !(c instanceof JPasswordField)
+                && Objects.isNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
+                ScriptExecutor.imSelect(JAPANESE);
+            } else {
+                ScriptExecutor.imSelect(ROMAN);
             }
         });
     }

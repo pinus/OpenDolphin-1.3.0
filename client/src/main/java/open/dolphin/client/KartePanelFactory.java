@@ -243,25 +243,14 @@ public class KartePanelFactory {
     private class WrapColumnFactory implements ViewFactory {
         @Override
         public View create(Element elem) {
-            String kind = elem.getName();
-            if (kind != null) {
-                switch (kind) {
-                    case AbstractDocument.ContentElementName:
-                        return new WrapLabelView(elem);
-                    case AbstractDocument.ParagraphElementName:
-                        return new ParagraphView(elem);
-                    case AbstractDocument.SectionElementName:
-                        return new BoxView(elem, View.Y_AXIS);
-                    case StyleConstants.ComponentElementName:
-                        return new ComponentView(elem);
-                    case StyleConstants.IconElementName:
-                        return new IconView(elem);
-                    default:
-                        break;
-                }
-            }
-            // default to text display
-            return new LabelView(elem);
+            return switch(elem.getName()) {
+                case AbstractDocument.ContentElementName -> new WrapLabelView(elem);
+                case AbstractDocument.ParagraphElementName -> new ParagraphView(elem);
+                case AbstractDocument.SectionElementName -> new BoxView(elem, View.Y_AXIS);
+                case StyleConstants.ComponentElementName -> new ComponentView(elem);
+                case StyleConstants.IconElementName -> new IconView(elem);
+                case null, default -> new LabelView(elem);
+            };
         }
     }
 
@@ -272,11 +261,11 @@ public class KartePanelFactory {
 
         @Override
         public float getMinimumSpan(int axis) {
-            switch (axis) {
-                case View.X_AXIS -> { return 0; }
-                case View.Y_AXIS -> { return super.getMinimumSpan(axis); }
+            return switch(axis) {
+                case View.X_AXIS -> 0;
+                case View.Y_AXIS -> super.getMinimumSpan(axis);
                 default -> throw new IllegalArgumentException("Invalid axis: " + axis);
-            }
+            };
         }
     }
 }

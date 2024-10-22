@@ -145,20 +145,12 @@ public class AppointTablePanel extends JPanel {
                 return null;
             }
 
-            String ret = null;
-            switch (col) {
-                case 0: // 日付
-                    ret = ModelUtils.getDateAsString(entry.getDate());
-                    break;
-                case 1: // 内容
-                    ret = entry.getName();
-                    break;
-                case 2: // メモ
-                    ret = entry.getMemo();
-                    break;
-            }
-
-            return ret;
+            return switch(col) {
+                case 0 -> ModelUtils.getDateAsString(entry.getDate()); // 日付
+                case 1 -> entry.getName(); // 内容
+                case 2 -> entry.getMemo(); // メモ
+                default -> null;
+            };
         }
 
         /**
@@ -171,7 +163,7 @@ public class AppointTablePanel extends JPanel {
         @Override
         public void setValueAt(Object val, int row, int col) {
             String str = (String) val;
-            if (col != MEMO_COLUMN || str == null || str.trim().equals("")) {
+            if (col != MEMO_COLUMN || str == null || str.trim().isEmpty()) {
                 return;
             }
 

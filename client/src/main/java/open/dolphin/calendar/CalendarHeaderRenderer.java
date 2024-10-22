@@ -36,21 +36,11 @@ public class CalendarHeaderRenderer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable t, Object v, boolean isSelected, boolean hasFocus, int row, int col) {
         super.getTableCellRendererComponent(t, v, isSelected, hasFocus, row, col);
-
         switch (col) {
-            case 0:
-                // 日曜
-                setForeground(Color.red);
-                break;
-            case 6:
-                // 土曜
-                setForeground(Color.blue);
-                break;
-            default:
-                // 平日
-                setForeground(Color.black);
+            case 0 -> setForeground(Color.red); // 日曜
+            case 6 -> setForeground(Color.blue); // 土曜
+            default -> setForeground(Color.black); // 平日
         }
-
         return this;
     }
 

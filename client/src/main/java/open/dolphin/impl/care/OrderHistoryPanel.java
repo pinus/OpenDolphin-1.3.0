@@ -39,8 +39,8 @@ public final class OrderHistoryPanel extends JPanel {
         String[] columnNames = {"　実施日", "　内   容"};
 
         // オーダの履歴(確定日|スタンプ名)を表示する TableModel: 各行は ModuleModel
-        tModel = new ObjectReflectTableModel<ModuleModel>(columnNames) {
-            
+        tModel = new ObjectReflectTableModel<>(columnNames) {
+
             @Override
             public boolean isCellEditable(int row, int col) {
                 return false;
@@ -49,14 +49,11 @@ public final class OrderHistoryPanel extends JPanel {
             @Override
             public Object getValueAt(int row, int col) {
                 ModuleModel module = getObject(row);
-
-                switch (col) {
-                    case 0:
-                        return ModelUtils.getDateAsString(module.getConfirmed());
-                    case 1:
-                        return module.getModuleInfo().getStampName();
-                }
-                return null;
+                return switch (col) {
+                    case 0 -> ModelUtils.getDateAsString(module.getConfirmed());
+                    case 1 -> module.getModuleInfo().getStampName();
+                    default -> null;
+                };
             }
         };
 
@@ -111,7 +108,7 @@ public final class OrderHistoryPanel extends JPanel {
      * allModules は List＜List＜ModuleModel＞＞
      * 抽出期間の数だけ List＜ModuleModel＞が List になっている
      *
-     * @param allModules
+     * @param allModules modules
      */
     public void setModuleList(List<List<ModuleModel>> allModules) {
         tModel.clear();
@@ -161,7 +158,7 @@ public final class OrderHistoryPanel extends JPanel {
      * SimpleDate 型式の date の行を選択する.
      * 日付は column 0 に String として入っている
      *
-     * @param date
+     * @param date date
      */
     public void findDate(SimpleDate date) {
         if (CalendarEvent.isModule(date.getEventCode())) {
