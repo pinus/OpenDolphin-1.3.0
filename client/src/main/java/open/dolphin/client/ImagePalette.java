@@ -10,16 +10,14 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * ImagePalette.
@@ -125,13 +123,25 @@ public class ImagePalette extends JPanel {
         imageTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         imageTable.setCellSelectionEnabled(true);
         imageTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        imageTable.setTransferHandler(new ImageEntryTransferHandler());
+
+        ImageEntryTransferHandler handler = new ImageEntryTransferHandler();
+        imageTable.setTransferHandler(handler);
 
         // ドラッグ処理
         imageTable.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                imageTable.getTransferHandler().exportAsDrag((JComponent) e.getSource(), e, TransferHandler.COPY);
+                handler.exportAsDrag((JComponent) e.getSource(), e, TransferHandler.COPY);
+            }
+        });
+        // 素早い操作でドラッグ開始マウス位置がドラッグ方向に少しずれてしまうのの workaround
+        imageTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Point p = e.getPoint();
+                int col = imageTable.columnAtPoint(p);
+                int row = imageTable.rowAtPoint(p);
+                handler.setTargetRowColumn(row, col);
             }
         });
 
@@ -211,7 +221,6 @@ public class ImagePalette extends JPanel {
     }
 
     private class ImageFileFilter implements FilenameFilter {
-
         private final String[] suffix;
 
         public ImageFileFilter(String[] suffix) {
@@ -220,60 +229,28 @@ public class ImagePalette extends JPanel {
 
         @Override
         public boolean accept(File dir, String name) {
-
-            boolean accept = false;
-            for (String s : suffix) {
-                if (name.toLowerCase().endsWith(s)) {
-                    accept = true;
-                    break;
-                }
-            }
-            return accept;
+            return Stream.of(suffix).anyMatch(name.toLowerCase()::endsWith);
         }
     }
 
     private class ImageRenderer extends DefaultTableCellRenderer {
 
         public ImageRenderer() {
-            initComponent();
-        }
-
-        private void initComponent() {
             setVerticalTextPosition(JLabel.BOTTOM);
             setHorizontalTextPosition(JLabel.CENTER);
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table,
-                                                       Object value,
-                                                       boolean isSelected,
-                                                       boolean isFocused,
-                                                       int row, int col) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean isFocused, int row, int col) {
+            Component compo = super.getTableCellRendererComponent(table, value, isSelected, isFocused, row, col);
+            JLabel label = (JLabel) compo;
 
-            Component compo = super.getTableCellRendererComponent(table,
-                    value,
-                    isSelected,
-                    isFocused,
-                    row, col);
+            label.setBackground(Color.WHITE);
+            label.setBorder(isSelected ? selectedBorder : normalBorder);
+            ImageEntry entry = (ImageEntry) value;
+            label.setIcon(Objects.nonNull(entry) ? entry.getImageIcon() : null);
+            label.setText(null);
 
-            JLabel l = (JLabel) compo;
-
-            l.setBackground(new Color(254, 255, 255)); // なぜか WHITE は無視される => quaqua のせい
-            if (isSelected) {
-                l.setBorder(selectedBorder);
-            } else {
-                l.setBorder(normalBorder);
-            }
-
-            if (value != null) {
-                ImageEntry entry = (ImageEntry) value;
-                l.setIcon(entry.getImageIcon());
-                l.setText(null);
-
-            } else {
-                l.setIcon(null);
-                l.setText(null);
-            }
             return compo;
         }
     }

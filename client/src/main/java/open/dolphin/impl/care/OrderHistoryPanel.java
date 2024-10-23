@@ -24,7 +24,7 @@ import java.util.List;
  * @author pns
  */
 public final class OrderHistoryPanel extends JPanel {
-        private final Dimension contentSize = new Dimension(240, 300);
+    private final Dimension contentSize = new Dimension(240, 300);
     private ObjectReflectTableModel<ModuleModel> tModel;
     private JTable table;
     private JLabel contents;
