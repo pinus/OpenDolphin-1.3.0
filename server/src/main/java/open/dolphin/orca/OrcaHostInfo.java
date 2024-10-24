@@ -28,19 +28,6 @@ public class OrcaHostInfo {
     private HostData hostData;
 
     /**
-     * orca or webOrca?
-     */
-    private boolean isWebOrca = false;
-
-    public void setWebOrca(boolean b) {
-        isWebOrca = b;
-    }
-
-    public boolean isWebOrca() {
-         return isWebOrca;
-    }
-
-    /**
      * OrcaHostInfo.
      * ORCA の接続情報を ORCA_HOST_INFO_FILE (JSON) から読み取ってインスタンスを作る.
      * ORCA への接続を試みて，接続が成功するまで待つ.
@@ -75,11 +62,9 @@ public class OrcaHostInfo {
                 URLConnection con = uri.toURL().openConnection();
                 try (InputStream in = con.getInputStream()) {
                 }
-                logger.info("ORCA server responded. WebOrca:" + isWebOrca);
                 break;
 
             } catch (IOException ex) {
-                setWebOrca(!isWebOrca);
                 logger.info(ex.getMessage() + ", retrying: " + ++retry);
                 try {
                     Thread.sleep(5000);
@@ -142,7 +127,7 @@ public class OrcaHostInfo {
      */
     public URI getOrcaApiUri(String url) {
         try {
-            return new URI(String.format("http://%s:8000%s%s", getHost(), isWebOrca? "/api":"", url));
+            return new URI(String.format("http://%s:8000/api%s", getHost(), url));
 
         } catch (URISyntaxException ex) {
             ex.printStackTrace(System.err);
@@ -157,9 +142,7 @@ public class OrcaHostInfo {
      * @return URI
      */
     public URI getPushApiUri() {
-        String url = isWebOrca?
-            String.format("ws://%s:8000/ws", getHost())
-            : String.format("ws://%s:9400/ws", getHost());
+        String url =  String.format("ws://%s:8000/ws", getHost());
         return URI.create(url);
     }
 
