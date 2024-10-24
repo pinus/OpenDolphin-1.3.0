@@ -47,9 +47,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     public void makeParagraph() {
         try {
             insertString(getLength(), "\n", null);
-        } catch (BadLocationException ex) {
-            logger.error(ex.getMessage());
-        }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -77,9 +75,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             // 簡易表示
             sh.setSimplify(simplifyStamp);
 
-        } catch (BadLocationException | NullPointerException ex) {
-            logger.error(ex.getMessage());
-        }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -107,9 +103,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             // 簡易表示
             sh.setSimplify(simplifyStamp);
 
-        } catch (BadLocationException | NullPointerException ex) {
-            logger.error(ex.getMessage());
-        }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -129,9 +123,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
                 remove(start, 1);
             }
 //masuda$
-        } catch (BadLocationException ex) {
-            logger.error(ex.getMessage());
-        }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -155,9 +147,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             insertString(start + 1, "\n", null);
             sc.setEntry(createPosition(start), createPosition(start + 1));
 
-        } catch (BadLocationException ex) {
-            logger.error(ex.getMessage());
-        }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -183,9 +173,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             // スタンプの開始と終了位置を生成して保存する
             sh.setEntry(createPosition(start), createPosition(start + 1));
 
-        } catch (BadLocationException | NullPointerException ex) {
-            logger.error(ex.getMessage());
-        }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -198,9 +186,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             int pos = kartePane.getTextPane().getCaretPosition();
             insertString(pos, text, null);
 
-        } catch (BadLocationException ex) {
-            logger.error(ex.getMessage());
-        }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -212,9 +198,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     public void insertFreeString(String text, AttributeSet a) {
         try {
             insertString(getLength(), text, a);
-        } catch (BadLocationException ex) {
-            logger.error(ex.getMessage());
-        }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -252,7 +236,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             String last = getText(endPos, 1);
             if ("\n".equals(last)) { remove(endPos, 1); }
 
-        } catch (BadLocationException ex) { logger.error(ex.getMessage()); }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -283,9 +267,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             if (len - pos > 0) {
                 remove(pos, len - pos);
             }
-        } catch (BadLocationException ex) {
-            logger.error(ex.getMessage());
-        }
+        } catch (BadLocationException ex) { processError(ex); }
     }
 
     /**
@@ -311,9 +293,12 @@ public class KarteStyledDocument extends DefaultStyledDocument {
                 }
                 pos++;
 
-            } catch (BadLocationException ex) {
-                logger.error(ex.getMessage());
-            }
+            } catch (BadLocationException ex) { processError(ex); }
         }
+    }
+
+    private void processError(Exception ex) {
+        //logger.error(ex.getMessage());
+        ex.printStackTrace();
     }
 }
