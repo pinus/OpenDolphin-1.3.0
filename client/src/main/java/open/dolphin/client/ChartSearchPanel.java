@@ -55,10 +55,9 @@ public class ChartSearchPanel extends JPanel {
 
     private void connect() {
         stampSearchField.addActionListener(e -> {
-            String text = stampSearchField.getText();
-            String pattern = ".*" + stampSearchField.getText() + ".*";
-
+            String text = stampSearchField.getText(); // can be null
             if (!StringUtils.isEmpty(text)) {
+                String pattern = ".*" + text.trim() + ".*";
                 JPopupMenu popup = chart.getChartMediator().createDiagnosisPopup(pattern, ev -> {
                     JComponent c = chart.getDiagnosisDocument().getDiagnosisTable();
                     TransferHandler handler = c.getTransferHandler();
@@ -76,17 +75,17 @@ public class ChartSearchPanel extends JPanel {
         });
 
         karteSearchField.addActionListener(e -> {
-            String keyWord = karteSearchField.getText();
+            String keyWord = karteSearchField.getText(); // can be null
             if (!StringUtils.isEmpty(keyWord)) {
                 String[] option = keyWord.split(":");
                 boolean searchSoa = true;
                 boolean searchP = true;
                 if (option.length == 2) {
-                    searchSoa = option[0].startsWith("s") || option[0].startsWith("S");
-                    searchP = option[0].startsWith("p") || option[0].startsWith("P");
+                    searchSoa = option[0].trim().startsWith("s") || option[0].trim().startsWith("S");
+                    searchP = option[0].trim().startsWith("p") || option[0].trim().startsWith("P");
                     keyWord = option[1];
                 }
-                findAndView.showFirst(keyWord, searchSoa, searchP, scrollerPanel);
+                findAndView.showFirst(keyWord.trim(), searchSoa, searchP, scrollerPanel);
             }
         });
 
