@@ -14,7 +14,7 @@ import java.util.List;
  * @author Kazushi Minagawa, Digital Globe, Inc.
  */
 public class KarteStyledDocument extends DefaultStyledDocument {
-        private static final String STAMP_STYLE = "stampHolder";
+    private static final String STAMP_STYLE = "stampHolder";
     private static final String SCHEMA_STYLE = "schemaHolder";
     private Logger logger = LoggerFactory.getLogger(KarteStyledDocument.class);
 
@@ -231,12 +231,18 @@ public class KarteStyledDocument extends DefaultStyledDocument {
 
     // 最終の改行を取り除く
     public void removeLastCr() {
-        try {
-            int endPos = getLength() - 1;
-            String last = getText(endPos, 1);
-            if ("\n".equals(last)) { remove(endPos, 1); }
+        int endPos = getLength() - 1;
+        if (endPos > 0) {
+            try {
+                String last = getText(endPos, 1);
+                if ("\n".equals(last)) {
+                    remove(endPos, 1);
+                }
 
-        } catch (BadLocationException ex) { processError(ex); }
+            } catch (BadLocationException ex) {
+                processError(ex);
+            }
+        }
     }
 
     /**
@@ -299,6 +305,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
 
     private void processError(Exception ex) {
         //logger.error(ex.getMessage());
-        ex.printStackTrace();
+        ex.printStackTrace(System.err);
     }
 }

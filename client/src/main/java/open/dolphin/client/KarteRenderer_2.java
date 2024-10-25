@@ -92,14 +92,10 @@ public class KarteRenderer_2 {
         for (ModuleModel bean : modules) {
             String role = bean.getModuleInfo().getStampRole();
             switch (role) {
-                case IInfoModel.ROLE_SOA
-                    -> soaModules.add(bean);
-                case IInfoModel.ROLE_SOA_SPEC
-                    -> soaSpec = ((ProgressCourse) bean.getModel()).getFreeText();
-                case IInfoModel.ROLE_P
-                    -> pModules.add(bean);
-                case IInfoModel.ROLE_P_SPEC
-                    -> pSpec = ((ProgressCourse) bean.getModel()).getFreeText();
+                case IInfoModel.ROLE_SOA -> soaModules.add(bean);
+                case IInfoModel.ROLE_SOA_SPEC -> soaSpec = ((ProgressCourse) bean.getModel()).getFreeText();
+                case IInfoModel.ROLE_P -> pModules.add(bean);
+                case IInfoModel.ROLE_P_SPEC -> pSpec = ((ProgressCourse) bean.getModel()).getFreeText();
             }
         }
 
@@ -113,15 +109,13 @@ public class KarteRenderer_2 {
         }
 
         // SOA Pane をレンダリングする
-        if (soaSpec == null || soaSpec.equals("")) {
+        if (soaSpec == null || soaSpec.isEmpty()) {
             soaModules.forEach(moduleModel -> {
                 soaPane.stamp(moduleModel);
                 soaPane.makeParagraph();
             });
             // モジュールのみの場合も dirty にセット
-            if (soaModules != null) {
-                soaPane.setDirty(true);
-            }
+            soaPane.setDirty(true);
 
         } else {
             debug("Render SOA Pane");
@@ -132,7 +126,7 @@ public class KarteRenderer_2 {
         }
 
         // P Pane をレンダリングする
-        if (pSpec == null || pSpec.equals("")) {
+        if (pSpec == null || pSpec.isEmpty()) {
             // 前回処方適用のようにモジュールのみの場合
             pModules.forEach(moduleModel -> {
                 //pPane.stamp(mm);
@@ -141,9 +135,7 @@ public class KarteRenderer_2 {
                 pPane.makeParagraph();
             });
             // モジュールだけの場合も dirty にセット
-            if (pModules != null && pPane != null) {
-                pPane.setDirty(true);
-            }
+            pPane.setDirty(true);
 
         } else {
             isSoaPane = false;

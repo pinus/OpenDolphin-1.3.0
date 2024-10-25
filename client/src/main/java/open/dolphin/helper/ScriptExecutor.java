@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Script でいろいろする.
@@ -101,7 +100,7 @@ public class ScriptExecutor {
      * @return current input method
      */
     public static String currentIm() {
-        return ScriptExecutor.executeShellScriptWithResponce("/usr/local/bin/im-select").get(0);
+        return ScriptExecutor.executeShellScriptWithResponce("/usr/local/bin/im-select").getFirst();
     }
 
     /**
@@ -110,10 +109,11 @@ public class ScriptExecutor {
      * @param command Shell commands in a string array
      */
     private static void executeShellScript(String... command) {
+        ProcessBuilder p = new ProcessBuilder(command);
         try {
-            Runtime.getRuntime().exec(command).waitFor(500, TimeUnit.MILLISECONDS);
-        } catch (IOException | InterruptedException ex) {
-            System.out.println("ExecuteScript.java: " + ex);
+            p.start();
+        } catch (IOException e) {
+            System.out.println("ExecuteScript.java: " + e);
         }
     }
 
@@ -125,19 +125,16 @@ public class ScriptExecutor {
      */
     public static List<String> executeShellScriptWithResponce(String... command) {
         List<String> output = new ArrayList<>();
-
-        try {
-            Process p = Runtime.getRuntime().exec(command);
-            InputStream is = p.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        ProcessBuilder p = new ProcessBuilder(command);
+        try (InputStream is = p.start().getInputStream();
+             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 
             String line;
             while ((line = br.readLine()) != null) {
                 output.add(line);
             }
-            p.waitFor();
 
-        } catch (IOException | InterruptedException ex) {
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
 
@@ -169,6 +166,8 @@ public class ScriptExecutor {
         //System.out.println(ScriptExecutor.getAtok24MemSize());
         //ScriptExecutor.setImeOff();
         //ScriptExecutor.displayNotification("message", "title", "subtitle");
-        imSelect("com.apple.keylayout.USExtended");
+        //imSelect("com.apple.keylayout.USExtended");
+        imSelect("com.justsystems.inputmethod.atok34.Japanese");
+        System.out.println(currentIm());
     }
 }
