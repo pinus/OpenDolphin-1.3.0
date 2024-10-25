@@ -22,6 +22,7 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * StampHolder を右クリックでいろいろいじる.
@@ -31,14 +32,13 @@ import java.util.function.Consumer;
 public class StampHolderPopupMenu extends JPopupMenu {
     private final Logger logger = LoggerFactory.getLogger(StampHolderPopupMenu.class);
 
-    /**
-     * メニューに載せる処方日数のリスト
-     */
+    // メニューに載せる処方日数のリスト
     private static final int[] BUNDLE_NUMS = {3, 4, 5, 7, 10, 14, 21, 28, 30, 56, 60};
-    /**
-     * メニューに載せる外用剤の量のリスト
-     */
+    //メニューに載せる外用剤の量のリスト
     private static final int[] DOSES = {5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 125, 150, 200, 250};
+    // 一般名記載の除外リスト（プロペト, アズノール軟膏, リンデロンVG軟膏)
+    private static final String IPPAN_EXCLUDE[] = { "667120036", "620002619", "662640418" };
+
     private final StampHolder ctx;
 
     public StampHolderPopupMenu(StampHolder ctx) {
@@ -691,7 +691,9 @@ public class StampHolderPopupMenu extends JPopupMenu {
                 }
                 if (src.getCode().startsWith("6")) {
                     if (generic) {
-                        list.add(item);
+                        if (!Stream.of(IPPAN_EXCLUDE).anyMatch(excl -> excl.equals(src.getCode()))) {
+                            list.add(item);
+                        }
                     } else {
                         switch (orca.getChokisenteikbn((src.getCode()))) {
                             case 1 -> list.add(item);
