@@ -62,6 +62,7 @@ public class OrcaHostInfo {
                 URLConnection con = uri.toURL().openConnection();
                 try (InputStream in = con.getInputStream()) {
                 }
+                logger.info("WebORCA responded");
                 break;
 
             } catch (IOException ex) {
@@ -142,8 +143,7 @@ public class OrcaHostInfo {
      * @return URI
      */
     public URI getPushApiUri() {
-        String url =  String.format("ws://%s:8000/ws", getHost());
-        return URI.create(url);
+        return URI.create(String.format("ws://%s:8000/ws", getHost()));
     }
 
     /**
