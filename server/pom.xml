@@ -51,7 +51,7 @@
 
         <!-- Hibernate -->
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${version.org.hibernate}</version>
             <scope>provided</scope>
@@ -67,13 +67,6 @@
             <artifactId>hibernate-search-backend-elasticsearch</artifactId>
             <version>${version.org.hibernate.search}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- Hibernate migration helper -->
-        <dependency>
-            <groupId>org.hibernate.search</groupId>
-            <artifactId>hibernate-search-v5migrationhelper-orm</artifactId>
-            <version>${version.org.hibernate}</version>
         </dependency>
 
         <!-- Jackson -->
@@ -119,12 +112,7 @@
             <artifactId>jackson-datatype-hibernate5</artifactId>
             <version>${version.com.fasterxml.jackson}</version>
         </dependency>
-<!--        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-hibernate6</artifactId>
-            <version>2.15.0</version>
-        </dependency>
--->
+
         <!-- Others -->
         <dependency>
             <groupId>org.apache.commons</groupId>
