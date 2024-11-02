@@ -13,7 +13,7 @@ dependencies {
     providedCompile(libs.resteasy.jackson2)
     providedCompile(libs.hibernate.core)
     providedCompile(libs.bundles.hibernate.search)
-    providedCompile(libs.bundles.jackson)
+    implementation(libs.bundles.jackson)
     implementation(libs.hibernate.migrationhelper)
     implementation(libs.commons.lang3)
     implementation(libs.postgres)

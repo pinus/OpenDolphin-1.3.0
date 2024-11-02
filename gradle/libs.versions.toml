@@ -5,8 +5,7 @@ resteasy = "6.2.1.Final"
 intellij = "12.0"
 
 ## server ##
-jackson = "2.13.4"
-jackson-databind = "${jackson}.2"
+jackson = "2.15.2"
 hibernate-search = "6.1.7.Final"
 commons-lang3 = "3.11"
 postgres = "42.5.1"
@@ -35,12 +34,12 @@ hibernate-search = { module = "org.hibernate.search:hibernate-search-mapper-orm-
 hibernate-search-elasticsearch = { module = "org.hibernate.search:hibernate-search-backend-elasticsearch", version.ref = "hibernate-search" }
 hibernate-migrationhelper = { module = "org.hibernate.search:hibernate-search-v5migrationhelper-orm", version.ref = "hibernate" }
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson-databind" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-annotation = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
 jackson-jaxrs = { module = "com.fasterxml.jackson.jaxrs:jackson-jaxrs-base", version.ref = "jackson" }
 jackson-jaxrs-json = { module = "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider", version.ref = "jackson" }
 jackson-jaxb = { module = "com.fasterxml.jackson.module:jackson-module-jaxb-annotations", version.ref = "jackson" }
-jackson-hibernate5 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5", version.ref = "jackson" }
+jackson-hibernate6 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6", version.ref = "jackson" }
 commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 jdom2 = { module = "org.jdom:jdom2", version.ref = "jdom2" }
@@ -60,4 +59,4 @@ commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 [bundles]
 google = [ "google-client", "google-oauth", "google-calendar" ]
 hibernate-search = [ "hibernate-search", "hibernate-search-elasticsearch" ]
-jackson = [ "jackson-core", "jackson-databind", "jackson-annotation", "jackson-jaxrs", "jackson-jaxrs-json", "jackson-jaxb", "jackson-hibernate5" ]
+jackson = [ "jackson-core", "jackson-databind", "jackson-annotation", "jackson-jaxrs", "jackson-jaxrs-json", "jackson-jaxb", "jackson-hibernate6" ]
