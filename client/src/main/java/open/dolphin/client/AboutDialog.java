@@ -55,14 +55,20 @@ public class AboutDialog extends JDialog {
 
         // ビルド日時文字列作成. pom.xml で UTC の "20231212064212" という文字列をセットしてある.
         String timestamp = System.getProperty("open.dolphin.build.timestamp");
-        if (Objects.nonNull(timestamp) && timestamp.length() == 14) {
-            LocalDateTime buildDate = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-            timestamp = buildDate.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        if (Objects.nonNull(timestamp)) {
+            if (timestamp.length() == 14) {
+                LocalDateTime buildDate = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                timestamp = buildDate.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            } else if (timestamp.length() == 12) {
+                timestamp = String.format("%s-%s-%s %s:%s",
+                    timestamp.substring(0,4), timestamp.substring(4,6), timestamp.substring(6,8), timestamp.substring(8,10), timestamp.substring(10,12));
+            }
         }
 
-        String version = String.format("<html><center>%s Ver. %s-%s<br>(Java %s)<br><small>build %s</small></center></html>",
+        String version = String.format("<html><center>%s %s Ver. %s (%s)<br>(Java %s)<br><small>build %s</small></center></html>",
             ClientContext.getString("productString"),
             ClientContext.getString("version"),
+            System.getProperty("open.dolphin.build.project.version"),
             System.getProperty("os.arch"),
             System.getProperty("java.vm.version"), timestamp);
         // copyright 文字列作成

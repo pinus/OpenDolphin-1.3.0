@@ -78,20 +78,9 @@ public final class ClientContextStub {
         logger.info("os.arch = " + System.getProperty("os.arch"));
         logger.info("java.version = " + System.getProperty("java.version"));
         logger.info("java.vm.version = " + System.getProperty("java.vm.version"));
-        logger.info("javafx.version = " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion());
-        logger.info("dolphin.version = " + getString("version"));
+        logger.info("javafx.version = " + System.getProperty("javafx.version"));
+        logger.info("dolphin.version = " + getString("version") + "." + System.getProperty("open.dolphin.build.project.version"));
         logger.info("dolphin.build.timestamp = " + System.getProperty("open.dolphin.build.timestamp"));
-        //logger.info("base.directory = " + getString("base.dir"));
-        //logger.info("lib.directory = " + getString("lib.dir"));
-        //logger.info("plugins.directory = " + getString("plugins.dir"));
-        //logger.info("log.directory = " + getString("log.dir"));
-        //logger.info("setting.directory = " + getString("setting.dir"));
-        //logger.info("security.directory = " + getString("security.dir"));
-        //logger.info("schema.directory = " + getString("schema.dir"));
-        //logger.info("log.config.file = " + getString("log.config.file"));
-        //logger.info("veleocity.log.file = " + getString("application.velocity.log.file"));
-        //logger.info("login.config.file = " + getString("application.security.login.config"));
-        //logger.info("ssl.trsutStore = " + getString("application.security.ssl.trustStore"));
 
         // garbage collector information
         for (GarbageCollectorMXBean gcMxBean : ManagementFactory.getGarbageCollectorMXBeans()) {

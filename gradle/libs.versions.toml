@@ -1,0 +1,63 @@
+[versions]
+jakarta = "10.0.0"
+hibernate = "6.1.5.Final"
+resteasy = "6.2.1.Final"
+intellij = "12.0"
+
+## server ##
+jackson = "2.13.4"
+jackson-databind = "${jackson}.2"
+hibernate-search = "6.1.7.Final"
+commons-lang3 = "3.11"
+postgres = "42.5.1"
+jdom2 = "2.0.6"
+
+## client ##
+tyrus = "2.1.2"
+google-client = "1.30.9"
+google-oauth = "1.23.0"
+google-calendar = "v3-rev305-1.23.0"
+logback = "1.4.14"
+j2html = "1.5.0"
+javax-mail = "1.4.7"
+flatlaf = "3.0"
+commons-io = "2.12.0"
+
+[libraries]
+jakarta = { module = "jakarta.platform:jakarta.jakartaee-api", version.ref = "jakarta" }
+hibernate-core = { module = "org.hibernate.orm:hibernate-core", version.ref = "hibernate" }
+resteasy-core = { module = "org.jboss.resteasy:resteasy-core", version.ref = "resteasy" }
+resteasy-jackson2 = { module = "org.jboss.resteasy:resteasy-jackson2-provider", version.ref = "resteasy" }
+intellij-annotations = { module = "com.intellij:annotations", version.ref = "intellij" }
+
+## server ##
+hibernate-search = { module = "org.hibernate.search:hibernate-search-mapper-orm-jakarta", version.ref = "hibernate-search" }
+hibernate-search-elasticsearch = { module = "org.hibernate.search:hibernate-search-backend-elasticsearch", version.ref = "hibernate-search" }
+hibernate-migrationhelper = { module = "org.hibernate.search:hibernate-search-v5migrationhelper-orm", version.ref = "hibernate" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson-databind" }
+jackson-annotation = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
+jackson-jaxrs = { module = "com.fasterxml.jackson.jaxrs:jackson-jaxrs-base", version.ref = "jackson" }
+jackson-jaxrs-json = { module = "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider", version.ref = "jackson" }
+jackson-jaxb = { module = "com.fasterxml.jackson.module:jackson-module-jaxb-annotations", version.ref = "jackson" }
+jackson-hibernate5 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5", version.ref = "jackson" }
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
+postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+jdom2 = { module = "org.jdom:jdom2", version.ref = "jdom2" }
+
+## client ##
+resteasy-client = { module = "org.jboss.resteasy:resteasy-client", version.ref = "resteasy" }
+tyrus = { module = "org.glassfish.tyrus.bundles:tyrus-standalone-client", version.ref = "tyrus" }
+google-client = { module = "com.google.api-client:google-api-client", version.ref = "google-client" }
+google-oauth = { module = "com.google.oauth-client:google-oauth-client-jetty", version.ref = "google-oauth" }
+google-calendar = { module = "com.google.apis:google-api-services-calendar", version.ref = "google-calendar" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+j2html = { module = "com.j2html:j2html", version.ref = "j2html" }
+javax-mail = { module = "javax.mail:mail", version.ref = "javax-mail" }
+flatlaf = { module = "com.formdev:flatlaf", version.ref = "flatlaf" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
+
+[bundles]
+google = [ "google-client", "google-oauth", "google-calendar" ]
+hibernate-search = [ "hibernate-search", "hibernate-search-elasticsearch" ]
+jackson = [ "jackson-core", "jackson-databind", "jackson-annotation", "jackson-jaxrs", "jackson-jaxrs-json", "jackson-jaxb", "jackson-hibernate5" ]
