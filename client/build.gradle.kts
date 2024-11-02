@@ -49,7 +49,7 @@ tasks {
         val projectVersion = project.property("version")
         val javaVersion = project.property("java.version")
         // win.amd64:windows-msix, mac.amd64:mac-app, mac.aarch64:mac-app
-        val target = when (PLATFORM) {
+        val target = when(PLATFORM.removeSurrounding("\"")) {
             "win" -> arrayOf("win.amd64", "windows-msix")
             "mac" -> arrayOf("mac.amd64", "mac-app")
             else -> arrayOf("mac.aarch64", "mac-app")
