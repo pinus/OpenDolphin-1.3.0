@@ -2,11 +2,11 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.text.SimpleDateFormat
 import java.util.*
 
-val CONVEYOR_COMMAND = "/Applications/Conveyor.app/Contents/MacOS/conveyor"
-val CONVEYOR_OUTPUT_DIR = "${projectDir}/output"
+val conveyorCommand = "/Applications/Conveyor.app/Contents/MacOS/conveyor"
+val conveyorInputDir = "${projectDir}/output"
 // win, mac, mac-aarch64
-val PLATFORM = if ("${System.getenv()["PLATFORM"]}" != "null") "${System.getenv()["PLATFORM"]}" else "mac-aarch64"
-val BUILD_DATE = SimpleDateFormat("yyyyMMddHHmm").format(Date())
+val platform = if ("${System.getenv()["PLATFORM"]}" != "null") "${System.getenv()["PLATFORM"]}" else "mac-aarch64"
+val buildDate:String = SimpleDateFormat("yyyyMMddHHmm").format(Date())
 
 plugins {
     application
@@ -25,7 +25,7 @@ application {
 javafx {
     version = "21"
     modules("javafx.controls", "javafx.graphics", "javafx.swing")
-    setPlatform("${PLATFORM}".removeSurrounding("\""))
+    setPlatform(this@Build_gradle.platform.removeSurrounding("\""))
 }
 
 tasks {
@@ -37,7 +37,7 @@ tasks {
         }
     }
     val deleteConveyorOutput = register<Delete>("delete-conveyor-output") {
-        delete(CONVEYOR_OUTPUT_DIR)
+        delete(conveyorInputDir)
     }
     val conveyor = register<Exec>("conveyor") {
         group = "distribution"
@@ -49,19 +49,19 @@ tasks {
         val projectVersion = project.property("version")
         val javaVersion = project.property("java.version")
         // win.amd64:windows-msix, mac.amd64:mac-app, mac.aarch64:mac-app
-        val target = when(PLATFORM.removeSurrounding("\"")) {
+        val target = when(platform.removeSurrounding("\"")) {
             "win" -> arrayOf("win.amd64", "windows-msix")
             "mac" -> arrayOf("mac.amd64", "mac-app")
             else -> arrayOf("mac.aarch64", "mac-app")
         }
         commandLine = (listOf(
-                CONVEYOR_COMMAND,
+                conveyorCommand,
                 "-Kjar.name=${jarName}",
                 "-Kproject.version=${projectVersion}",
-                "-Kbuild.date=${BUILD_DATE}",
+                "-Kbuild.date=${buildDate}",
                 "-Kjava.version=${javaVersion}",
                 "-Kapp.machines=${target[0]}",
-                "make", "${target[1]}"))
+                "make", target[1]))
 
     }
     register<Exec>("tar") {
@@ -69,8 +69,8 @@ tasks {
         description = "make tar"
         dependsOn.add(conveyor)
         commandLine = (listOf(
-                "tar", "czf", "${CONVEYOR_OUTPUT_DIR}/OpenDolphin-${BUILD_DATE}.tgz",
-                "-C", "${CONVEYOR_OUTPUT_DIR}", "OpenDolphin.app"))
+                "tar", "czf", "${conveyorInputDir}/OpenDolphin-${buildDate}.tgz",
+                "-C", conveyorInputDir, "OpenDolphin.app"))
     }
     build {
         dependsOn.add(":server:jar")
