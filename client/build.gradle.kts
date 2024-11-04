@@ -82,11 +82,10 @@ tasks {
 
 repositories {
     mavenCentral()
-    flatDir { dirs("../server/build/libs") }
 }
 
 dependencies {
-    api(project(":server"))
+    implementation(project(":server"))
     implementation(libs.jakarta)
     implementation(libs.resteasy.core)
     implementation(libs.resteasy.jackson2)
