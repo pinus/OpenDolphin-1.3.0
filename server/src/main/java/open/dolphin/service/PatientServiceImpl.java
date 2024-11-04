@@ -142,16 +142,17 @@ public class PatientServiceImpl extends DolphinService implements PatientService
                 final SearchSession searchSession = Search.session(em);
 
                 List<DocumentModel> hits = searchSession.search(DocumentModel.class)
-                    .where(f -> f.bool(b -> {
-                        b.must(switch (spec.getType()) {
-                            case QUERY -> f.simpleQueryString().field("modules.fullText").matching(searchText);
-                            case REGEXP -> f.regexp().field("modules.fullText").matching(searchText);
-                            default -> f.phrase().field("modules.fullText").matching(searchText);
-                        });
-                        if (!ids.isEmpty()) {
-                            b.must(f.terms().field("karte.patient.id").matchingAny(ids));
+                    .where((f, root) -> {
+                            // should match all clauses
+                            root.add(f.matchAll());
+                            switch (spec.getType()) {
+                                case QUERY ->
+                                    root.add(f.simpleQueryString().field("modules.fullText").matching(searchText));
+                                case REGEXP -> root.add(f.regexp().field("modules.fullText").matching(searchText));
+                                default -> root.add(f.phrase().field("modules.fullText").matching(searchText));
+                            }
                         }
-                    })).fetchHits(1000);
+                    ).fetchHits(1000);
 
                 ret = hits.stream().map(dm -> dm.getKarte().getPatient()).distinct().toList();
             }
