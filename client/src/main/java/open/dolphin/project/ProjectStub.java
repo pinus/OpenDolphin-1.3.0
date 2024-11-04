@@ -1,5 +1,7 @@
 package open.dolphin.project;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeUtility;
 import open.dolphin.client.ClientContext;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.infomodel.UserModel;
@@ -11,8 +13,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -25,7 +25,7 @@ import java.util.prefs.Preferences;
  * @author Kazushi Minagawa, Digital Globe, Inc.
  */
 public class ProjectStub implements java.io.Serializable {
-    
+
     private final Preferences prefs;
     // Preferences のノード名
     private final String NODE_NAME = "/open/dolphin/project/v1310";
@@ -693,6 +693,7 @@ public class ProjectStub implements java.io.Serializable {
         ByteArrayOutputStream bo = new ByteArrayOutputStream();
 
         try (OutputStream outputStream = MimeUtility.encode(bo, "base64")) {
+
             SecretKeySpec spec = new SecretKeySpec(key.getBytes(), "Blowfish");
             Cipher cipher = Cipher.getInstance("Blowfish");
             cipher.init(Cipher.ENCRYPT_MODE, spec);
@@ -700,7 +701,7 @@ public class ProjectStub implements java.io.Serializable {
             outputStream.write(cipher.doFinal(pass.getBytes()));
 
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-            | IOException | IllegalBlockSizeException | BadPaddingException | MessagingException ex) {
+                 | IOException | IllegalBlockSizeException | BadPaddingException | MessagingException ex) {
             System.out.println("ProjectStub.java:" + ex);
         }
 
