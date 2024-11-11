@@ -82,6 +82,7 @@ public class GUIConst {
     public static final String ACTION_SHOW_SCHEMABOX = "showSchemaBox";
     public static final String ACTION_SHOW_WAITING_LIST = "showWaitingList";
     public static final String ACTION_SHOW_PATIENT_SEARCH = "showPatientSearch";
+    public static final String ACTION_SHOW_ORCA_CONTROLLER = "showOrcaController";
     public static final String ACTION_CHANGE_PASSWORD = "changePassword";
     public static final String ACTION_ADD_USER = "addUser";
 

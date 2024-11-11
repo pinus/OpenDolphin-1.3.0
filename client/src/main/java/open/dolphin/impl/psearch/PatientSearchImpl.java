@@ -91,6 +91,9 @@ public class PatientSearchImpl extends AbstractMainComponent {
 
         // 別の MainComponent に tab が切り替わったらクリアする
         tab.addChangeListener(e -> {
+            // オルコンの時は keywordfield にフォーカス取らせない
+            view.getKeywordFld().setEnabled(tab.getSelectedIndex() == 3? false : true);
+
             if (tab.getSelectedIndex() != tab.indexOfTab(getName())) {
                 view.getKeywordFld().setText("");
             }

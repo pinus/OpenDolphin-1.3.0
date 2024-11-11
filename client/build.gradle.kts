@@ -102,4 +102,5 @@ dependencies {
     implementation(libs.jdom2)
     implementation(libs.commons.io)
     implementation(libs.commons.lang3)
+    implementation("org.seleniumhq.selenium:selenium-java:4.26.0")
 }

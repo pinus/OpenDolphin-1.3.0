@@ -5,6 +5,7 @@ import open.dolphin.impl.labrcv.LaboTestImporter;
 import open.dolphin.impl.login.LoginDialog;
 import open.dolphin.impl.psearch.PatientSearchImpl;
 import open.dolphin.impl.pvt.WaitingListImpl;
+import open.dolphin.impl.orcon.OrcaController;
 import open.dolphin.infomodel.PatientVisitModel;
 import open.dolphin.infomodel.RoleModel;
 import open.dolphin.project.AbstractProjectFactory;
@@ -260,7 +261,8 @@ public class Dolphin implements MainWindow {
         MainTool[] plugin = {
             new WaitingListImpl(),
             new PatientSearchImpl(),
-            new LaboTestImporter()
+            new LaboTestImporter(),
+            new OrcaController()
         };
         // map of the index number and the plugin object
         final HashMap<Integer, MainTool> tabMap = new HashMap<>();
@@ -674,6 +676,14 @@ public class Dolphin implements MainWindow {
     }
 
     /**
+     * Orca Controller を表示する. MenuSupport から reflection で呼ばれる.
+     */
+    public void showOrcaController() {
+        windowSupport.getFrame().toFront();
+        tabbedPane.setSelectedIndex(3);
+    }
+
+    /**
      * DocumentFolder をチェック.
      */
     private void checkDocumentFolder() {
@@ -742,6 +752,7 @@ public class Dolphin implements MainWindow {
                 GUIConst.ACTION_SHOW_SCHEMABOX,
                 GUIConst.ACTION_SHOW_WAITING_LIST,
                 GUIConst.ACTION_SHOW_PATIENT_SEARCH,
+                GUIConst.ACTION_SHOW_ORCA_CONTROLLER,
                 GUIConst.ACTION_CHANGE_PASSWORD,
                 GUIConst.ACTION_SHOW_ABOUT,
             };

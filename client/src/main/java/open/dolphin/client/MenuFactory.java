@@ -293,6 +293,9 @@ public class MenuFactory {
     public void showPatientSearch() { main.sendToChain(GUIConst.ACTION_SHOW_PATIENT_SEARCH); }
 
     @MenuAction
+    public void showOrcaController() { main.sendToChain(GUIConst.ACTION_SHOW_ORCA_CONTROLLER); }
+
+    @MenuAction
     public void changePassword() {
         main.sendToChain(GUIConst.ACTION_CHANGE_PASSWORD);
     }
@@ -509,6 +512,7 @@ public class MenuFactory {
         tool.add(createMenuItem("シェーマ箱", GUIConst.ACTION_SHOW_SCHEMABOX, "2"));
         tool.add(createMenuItem("患者検索", GUIConst.ACTION_SHOW_PATIENT_SEARCH, "3"));
         tool.add(createMenuItem("スタンプ箱", GUIConst.ACTION_SHOW_STAMPBOX, "4"));
+        tool.add(createMenuItem("オルコン", GUIConst.ACTION_SHOW_ORCA_CONTROLLER, "0"));
         tool.addSeparator();
         tool.add(createMenuItem("プロフィール変更", GUIConst.ACTION_CHANGE_PASSWORD));
         tool.add(createMenuItem("院内ユーザー登録", GUIConst.ACTION_ADD_USER));
