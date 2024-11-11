@@ -61,7 +61,7 @@ public class ShortcutListener implements KeyListener {
 
         // そのまま流す
         String key = String.valueOf(e.getKeyChar());
-        logger.info("typed: " + key);
+        //logger.info("typed: " + key);
         sendThrough(key);
         e.consume();
     }
@@ -80,7 +80,7 @@ public class ShortcutListener implements KeyListener {
             return;
         }
 
-        logger.info("pressed: " + KeyEvent.getKeyText(e.getKeyCode()));
+        //logger.info("pressed: " + KeyEvent.getKeyText(e.getKeyCode()));
 
         // ショートカットキープログラム
         if (ctrl && e.getKeyCode() == KeyEvent.VK_ENTER) {

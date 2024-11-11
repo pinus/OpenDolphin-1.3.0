@@ -59,6 +59,7 @@ public class OrcaController extends AbstractMainComponent {
     @Override
     public void enter() {
         logger.info("enter");
+        SwingUtilities.invokeLater(() -> orconPanel.getCloseButton().requestFocusInWindow());
     }
 
     @Override
