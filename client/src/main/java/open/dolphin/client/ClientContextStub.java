@@ -79,7 +79,7 @@ public final class ClientContextStub {
         logger.info("java.version = " + System.getProperty("java.version"));
         logger.info("java.vm.version = " + System.getProperty("java.vm.version"));
         logger.info("javafx.version = " + System.getProperty("javafx.version"));
-        logger.info("dolphin.version = " + getString("version") + "." + System.getProperty("open.dolphin.build.project.version"));
+        logger.info("dolphin.version = " + System.getProperty("open.dolphin.build.project.version"));
         logger.info("dolphin.build.timestamp = " + System.getProperty("open.dolphin.build.timestamp"));
 
         // garbage collector information
@@ -219,10 +219,6 @@ public final class ClientContextStub {
         return getLocation("dolphin.jar");
     }
 
-    public String getVersion() {
-        return getString("version");
-    }
-
     public String getUpdateURL() {
 
         if (isMac()) {
@@ -247,7 +243,7 @@ public final class ClientContextStub {
             // System.out.println("ClientContextStub.java: " + e);
         }
 
-        return String.format("%s-%s-%s", title, getString("application.title"), getString("version"));
+        return String.format("%s-%s", title, getString("application.title"));
     }
 
     public URL getResource(String name) {

@@ -65,9 +65,8 @@ public class AboutDialog extends JDialog {
             }
         }
 
-        String version = String.format("<html><center>%s %s Ver. %s (%s)<br>(Java %s)<br><small>build %s</small></center></html>",
+        String version = String.format("<html><center>%s Ver. %s (%s)<br>(Java %s)<br><small>build %s</small></center></html>",
             ClientContext.getString("productString"),
-            ClientContext.getString("version"),
             System.getProperty("open.dolphin.build.project.version"),
             System.getProperty("os.arch"),
             System.getProperty("java.vm.version"), timestamp);

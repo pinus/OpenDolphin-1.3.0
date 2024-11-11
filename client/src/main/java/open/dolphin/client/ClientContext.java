@@ -42,10 +42,6 @@ public class ClientContext {
         return stub.isLinux();
     }
 
-    public static String getVersion() {
-        return stub.getVersion();
-    }
-
     public static String getUserDirectory() {
         return stub.getLocation("base");
     }
