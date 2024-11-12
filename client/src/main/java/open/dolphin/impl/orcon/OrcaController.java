@@ -1,6 +1,9 @@
 package open.dolphin.impl.orcon;
 
 import open.dolphin.client.AbstractMainComponent;
+import open.dolphin.helper.WindowHolder;
+import open.dolphin.impl.pvt.WaitingListImpl;
+import open.dolphin.infomodel.PatientVisitModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.io.output.TeeOutputStream;
@@ -24,6 +27,7 @@ public class OrcaController extends AbstractMainComponent {
     private static final String NAME = "オルコン";
     private OrconPanel orconPanel;
     private OrconProperties orconProps;
+    private Macro macro;
     private final Logger logger;
 
     public OrcaController() {
@@ -43,7 +47,7 @@ public class OrcaController extends AbstractMainComponent {
 
         orconProps = new OrconProperties(orconPanel);
         orconProps.modelToView();
-        Macro macro = new Macro(orconPanel, orconProps);
+        macro = new Macro(orconPanel, orconProps);
 
         // Listen KeyEvent on the close button,
         // which is the only component enabled after orca login
@@ -60,6 +64,22 @@ public class OrcaController extends AbstractMainComponent {
     public void enter() {
         logger.info("enter");
         SwingUtilities.invokeLater(() -> orconPanel.getCloseButton().requestFocusInWindow());
+        // 患者番号を macro に保存する
+        String ptnum = "";
+        // 開いている chart があれば, その番号を保存
+        if (WindowHolder.allCharts().size() > 0) {
+            ptnum = WindowHolder.allCharts().getFirst().getPatient().getPatientId();
+            //logger.info("ptnum in windowholder = " + ptnum);
+        }
+        // ない場合は, WaitingList の選択患者を送る
+        if (ptnum.isEmpty()) {
+            PatientVisitModel[] pvt = getContext().getPlugin(WaitingListImpl.class).getSelectedPvt();
+            if (pvt != null && pvt.length > 0) {
+                ptnum = pvt[0].getPatientId();
+                //logger.info("ptnum in waitinglist = " + ptnum);
+            }
+        }
+        macro.setPatientNumber(ptnum);
     }
 
     @Override
