@@ -127,7 +127,7 @@ public class Macro {
         // list of "入力コード" column
         List<WebElement> elements = driver.findElements(By.xpath("/html/body/div[2]/div/div/div[2]/div[6]/div/div[19]/table/tbody/tr/td[2]/input"));
         WebElement target = null;
-        for (int r=0; r<10; r++) {
+        for (int r = 0; r < 10; r++) {
             // 112011010 外来管理加算コード検索
             if ("112011010".equals(elements.get(r).getAttribute("value"))) {
                 target = elements.get(r);
@@ -135,7 +135,7 @@ public class Macro {
             }
         }
         // 見つかったら コマンド-A で全選択, 削除
-        if (target!= null) {
+        if (target != null) {
             target.sendKeys(Keys.chord(Keys.META, "A"), Keys.BACK_SPACE);
         }
     }

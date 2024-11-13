@@ -2,7 +2,9 @@ package open.dolphin.impl.orcon;
 
 import open.dolphin.client.AbstractMainComponent;
 import open.dolphin.helper.WindowHolder;
+import open.dolphin.impl.psearch.PatientSearchImpl;
 import open.dolphin.impl.pvt.WaitingListImpl;
+import open.dolphin.infomodel.PatientModel;
 import open.dolphin.infomodel.PatientVisitModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.Callable;
 import java.util.prefs.Preferences;
 
 /**
@@ -71,7 +74,15 @@ public class OrcaController extends AbstractMainComponent {
             ptnum = WindowHolder.allCharts().getFirst().getPatient().getPatientId();
             //logger.info("ptnum in windowholder = " + ptnum);
         }
-        // ない場合は, WaitingList の選択患者を送る
+        // ない場合は, PatientSearchImpl の選択患者を送る
+        if (ptnum.isEmpty()) {
+            PatientModel[] pm = getContext().getPlugin(PatientSearchImpl.class).getSelectedPatinet();
+            if (pm != null && pm.length > 0) {
+                ptnum = pm[0].getPatientId();
+                //logger.info("ptnum in patientsearch = " + ptnum);
+            }
+        }
+        // それもない場合は, WaitingList の選択患者を送る
         if (ptnum.isEmpty()) {
             PatientVisitModel[] pvt = getContext().getPlugin(WaitingListImpl.class).getSelectedPvt();
             if (pvt != null && pvt.length > 0) {
@@ -84,6 +95,19 @@ public class OrcaController extends AbstractMainComponent {
 
     @Override
     public void stop() {}
+
+    @Override
+    public Callable<Boolean> getStoppingTask() {
+        logger.info("OrcaController stopping task starts");
+        return () -> {
+            try {
+                macro.close();
+            } catch (RuntimeException ex) {
+                System.err.println(ex.getMessage());
+            }
+            return true;
+        };
+    }
 
     private static void redirectConsole() {
         try {
