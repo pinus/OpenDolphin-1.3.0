@@ -638,6 +638,7 @@ public class Dolphin implements MainWindow {
     public void showSchemaBox() {
         if (imageBox == null) {
             imageBox = new ImageBox();
+            providers.put(ImageBox.class, imageBox);
             imageBox.setContext(this);
             imageBox.start();
         } else {

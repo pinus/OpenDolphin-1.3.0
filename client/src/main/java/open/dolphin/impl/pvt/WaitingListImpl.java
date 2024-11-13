@@ -13,6 +13,7 @@ import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.infomodel.KarteState;
 import open.dolphin.infomodel.PatientVisitModel;
 import open.dolphin.project.Project;
+import open.dolphin.stampbox.StampBoxPlugin;
 import open.dolphin.ui.IndentTableCellRenderer;
 import open.dolphin.ui.ObjectReflectTableModel;
 import open.dolphin.ui.PNSBadgeTabbedPane;
@@ -279,6 +280,12 @@ public class WaitingListImpl extends AbstractMainComponent {
     @Override
     public void enter() {
         controlMenu();
+        // オルコン操作で隠されたウインドウ再表示
+        StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
+        if (stampBox != null) {
+            stampBox.getFrame().setState(Frame.NORMAL);
+        }
+        WindowHolder.allCharts().forEach(c -> c.getFrame().setState(Frame.NORMAL));
     }
 
     /**

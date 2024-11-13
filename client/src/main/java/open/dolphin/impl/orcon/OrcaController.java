@@ -1,11 +1,13 @@
 package open.dolphin.impl.orcon;
 
 import open.dolphin.client.AbstractMainComponent;
+import open.dolphin.client.ImageBox;
 import open.dolphin.helper.WindowHolder;
 import open.dolphin.impl.psearch.PatientSearchImpl;
 import open.dolphin.impl.pvt.WaitingListImpl;
 import open.dolphin.infomodel.PatientModel;
 import open.dolphin.infomodel.PatientVisitModel;
+import open.dolphin.stampbox.StampBoxPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.io.output.TeeOutputStream;
@@ -67,6 +69,17 @@ public class OrcaController extends AbstractMainComponent {
     public void enter() {
         logger.info("enter");
         SwingUtilities.invokeLater(() -> orconPanel.getCloseButton().requestFocusInWindow());
+
+        // オルコン操作中はウインドウをできるだけ隠す
+        if (orconPanel.getCloseButton().isEnabled()) {
+            StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
+            stampBox.getFrame().setState(Frame.ICONIFIED);
+            ImageBox imageBox = getContext().getPlugin(ImageBox.class);
+            if (imageBox != null) {
+                imageBox.getFrame().setVisible(false);
+            }
+            WindowHolder.allCharts().forEach(c -> c.getFrame().setState(Frame.ICONIFIED));
+        }
 
         // 患者番号を macro に保存する
         String ptnum = "";
