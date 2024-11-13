@@ -67,14 +67,15 @@ public class OrcaController extends AbstractMainComponent {
     public void enter() {
         logger.info("enter");
         SwingUtilities.invokeLater(() -> orconPanel.getCloseButton().requestFocusInWindow());
+
         // 患者番号を macro に保存する
         String ptnum = "";
-        // 開いている chart があれば, その番号を保存
-        if (WindowHolder.allCharts().size() > 0) {
+        // 開いている chart があれば, その患者番号を保存
+        if (!WindowHolder.allCharts().isEmpty()) {
             ptnum = WindowHolder.allCharts().getFirst().getPatient().getPatientId();
             //logger.info("ptnum in windowholder = " + ptnum);
         }
-        // ない場合は, PatientSearchImpl の選択患者を送る
+        // ない場合は, PatientSearchImpl の選択患者番号を保存
         if (ptnum.isEmpty()) {
             PatientModel[] pm = getContext().getPlugin(PatientSearchImpl.class).getSelectedPatinet();
             if (pm != null && pm.length > 0) {
@@ -82,7 +83,7 @@ public class OrcaController extends AbstractMainComponent {
                 //logger.info("ptnum in patientsearch = " + ptnum);
             }
         }
-        // それもない場合は, WaitingList の選択患者を送る
+        // それもない場合は, WaitingList の選択患者番号を保存
         if (ptnum.isEmpty()) {
             PatientVisitModel[] pvt = getContext().getPlugin(WaitingListImpl.class).getSelectedPvt();
             if (pvt != null && pvt.length > 0) {
