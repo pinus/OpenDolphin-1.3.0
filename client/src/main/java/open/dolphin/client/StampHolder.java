@@ -18,10 +18,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.HierarchyBoundsAdapter;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Objects;
@@ -112,6 +109,12 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
      */
     @Override
     public void keyPressed(KeyEvent e) {
+        // modifier キーが押されている場合は処理しない
+        if (e.isShiftDown() || e.isAltDown() || e.isControlDown() || e.isMetaDown()) {
+            super.keyPressed(e);
+            return;
+        }
+
         if (e.getKeyChar() == 'i') {
             // i キーで一般名記載追加
             if (kartePane.getTextPane().isEditable()) {

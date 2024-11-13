@@ -2,7 +2,7 @@
 jakarta = "10.0.0"
 hibernate-orm = "6.6.1.Final"
 resteasy = "6.2.10.Final"
-intellij = "12.0"
+intellij = "24.0.0"
 
 ## server ##
 jackson = "2.17.0"
@@ -21,13 +21,14 @@ j2html = "1.5.0"
 angus-mail = "2.0.3"
 flatlaf = "3.0"
 commons-io = "2.16.1"
+selenium = "4.26.0"
 
 [libraries]
 jakarta = { module = "jakarta.platform:jakarta.jakartaee-api", version.ref = "jakarta" }
 hibernate-core = { module = "org.hibernate.orm:hibernate-core", version.ref = "hibernate-orm" }
 resteasy-core = { module = "org.jboss.resteasy:resteasy-core", version.ref = "resteasy" }
 resteasy-jackson2 = { module = "org.jboss.resteasy:resteasy-jackson2-provider", version.ref = "resteasy" }
-intellij-annotations = { module = "com.intellij:annotations", version.ref = "intellij" }
+intellij-annotations = { module = "org.jetbrains:annotations", version.ref = "intellij" }
 
 ## server ##
 hibernate-search = { module = "org.hibernate.search:hibernate-search-mapper-orm", version.ref = "hibernate-search" }
@@ -51,6 +52,7 @@ j2html = { module = "com.j2html:j2html", version.ref = "j2html" }
 angus-mail = { module = "org.eclipse.angus:angus-mail", version.ref = "angus-mail" }
 flatlaf = { module = "com.formdev:flatlaf", version.ref = "flatlaf" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
+selenium = { module = "org.seleniumhq.selenium:selenium-java", version.ref = "selenium" }
 
 [bundles]
 google = [ "google-client", "google-oauth", "google-calendar" ]

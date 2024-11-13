@@ -4,7 +4,6 @@ import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -30,10 +29,10 @@ public class ShortcutListener implements KeyListener {
      * @param e KeyEvent
      */
     private void setModifierState(KeyEvent e) {
-        shift = (e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0;
-        ctrl = (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0;
-        alt = (e.getModifiersEx() & InputEvent.ALT_DOWN_MASK) != 0;
-        meta = (e.getModifiersEx() & InputEvent.META_DOWN_MASK) != 0;
+        shift = e.isShiftDown();
+        ctrl = e.isControlDown();
+        alt = e.isAltDown();
+        meta = e.isMetaDown();
     }
 
     /**
