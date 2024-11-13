@@ -40,9 +40,9 @@ public final class StampListTransferable extends DolphinTransferable<OrderList> 
     }
 
     /**
-     * スタンプの文字列型式を作る.
+     * スタンプの文字列型式を作る. 外部エディタペースト用.
      *
-     * @return string expression of the stamp
+     * @return string expression of the stamp for clipboard
      */
     @NotNull
     private String getStampText(ModuleModel stamp) {
@@ -53,7 +53,7 @@ public final class StampListTransferable extends DolphinTransferable<OrderList> 
 
             for (ClaimItem item : bundle.getClaimItem()) {
                 if (!item.getCode().matches("099[0-9]{6}")) {
-                    sb.append(item.getName());
+                    sb.append(item.getName().replaceAll("「.*」", "")); // 会社名削除
                     sb.append(" ");
 
                     if (!item.getCode().matches("0085[0-9]{5}")
@@ -74,6 +74,12 @@ public final class StampListTransferable extends DolphinTransferable<OrderList> 
             text = text.replaceAll("　", " ");
             text = text.replaceAll("．", ".");
             text = text.replace("\n", " ");
+            // 括弧を除去
+            text = text.replaceAll("（.*）", "");
+            // 軟膏混合の場合, 最初の "g" に "＋" を付ける
+            if (text.contains("混合")) {
+                text = text.replaceFirst("g ", "g＋");
+            }
 
             return text;
         }
