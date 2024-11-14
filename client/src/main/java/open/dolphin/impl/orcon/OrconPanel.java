@@ -92,9 +92,9 @@ public class OrconPanel {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 16,0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
         buttonPanel.add(loginButton);
         buttonPanel.add(closeButton);
-        layouter.fixSize(buttonPanel, Integer.MAX_VALUE);
         layouter.setConstraints(buttonPanel, 0, 2, GridBagConstraints.REMAINDER, 1);
         orconPanel.add(buttonPanel);
 
