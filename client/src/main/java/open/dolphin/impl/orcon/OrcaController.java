@@ -63,6 +63,12 @@ public class OrcaController extends AbstractMainComponent {
         orconPanel.getCloseButton().addActionListener(e -> macro.close());
 
         getContext().getFrame().getRootPane().setDefaultButton(orconPanel.getLoginButton());
+        getContext().getFrame().addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowActivated(WindowEvent e) { orconPanel.setActive(orconPanel.getCloseButton().isEnabled()); }
+            @Override
+            public void windowDeactivated(WindowEvent e) { orconPanel.setActive(false); }
+        });
     }
 
     @Override

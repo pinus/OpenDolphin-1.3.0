@@ -229,5 +229,6 @@ public class Macro {
     public void quit() {
         driver.quit();
         panel.getLoginButton().setEnabled(true);
+        panel.setActive(false);
     }
 }

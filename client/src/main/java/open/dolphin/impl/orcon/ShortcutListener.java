@@ -53,11 +53,11 @@ public class ShortcutListener implements KeyListener {
         // 特殊キーを selenium Keys に変換
         Keys specialKey = KeyUtils.toSeleniumKey(e.getKeyCode());
         if (specialKey != null) {
-            logger.info("specialKey = " + specialKey);
+            //logger.info("specialKey = " + specialKey);
             chord.append(specialKey);
         } else {
             // 通常キーは getChar で受ける
-            logger.info("normal key = " + e.getKeyChar());
+            //logger.info("normal key = " + e.getKeyChar());
             chord.append(e.getKeyChar());
         }
 //        for (int i=0; i<chord.length(); i++) {
