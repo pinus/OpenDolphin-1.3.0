@@ -103,4 +103,5 @@ dependencies {
     implementation(libs.commons.io)
     implementation(libs.commons.lang3)
     implementation(libs.selenium)
+    implementation("io.github.bonigarcia:webdrivermanager:5.9.2")
 }

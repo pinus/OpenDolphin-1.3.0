@@ -1,5 +1,6 @@
 package open.dolphin.impl.orcon;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import open.dolphin.client.AbstractMainComponent;
 import open.dolphin.client.ImageBox;
 import open.dolphin.helper.WindowHolder;
@@ -37,6 +38,7 @@ public class OrcaController extends AbstractMainComponent {
 
     public OrcaController() {
         setName(NAME);
+        WebDriverManager.chromedriver().setup();
         logger = LoggerFactory.getLogger(OrcaController.class);
     }
 
