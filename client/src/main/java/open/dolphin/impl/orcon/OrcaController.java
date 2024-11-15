@@ -33,7 +33,8 @@ public class OrcaController extends AbstractMainComponent {
     private static final String NAME = "オルコン";
     private OrconPanel orconPanel;
     private OrconProperties orconProps;
-    private Macro macro;
+    private OrconMacro orconMacro;
+    private OrconKeyDispatcher keyDispatcher;
     private final Logger logger;
 
     public OrcaController() {
@@ -54,15 +55,19 @@ public class OrcaController extends AbstractMainComponent {
 
         orconProps = new OrconProperties(orconPanel);
         orconProps.modelToView();
-        macro = new Macro(orconPanel, orconProps);
+        orconMacro = new OrconMacro(orconPanel, orconProps);
 
-        // Listen KeyEvent on the close button,
-        // which is the only component enabled after orca login
-        ShortcutListener shortcutListener = new ShortcutListener(macro);
-        orconPanel.getCloseButton().addKeyListener(shortcutListener);
-        orconPanel.getCloseButton().setFocusTraversalKeysEnabled(false); // tab を取られないように
-        orconPanel.getLoginButton().addActionListener(e -> macro.login());
-        orconPanel.getCloseButton().addActionListener(e -> macro.close());
+        keyDispatcher = new OrconKeyDispatcher(orconMacro);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyDispatcher);
+
+        orconPanel.getLoginButton().addActionListener(e -> {
+            orconMacro.login();
+            keyDispatcher.setEnabled(true);
+        });
+        orconPanel.getCloseButton().addActionListener(e -> {
+            keyDispatcher.setEnabled(false);
+            orconMacro.close();
+        });
 
         getContext().getFrame().getRootPane().setDefaultButton(orconPanel.getLoginButton());
         getContext().getFrame().addWindowListener(new WindowAdapter() {
@@ -73,10 +78,17 @@ public class OrcaController extends AbstractMainComponent {
         });
     }
 
+    /**
+     * orcon にキーを送るかどうか.
+     * @param enable set true to send keys to orcon
+     */
+    public void enableOrconKeyProcessor(boolean enable) {
+        keyDispatcher.setEnabled(enable);
+    }
+
     @Override
     public void enter() {
         logger.info("enter");
-        SwingUtilities.invokeLater(() -> orconPanel.getCloseButton().requestFocusInWindow());
 
         // オルコン操作中はウインドウをできるだけ隠す
         if (orconPanel.getCloseButton().isEnabled()) {
@@ -89,7 +101,7 @@ public class OrcaController extends AbstractMainComponent {
             WindowHolder.allCharts().forEach(c -> c.getFrame().setState(Frame.ICONIFIED));
         }
 
-        // 患者番号を macro に保存する
+        // 患者番号を orconMacro に保存する
         String ptnum = "";
         // 開いている chart があれば, その患者番号を保存
         if (!WindowHolder.allCharts().isEmpty()) {
@@ -112,7 +124,7 @@ public class OrcaController extends AbstractMainComponent {
                 //logger.info("ptnum in waitinglist = " + ptnum);
             }
         }
-        macro.setPatientNumber(ptnum);
+        orconMacro.setPatientNumber(ptnum);
     }
 
     @Override
@@ -123,7 +135,7 @@ public class OrcaController extends AbstractMainComponent {
         logger.info("OrcaController stopping task starts");
         return () -> {
             try {
-                macro.close();
+                orconMacro.close();
             } catch (RuntimeException ex) {
                 System.err.println(ex.getMessage());
             }
