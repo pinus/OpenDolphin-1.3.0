@@ -57,28 +57,49 @@ public class OrcaController extends AbstractMainComponent {
         orconProps.modelToView();
         orconMacro = new OrconMacro(orconPanel, orconProps);
 
-        // connect
-        keyDispatcher = new OrconKeyDispatcher(orconMacro);
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyDispatcher);
-        orconPanel.getLoginButton().addActionListener(e -> {
-            orconMacro.login();
-            keyDispatcher.setEnabled(true);
-        });
-        orconPanel.getCloseButton().addActionListener(e -> orconMacro.close());
+        // set default button
         getContext().getFrame().getRootPane().setDefaultButton(orconPanel.getLoginButton());
 
-        getContext().getFrame().addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowActivated(WindowEvent e) { orconPanel.setActive(orconPanel.getCloseButton().isEnabled()); }
-            @Override
-            public void windowDeactivated(WindowEvent e) { orconPanel.setActive(false); }
+        // key dispatcher の動き
+        keyDispatcher = new OrconKeyDispatcher(orconMacro);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyDispatcher);
+        // login したら　enables する
+        orconPanel.getLoginButton().addActionListener(e -> {
+            orconMacro.login();
+            keyDispatcher.setMode(OrconKeyDispatcher.Mode.FULL);
+        });
+        orconPanel.getCloseButton().addActionListener(e -> {
+            orconMacro.close();
+            keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
         });
 
+        // window inactive になったら disable する, active になったら元に戻す
+        getContext().getFrame().addWindowListener(new WindowAdapter() {
+            private OrconKeyDispatcher.Mode oldMode
+                = OrconKeyDispatcher.Mode.DISABLE;
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+                orconPanel.setActive(orconPanel.getCloseButton().isEnabled());
+                keyDispatcher.setMode(oldMode);
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+                orconPanel.setActive(false);
+                oldMode = keyDispatcher.getMode();
+                keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+            }
+        });
+        // 他の panel に移ったら disable
         orconPanel.getPanel().addComponentListener(new ComponentListener() {
             @Override
-            public void componentShown(ComponentEvent e) { keyDispatcher.setEnabled(orconPanel.getCloseButton().isEnabled()); }
+            public void componentHidden(ComponentEvent e) {
+                keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+            }
+
             @Override
-            public void componentHidden(ComponentEvent e) { keyDispatcher.setEnabled(false); }
+            public void componentShown(ComponentEvent e) {}
             @Override
             public void componentResized(ComponentEvent e) {}
             @Override
@@ -87,16 +108,20 @@ public class OrcaController extends AbstractMainComponent {
     }
 
     /**
-     * orcon にキーを送るかどうか.
-     * @param enable set true to send keys to orcon
+     * OrconKeyDispatcher Stealth mode ON/OFF
+     * @param enable set true for stealth mode
      */
-    public void enableOrconKeyProcessor(boolean enable) {
-        keyDispatcher.setEnabled(enable);
+    public void setStealth(boolean enable) {
+        keyDispatcher.setMode(enable?
+            OrconKeyDispatcher.Mode.STEALTH : OrconKeyDispatcher.Mode.DISABLE);
     }
 
     @Override
     public void enter() {
         logger.info("enter");
+        // 入ってきたら key dispatcher enable
+        keyDispatcher.setMode(orconPanel.getCloseButton().isEnabled()?
+            OrconKeyDispatcher.Mode.FULL : OrconKeyDispatcher.Mode.DISABLE);
 
         // オルコン操作中はウインドウをできるだけ隠す
         if (orconPanel.getCloseButton().isEnabled()) {
