@@ -181,7 +181,8 @@ public class ImageBox extends AbstractMainTool {
                 GUIConst.ACTION_SET_KARTE_ENVIROMENT,
                 GUIConst.ACTION_SHOW_WAITING_LIST,
                 GUIConst.ACTION_SHOW_PATIENT_SEARCH,
-                GUIConst.ACTION_SHOW_ORCA_CONTROLLER
+                GUIConst.ACTION_SHOW_ORCON,
+                GUIConst.ACTION_STEALTH_ORCON,
             };
             mediator.enableMenus(enables);
         }

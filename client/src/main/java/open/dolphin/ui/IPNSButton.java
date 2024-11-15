@@ -17,6 +17,7 @@ interface IPNSButton {
     Color ACTIVE_FRAME_SELECTED = new Color(91, 91, 91);
     Color ACTIVE_FILL = new Color(240, 240, 240);
     Color ACTIVE_FILL_SELECTED = new Color(100, 100, 100);
+    Color ACTIVE_TEXT = Color.BLACK;
     Color INACTIVE_TEXT = new Color(180, 180, 180);
     Color INACTIVE_TEXT_SELECTED = new Color(50, 50, 50);
 

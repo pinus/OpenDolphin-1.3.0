@@ -80,7 +80,7 @@ public class OrcaController extends AbstractMainComponent {
 
             @Override
             public void windowActivated(WindowEvent e) {
-                orconPanel.setActive(orconPanel.getCloseButton().isEnabled());
+                orconPanel.setActive(isEnabled());
                 keyDispatcher.setMode(oldMode);
             }
 
@@ -108,6 +108,14 @@ public class OrcaController extends AbstractMainComponent {
     }
 
     /**
+     * ORCA が立ち上がっているかどうか
+     * @return true if orca is active
+     */
+    public boolean isEnabled() {
+        return orconPanel.getCloseButton().isEnabled();
+    }
+
+    /**
      * OrconKeyDispatcher Stealth mode ON/OFF
      * @param enable set true for stealth mode
      */
@@ -120,11 +128,11 @@ public class OrcaController extends AbstractMainComponent {
     public void enter() {
         logger.info("enter");
         // 入ってきたら key dispatcher enable
-        keyDispatcher.setMode(orconPanel.getCloseButton().isEnabled()?
+        keyDispatcher.setMode(isEnabled()?
             OrconKeyDispatcher.Mode.FULL : OrconKeyDispatcher.Mode.DISABLE);
 
         // オルコン操作中はウインドウをできるだけ隠す
-        if (orconPanel.getCloseButton().isEnabled()) {
+        if (isEnabled()) {
             StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
             stampBox.getFrame().setState(Frame.ICONIFIED);
             ImageBox imageBox = getContext().getPlugin(ImageBox.class);

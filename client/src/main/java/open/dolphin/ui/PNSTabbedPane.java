@@ -243,6 +243,16 @@ public class PNSTabbedPane extends JPanel implements ChangeListener {
     }
 
     /**
+     * index のボタンの title の色を返す.
+     *
+     * @param index index
+     */
+    public Color getColorAt(int index) {
+        TabButton button = (TabButton) buttonPanel.getComponent(index);
+        return button.getForeground();
+    }
+
+    /**
      * index のボタンの title の色を設定する.
      *
      * @param index index
@@ -517,6 +527,7 @@ public class PNSTabbedPane extends JPanel implements ChangeListener {
             setName(name);
             addActionListener(this);
             setFocusable(false);
+            setForeground(ACTIVE_TEXT);
             setBorderPainted(false);
             setFont(buttonPanelFont);
 
@@ -586,7 +597,7 @@ public class PNSTabbedPane extends JPanel implements ChangeListener {
                 if (this.isSelected()) {
                     g.setColor(Color.WHITE);
                 } else {
-                    g.setColor(Color.BLACK);
+                    g.setColor(getForeground());
                 }
 
             } else {

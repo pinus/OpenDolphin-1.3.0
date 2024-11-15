@@ -284,6 +284,7 @@ public class Dolphin implements MainWindow {
             MainTool selected = tabMap.get(tabbedPane.getSelectedIndex());
             selected.enter();
             mediator.addChain(selected);
+            tabbedPane.setColorAt(tabbedPane.getSelectedIndex(), Color.BLACK);
         });
 
         // StateMagrを使用してメインウインドウの状態を制御する
@@ -685,6 +686,20 @@ public class Dolphin implements MainWindow {
     }
 
     /**
+     * Stealth mode Orca Controller. MenuSupport から reflection で呼ばれる.
+     */
+    public void stealthOrcaController() {
+        OrcaController orcon = getPlugin(OrcaController.class);
+        if (tabbedPane.getColorAt(3).equals(Color.BLACK) && orcon.isEnabled()) {
+            tabbedPane.setColorAt(3, Color.GREEN);
+            orcon.setStealth(true);
+        } else {
+            tabbedPane.setColorAt(3, Color.BLACK);
+            orcon.setStealth(false);
+        }
+    }
+
+    /**
      * DocumentFolder をチェック.
      */
     private void checkDocumentFolder() {
@@ -753,7 +768,8 @@ public class Dolphin implements MainWindow {
                 GUIConst.ACTION_SHOW_SCHEMABOX,
                 GUIConst.ACTION_SHOW_WAITING_LIST,
                 GUIConst.ACTION_SHOW_PATIENT_SEARCH,
-                GUIConst.ACTION_SHOW_ORCA_CONTROLLER,
+                GUIConst.ACTION_SHOW_ORCON,
+                GUIConst.ACTION_STEALTH_ORCON,
                 GUIConst.ACTION_CHANGE_PASSWORD,
                 GUIConst.ACTION_SHOW_ABOUT,
             };
