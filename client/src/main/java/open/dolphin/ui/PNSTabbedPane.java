@@ -243,6 +243,17 @@ public class PNSTabbedPane extends JPanel implements ChangeListener {
     }
 
     /**
+     * index のボタンの title の色を設定する.
+     *
+     * @param index index
+     * @param color ボタン文字色を設定
+     */
+    public void setColorAt(int index, Color color) {
+        TabButton button = (TabButton) buttonPanel.getComponent(index);
+        button.setForeground(color);
+    }
+
+    /**
      * ボタンパネルを上につけるか，下につけるか.
      *
      * @param tabPlacement ボタン位置
