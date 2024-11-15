@@ -57,24 +57,32 @@ public class OrcaController extends AbstractMainComponent {
         orconProps.modelToView();
         orconMacro = new OrconMacro(orconPanel, orconProps);
 
+        // connect
         keyDispatcher = new OrconKeyDispatcher(orconMacro);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyDispatcher);
-
         orconPanel.getLoginButton().addActionListener(e -> {
             orconMacro.login();
             keyDispatcher.setEnabled(true);
         });
-        orconPanel.getCloseButton().addActionListener(e -> {
-            keyDispatcher.setEnabled(false);
-            orconMacro.close();
-        });
-
+        orconPanel.getCloseButton().addActionListener(e -> orconMacro.close());
         getContext().getFrame().getRootPane().setDefaultButton(orconPanel.getLoginButton());
+
         getContext().getFrame().addWindowListener(new WindowAdapter() {
             @Override
             public void windowActivated(WindowEvent e) { orconPanel.setActive(orconPanel.getCloseButton().isEnabled()); }
             @Override
             public void windowDeactivated(WindowEvent e) { orconPanel.setActive(false); }
+        });
+
+        orconPanel.getPanel().addComponentListener(new ComponentListener() {
+            @Override
+            public void componentShown(ComponentEvent e) { keyDispatcher.setEnabled(orconPanel.getCloseButton().isEnabled()); }
+            @Override
+            public void componentHidden(ComponentEvent e) { keyDispatcher.setEnabled(false); }
+            @Override
+            public void componentResized(ComponentEvent e) {}
+            @Override
+            public void componentMoved(ComponentEvent e) {}
         });
     }
 
