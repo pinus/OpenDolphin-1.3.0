@@ -120,8 +120,24 @@ public class OrcaController extends AbstractMainComponent {
      * @param enable set true for stealth mode
      */
     public void setStealth(boolean enable) {
+        hideWindowsAsPossible(enable);
         keyDispatcher.setMode(enable?
             OrconKeyDispatcher.Mode.STEALTH : OrconKeyDispatcher.Mode.DISABLE);
+    }
+
+    /**
+     * ORCA を操作しやすくなるように, できるだけウインドウを隠す.
+     * @param hide to hide windows
+     */
+    private void hideWindowsAsPossible(boolean hide) {
+        StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
+        stampBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
+        ImageBox imageBox = getContext().getPlugin(ImageBox.class);
+        if (imageBox != null && imageBox.getFrame().isVisible()) {
+            imageBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
+        }
+        WindowHolder.allCharts().forEach(c -> c.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL));
+        SwingUtilities.invokeLater(() -> getContext().getFrame().toFront());
     }
 
     @Override
@@ -132,15 +148,7 @@ public class OrcaController extends AbstractMainComponent {
             OrconKeyDispatcher.Mode.FULL : OrconKeyDispatcher.Mode.DISABLE);
 
         // オルコン操作中はウインドウをできるだけ隠す
-        if (isEnabled()) {
-            StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
-            stampBox.getFrame().setState(Frame.ICONIFIED);
-            ImageBox imageBox = getContext().getPlugin(ImageBox.class);
-            if (imageBox != null) {
-                imageBox.getFrame().setVisible(false);
-            }
-            WindowHolder.allCharts().forEach(c -> c.getFrame().setState(Frame.ICONIFIED));
-        }
+        hideWindowsAsPossible(isEnabled());
 
         // 患者番号を orconMacro に保存する
         String ptnum = "";

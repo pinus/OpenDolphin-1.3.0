@@ -93,15 +93,22 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
     public boolean dispatchKeyEvent(KeyEvent e) {
         setModifierState(e);
 
+        // 横取りしないキーを false で返す
         if (mode == Mode.DISABLE) {
+            // 横取りしない
             return false;
+
         } else if (mode == Mode.FULL) {
+            // コマンドキーを横取りしない
             if (meta) { return false; }
-        } else {
-            // stealth
-            if (meta || e.getKeyCode() == KeyEvent.VK_SPACE
-                || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN
-                || e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT) {
+
+        } else { // Mode.STEALTH
+            //ショートカットだけ通す
+            int c = e.getKeyCode();
+            if (!( (ctrl && c == KeyEvent.VK_ENTER) || (ctrl && c == KeyEvent.VK_K) || (ctrl && c == KeyEvent.VK_B)
+                || (ctrl && c == KeyEvent.VK_0) || (ctrl && c == KeyEvent.VK_1) || (ctrl && c == KeyEvent.VK_2)
+                || (ctrl && c == KeyEvent.VK_V)
+                || (shift && c == KeyEvent.VK_ENTER) )) {
                 return false;
             }
         }
@@ -115,6 +122,12 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
                 if (orconMacro.whereAmI().equals("K02")) {
                     orconMacro.k20ChutoTenkai();
                 }
+            }
+
+        } else if (shift && e.getKeyCode() == KeyEvent.VK_ENTER) {
+            // shift + ENTER で orca enter 入力
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                orconMacro.sendThrough(Keys.ENTER);
             }
 
         } else if (ctrl && e.getKeyCode() == KeyEvent.VK_K) {
@@ -148,7 +161,7 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
                     case "K02" -> orconMacro.k02SendPtNum();
                     case "C02" -> orconMacro.c02SendPtNum();
                 }
-            }
+                }
 
         } else {
             // ショートカットキー以外は, そのまま流す

@@ -284,6 +284,7 @@ public class Dolphin implements MainWindow {
             MainTool selected = tabMap.get(tabbedPane.getSelectedIndex());
             selected.enter();
             mediator.addChain(selected);
+            // ステルスオルコンで色が変わっているのを直す
             tabbedPane.setColorAt(tabbedPane.getSelectedIndex(), Color.BLACK);
         });
 
@@ -689,14 +690,18 @@ public class Dolphin implements MainWindow {
      * Stealth mode Orca Controller. MenuSupport から reflection で呼ばれる.
      */
     public void stealthOrcaController() {
+        enableStealthOrcaController(
+            tabbedPane.getColorAt(3).equals(Color.BLACK) && getPlugin(OrcaController.class).isEnabled());
+    }
+
+    /**
+     * ステルスオルコンの ON/OFF
+     * @param enabled stealth orcon on/off
+     */
+    private void enableStealthOrcaController(boolean enabled) {
         OrcaController orcon = getPlugin(OrcaController.class);
-        if (tabbedPane.getColorAt(3).equals(Color.BLACK) && orcon.isEnabled()) {
-            tabbedPane.setColorAt(3, Color.GREEN);
-            orcon.setStealth(true);
-        } else {
-            tabbedPane.setColorAt(3, Color.BLACK);
-            orcon.setStealth(false);
-        }
+        tabbedPane.setColorAt(3, enabled? Color.GREEN : Color.BLACK);
+        orcon.setStealth(enabled);
     }
 
     /**
