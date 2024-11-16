@@ -2,13 +2,12 @@ package open.dolphin.impl.orcon;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import open.dolphin.client.AbstractMainComponent;
+import open.dolphin.client.Dolphin;
 import open.dolphin.client.ImageBox;
+import open.dolphin.event.BadgeEvent;
 import open.dolphin.helper.WindowHolder;
-import open.dolphin.impl.psearch.PatientSearchImpl;
-import open.dolphin.impl.pvt.WaitingListImpl;
-import open.dolphin.infomodel.PatientModel;
-import open.dolphin.infomodel.PatientVisitModel;
 import open.dolphin.stampbox.StampBoxPlugin;
+import open.dolphin.ui.PNSBadgeTabbedPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.io.output.TeeOutputStream;
@@ -43,6 +42,10 @@ public class OrcaController extends AbstractMainComponent {
         logger = LoggerFactory.getLogger(OrcaController.class);
     }
 
+    public OrconPanel getOrconPanel() { return orconPanel; }
+
+    public OrconProperties getOrconProps() { return orconProps; }
+
     @Override
     public JPanel getUI() {
         return orconPanel.getPanel();
@@ -55,7 +58,7 @@ public class OrcaController extends AbstractMainComponent {
 
         orconProps = new OrconProperties(orconPanel);
         orconProps.modelToView();
-        orconMacro = new OrconMacro(orconPanel, orconProps);
+        orconMacro = new OrconMacro(this);
 
         // set default button
         getContext().getFrame().getRootPane().setDefaultButton(orconPanel.getLoginButton());
@@ -116,16 +119,6 @@ public class OrcaController extends AbstractMainComponent {
     }
 
     /**
-     * OrconKeyDispatcher Stealth mode ON/OFF
-     * @param enable set true for stealth mode
-     */
-    public void setStealth(boolean enable) {
-        hideWindowsAsPossible(enable);
-        keyDispatcher.setMode(enable?
-            OrconKeyDispatcher.Mode.STEALTH : OrconKeyDispatcher.Mode.DISABLE);
-    }
-
-    /**
      * ORCA を操作しやすくなるように, できるだけウインドウを隠す.
      * @param hide to hide windows
      */
@@ -140,40 +133,44 @@ public class OrcaController extends AbstractMainComponent {
         SwingUtilities.invokeLater(() -> getContext().getFrame().toFront());
     }
 
+    /**
+     * ステルスモードを toggle する.
+     */
+    public void toggleStealth() {
+        if (isEnabled()) {
+            PNSBadgeTabbedPane pane = ((Dolphin) getContext()).getTabbedPane();
+            BadgeEvent e = new BadgeEvent(this);
+            e.setTabIndex(pane.indexOfTab(getName()));
+
+            switch(keyDispatcher.getMode()) {
+                case OrconKeyDispatcher.Mode.DISABLE -> {
+                    keyDispatcher.setMode(OrconKeyDispatcher.Mode.STEALTH);
+                    hideWindowsAsPossible(true);
+                    e.setBadgeNumber(-1);
+                    pane.setBadge(e);
+                }
+                case OrconKeyDispatcher.Mode.STEALTH -> {
+                    keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+                    hideWindowsAsPossible(false);
+                    e.setBadgeNumber(0);
+                    pane.setBadge(e);
+                    SwingUtilities.invokeLater(() -> getContext().getFrame().toFront());
+                }
+            }
+        }
+    }
+
+    /**
+     * オルコンパネルが選択された時の入り口.
+     */
     @Override
     public void enter() {
         logger.info("enter");
         // 入ってきたら key dispatcher enable
         keyDispatcher.setMode(isEnabled()?
             OrconKeyDispatcher.Mode.FULL : OrconKeyDispatcher.Mode.DISABLE);
-
         // オルコン操作中はウインドウをできるだけ隠す
         hideWindowsAsPossible(isEnabled());
-
-        // 患者番号を orconMacro に保存する
-        String ptnum = "";
-        // 開いている chart があれば, その患者番号を保存
-        if (!WindowHolder.allCharts().isEmpty()) {
-            ptnum = WindowHolder.allCharts().getFirst().getPatient().getPatientId();
-            //logger.info("ptnum in windowholder = " + ptnum);
-        }
-        // ない場合は, PatientSearchImpl の選択患者番号を保存
-        if (ptnum.isEmpty()) {
-            PatientModel[] pm = getContext().getPlugin(PatientSearchImpl.class).getSelectedPatinet();
-            if (pm != null && pm.length > 0) {
-                ptnum = pm[0].getPatientId();
-                //logger.info("ptnum in patientsearch = " + ptnum);
-            }
-        }
-        // それもない場合は, WaitingList の選択患者番号を保存
-        if (ptnum.isEmpty()) {
-            PatientVisitModel[] pvt = getContext().getPlugin(WaitingListImpl.class).getSelectedPvt();
-            if (pvt != null && pvt.length > 0) {
-                ptnum = pvt[0].getPatientId();
-                //logger.info("ptnum in waitinglist = " + ptnum);
-            }
-        }
-        orconMacro.setPatientNumber(ptnum);
     }
 
     @Override

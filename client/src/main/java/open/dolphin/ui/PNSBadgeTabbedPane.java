@@ -27,6 +27,7 @@ public class PNSBadgeTabbedPane extends PNSTabbedPane {
     private static final int BADGE_OFFSET = 4;
     private static final String BADGE_FONT = "Arial";
     private static final Color BADGE_COLOR = new Color(233, 91, 73);
+    private static final Color ORCON_COLOR = new Color(2,135,96);
 
     private int tabIndex = 0;
     private int badgeNumber;
@@ -65,6 +66,18 @@ public class PNSBadgeTabbedPane extends PNSTabbedPane {
             int strWidth = fm.stringWidth(num);
 
             g.drawString(num, center.x - strWidth / 2, center.y + fm.getHeight() / 2 - fm.getDescent());
+
+        } else if (badgeNumber == -1) {
+            // オルコンステルスモード用
+            Graphics2D g = (Graphics2D) graphics;
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // 円
+            g.setColor(ORCON_COLOR);
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
+            Point p = getButtonTopRightCornerLocation(tabIndex);
+            Point center = new Point(p.x - BADGE_OFFSET, p.y + BADGE_OFFSET);
+            g.fillOval(center.x - BADGE_RADIUS, center.y - BADGE_RADIUS, BADGE_RADIUS * 2, BADGE_RADIUS * 2);
         }
     }
 

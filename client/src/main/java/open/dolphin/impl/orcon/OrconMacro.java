@@ -1,5 +1,10 @@
 package open.dolphin.impl.orcon;
 
+import open.dolphin.client.Dolphin;
+import open.dolphin.impl.psearch.PatientSearchImpl;
+import open.dolphin.impl.pvt.WaitingListImpl;
+import open.dolphin.infomodel.PatientModel;
+import open.dolphin.infomodel.PatientVisitModel;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -26,25 +31,16 @@ import static open.dolphin.impl.orcon.OrcaElements.*;
 public class OrconMacro {
     private WebDriver driver;
     private WebDriverWait wait;
+    private final OrcaController context;
     private final OrconPanel panel;
     private final OrconProperties props;
     private final Logger logger;
 
-    // 患者番号
-    private String ptnum = "";
-
-    public OrconMacro(OrconPanel orconPanel, OrconProperties orconProperties) {
-        panel = orconPanel;
-        props = orconProperties;
+    public OrconMacro(OrcaController context) {
+        this.context = context;
+        panel = context.getOrconPanel();
+        props = context.getOrconProps();
         logger = LoggerFactory.getLogger(OrconMacro.class);
-    }
-
-    /**
-     * 送信する患者番号をセットする.
-     * @param ptnum patient number
-     */
-    public void setPatientNumber(String ptnum) {
-        this.ptnum = ptnum;
     }
 
     /**
@@ -203,7 +199,7 @@ public class OrconMacro {
      * at (K02)診療行為入力 do 患者番号送信.
      */
     public void k02SendPtNum() {
-        logger.info("患者番号送信 " + ptnum);
+        logger.info("患者番号送信");
         sendPtNumTo(診療行為患者番号.id);
     }
 
@@ -211,7 +207,7 @@ public class OrconMacro {
      * at (C02)病名登録 do 患者番号送信.
      */
     public void c02SendPtNum() {
-        logger.info("患者番号送信 " + ptnum);
+        logger.info("患者番号送信");
         sendPtNumTo(病名登録患者番号.id);
     }
 
@@ -219,9 +215,21 @@ public class OrconMacro {
      * elementId のフィールドに患者番号送信.
      */
     private void sendPtNumTo(String elementId) {
-        if (!ptnum.isEmpty()) {
-            WebElement test = driver.findElement(By.id(elementId));
-            if (test.isDisplayed()) { test.sendKeys(ptnum); }
+        int selected = ((Dolphin)context.getContext()).getTabbedPane().getSelectedIndex();
+        if (selected == 0) {
+            WaitingListImpl waitingList = context.getContext().getPlugin(WaitingListImpl.class);
+            PatientVisitModel[] pvt = waitingList.getSelectedPvt();
+            if (pvt != null && pvt.length > 0) {
+                WebElement test = driver.findElement(By.id(elementId));
+                if (test.isDisplayed()) { test.sendKeys(pvt[0].getPatientId()); }
+            }
+        } else if (selected == 1) {
+            PatientSearchImpl patientSearch = context.getContext().getPlugin(PatientSearchImpl.class);
+            PatientModel[] pm = patientSearch.getSelectedPatinet();
+            if (pm != null && pm.length > 0) {
+                WebElement test = driver.findElement(By.id(elementId));
+                if (test.isDisplayed()) { test.sendKeys(pm[0].getPatientId()); }
+            }
         }
     }
 

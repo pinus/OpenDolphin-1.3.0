@@ -9,14 +9,14 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 /**
- * キーを横取りして orca に送るための key dispacher.
+ * キーを横取りして orca に送るための key dispatcher.
  * @author pns
  */
 public class OrconKeyDispatcher implements KeyEventDispatcher {
     public enum Mode { DISABLE, FULL, STEALTH }
 
     private Mode mode;
-    private OrconMacro orconMacro;
+    private final OrconMacro orconMacro;
     private final Logger logger = LoggerFactory.getLogger(OrconKeyDispatcher.class);
 
     private boolean shift;
@@ -88,7 +88,7 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
      * DISABLE: 何も奪わない, FULL: コマンドキーは奪わない
      * STEALTH: コマンドキー、スペース、矢印キーは奪わない
      * @param e the KeyEvent to dispatch
-     * @return
+     * @return true to block
      */
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
@@ -106,6 +106,7 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
         } else { // Mode.STEALTH
             // ショートカット、ファンクションキーだけ通す
             int c = e.getKeyCode();
+
             if (!( (ctrl && c == KeyEvent.VK_ENTER) || (ctrl && c == KeyEvent.VK_K) || (ctrl && c == KeyEvent.VK_B)
                 || (ctrl && c == KeyEvent.VK_0) || (ctrl && c == KeyEvent.VK_1) || (ctrl && c == KeyEvent.VK_2)
                 || (ctrl && c == KeyEvent.VK_V) || (shift && c == KeyEvent.VK_ENTER)
