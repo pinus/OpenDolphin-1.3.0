@@ -29,6 +29,7 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
     }
 
     public void setMode(Mode mode) {
+        logger.info("mode = " + mode);
         this.mode = mode;
     }
 
@@ -103,12 +104,14 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
             if (meta) { return false; }
 
         } else { // Mode.STEALTH
-            //ショートカットだけ通す
+            // ショートカット、ファンクションキーだけ通す
             int c = e.getKeyCode();
             if (!( (ctrl && c == KeyEvent.VK_ENTER) || (ctrl && c == KeyEvent.VK_K) || (ctrl && c == KeyEvent.VK_B)
                 || (ctrl && c == KeyEvent.VK_0) || (ctrl && c == KeyEvent.VK_1) || (ctrl && c == KeyEvent.VK_2)
-                || (ctrl && c == KeyEvent.VK_V)
-                || (shift && c == KeyEvent.VK_ENTER) )) {
+                || (ctrl && c == KeyEvent.VK_V) || (shift && c == KeyEvent.VK_ENTER)
+                || c == KeyEvent.VK_F1 || c == KeyEvent.VK_F2|| c == KeyEvent.VK_F3|| c == KeyEvent.VK_F4|| c == KeyEvent.VK_F5 || c == KeyEvent.VK_F6
+                || c == KeyEvent.VK_F7 || c == KeyEvent.VK_F8 || c == KeyEvent.VK_F9 || c == KeyEvent.VK_F10 || c == KeyEvent.VK_F11 || c == KeyEvent.VK_F12)
+            ) {
                 return false;
             }
         }
