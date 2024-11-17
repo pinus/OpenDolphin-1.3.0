@@ -6,6 +6,7 @@ import open.dolphin.client.Dolphin;
 import open.dolphin.client.GUIConst;
 import open.dolphin.client.ImageBox;
 import open.dolphin.event.BadgeEvent;
+import open.dolphin.event.BadgeListener;
 import open.dolphin.helper.WindowHolder;
 import open.dolphin.stampbox.StampBoxPlugin;
 import open.dolphin.ui.PNSBadgeTabbedPane;
@@ -36,6 +37,8 @@ public class OrcaController extends AbstractMainComponent {
     private OrconMacro orconMacro;
     private OrconKeyDispatcher keyDispatcher;
     private WindowListener windowListener;
+    private BadgeListener badgeListener;
+    private BadgeEvent badgeEvent;
     private final Logger logger;
 
     public OrcaController() {
@@ -62,7 +65,6 @@ public class OrcaController extends AbstractMainComponent {
         orconProps.modelToView();
         orconMacro = new OrconMacro(this);
 
-
         // set default button
         getContext().getFrame().getRootPane().setDefaultButton(orconPanel.getLoginButton());
 
@@ -83,12 +85,16 @@ public class OrcaController extends AbstractMainComponent {
         orconPanel.getPanel().addComponentListener(new ComponentListener() {
             @Override
             public void componentHidden(ComponentEvent e) {
-                keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+                if (keyDispatcher.getMode() == OrconKeyDispatcher.Mode.FULL) {
+                    keyDispatcher.setMode(badgeEvent.getBadgeNumber() == -1
+                        ? OrconKeyDispatcher.Mode.STEALTH : OrconKeyDispatcher.Mode.DISABLE);
+                }
                 getContext().getFrame().removeWindowListener(windowListener);
                 getContext().enableAction(GUIConst.ACTION_STEALTH_ORCON, true);
             }
             @Override
             public void componentShown(ComponentEvent e) {
+                // mode は enter で処理
                 getContext().getFrame().addWindowListener(windowListener);
                 getContext().enableAction(GUIConst.ACTION_STEALTH_ORCON, false);
             }
@@ -110,6 +116,11 @@ public class OrcaController extends AbstractMainComponent {
                 keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
             }
         };
+        // バッジ関連
+        PNSBadgeTabbedPane pane = ((Dolphin) getContext()).getTabbedPane();
+        badgeListener = pane::setBadge;
+        badgeEvent = new BadgeEvent(this);
+        badgeEvent.setTabIndex(3);
     }
 
     /**
@@ -140,23 +151,18 @@ public class OrcaController extends AbstractMainComponent {
      */
     public void toggleStealth() {
         if (isEnabled()) {
-            PNSBadgeTabbedPane pane = ((Dolphin) getContext()).getTabbedPane();
-            BadgeEvent e = new BadgeEvent(this);
-            e.setTabIndex(pane.indexOfTab(getName()));
-
             switch(keyDispatcher.getMode()) {
                 case OrconKeyDispatcher.Mode.DISABLE -> {
                     keyDispatcher.setMode(OrconKeyDispatcher.Mode.STEALTH);
                     hideWindowsAsPossible(true);
-                    e.setBadgeNumber(-1);
-                    pane.setBadge(e);
+                    badgeEvent.setBadgeNumber(-1);
+                    badgeListener.badgeChanged(badgeEvent);
                 }
                 case OrconKeyDispatcher.Mode.STEALTH -> {
                     keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
                     hideWindowsAsPossible(false);
-                    e.setBadgeNumber(0);
-                    pane.setBadge(e);
-                    SwingUtilities.invokeLater(() -> getContext().getFrame().toFront());
+                    badgeEvent.setBadgeNumber(0);
+                    badgeListener.badgeChanged(badgeEvent);
                 }
             }
         }

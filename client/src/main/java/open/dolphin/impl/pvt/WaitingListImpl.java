@@ -9,6 +9,7 @@ import open.dolphin.event.ProxyAction;
 import open.dolphin.helper.PNSTriple;
 import open.dolphin.helper.ScriptExecutor;
 import open.dolphin.helper.WindowHolder;
+import open.dolphin.impl.orcon.OrcaController;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.infomodel.KarteState;
 import open.dolphin.infomodel.PatientVisitModel;
@@ -281,11 +282,13 @@ public class WaitingListImpl extends AbstractMainComponent {
     public void enter() {
         controlMenu();
         // オルコン操作で隠されたウインドウ再表示
-        StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
-        if (stampBox != null) {
-            stampBox.getFrame().setState(Frame.NORMAL);
+        if (!getContext().getPlugin(OrcaController.class).isEnabled()) {
+            StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
+            if (stampBox != null) {
+                stampBox.getFrame().setState(Frame.NORMAL);
+            }
+            WindowHolder.allCharts().forEach(c -> c.getFrame().setState(Frame.NORMAL));
         }
-        WindowHolder.allCharts().forEach(c -> c.getFrame().setState(Frame.NORMAL));
     }
 
     /**
