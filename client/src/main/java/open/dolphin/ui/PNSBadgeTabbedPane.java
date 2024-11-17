@@ -6,7 +6,6 @@ import open.dolphin.event.BadgeEvent;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Badge を付けられる PNSTabbedPane.
@@ -32,7 +31,7 @@ public class PNSBadgeTabbedPane extends PNSTabbedPane {
     private static final Color BADGE_COLOR = new Color(233, 91, 73);
     private static final Color ORCON_COLOR = new Color(2,135,96);
     // tabIndex -> badgeNumber の map
-    private Map<Integer, Integer> badgeNumberMap = new HashMap<>();
+    private final Map<Integer, Integer> badgeNumberMap = new HashMap<>();
     private int fontSize = BADGE_FONT_SIZE;
 
     public PNSBadgeTabbedPane() {
@@ -52,8 +51,7 @@ public class PNSBadgeTabbedPane extends PNSTabbedPane {
     }
 
     private void paintBadge(Graphics2D g, int tabIndex) {
-        int badgeNumber = Objects.isNull(badgeNumberMap.get(tabIndex))?
-            0 : badgeNumberMap.get(tabIndex);
+        int badgeNumber = badgeNumberMap.getOrDefault(tabIndex, 0);
 
         if (badgeNumber > 0) {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
