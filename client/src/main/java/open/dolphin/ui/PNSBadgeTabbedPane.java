@@ -4,6 +4,9 @@ import open.dolphin.client.Dolphin;
 import open.dolphin.event.BadgeEvent;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Badge を付けられる PNSTabbedPane.
@@ -28,9 +31,8 @@ public class PNSBadgeTabbedPane extends PNSTabbedPane {
     private static final String BADGE_FONT = "Arial";
     private static final Color BADGE_COLOR = new Color(233, 91, 73);
     private static final Color ORCON_COLOR = new Color(2,135,96);
-
-    private int tabIndex = 0;
-    private int badgeNumber;
+    // tabIndex -> badgeNumber の map
+    private Map<Integer, Integer> badgeNumberMap = new HashMap<>();
     private int fontSize = BADGE_FONT_SIZE;
 
     public PNSBadgeTabbedPane() {
@@ -44,8 +46,16 @@ public class PNSBadgeTabbedPane extends PNSTabbedPane {
 
     @Override
     public void paintButtonPanel(Graphics graphics) {
+        for (int index = 0; index < getTabCount(); index++) {
+            paintBadge((Graphics2D) graphics, index);
+        }
+    }
+
+    private void paintBadge(Graphics2D g, int tabIndex) {
+        int badgeNumber = Objects.isNull(badgeNumberMap.get(tabIndex))?
+            0 : badgeNumberMap.get(tabIndex);
+
         if (badgeNumber > 0) {
-            Graphics2D g = (Graphics2D) graphics;
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // 円
@@ -58,7 +68,9 @@ public class PNSBadgeTabbedPane extends PNSTabbedPane {
             // 文字
             g.setColor(Color.WHITE);
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-            if (badgeNumber >= 100) { fontSize = BADGE_FONT_SIZE - 3; }
+            if (badgeNumber >= 100) {
+                fontSize = BADGE_FONT_SIZE - 3;
+            }
             g.setFont(new Font(BADGE_FONT, Font.BOLD, fontSize));
 
             FontMetrics fm = g.getFontMetrics();
@@ -69,7 +81,6 @@ public class PNSBadgeTabbedPane extends PNSTabbedPane {
 
         } else if (badgeNumber == -1) {
             // オルコンステルスモード用
-            Graphics2D g = (Graphics2D) graphics;
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // 円
@@ -87,8 +98,7 @@ public class PNSBadgeTabbedPane extends PNSTabbedPane {
      * @param e BadgeEvent
      */
     public void setBadge(BadgeEvent e) {
-        badgeNumber = e.getBadgeNumber();
-        tabIndex = e.getTabIndex();
+        badgeNumberMap.put(e.getTabIndex(), e.getBadgeNumber());
         repaint();
     }
 }
