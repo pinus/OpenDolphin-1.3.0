@@ -3,6 +3,7 @@ package open.dolphin.impl.orcon;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import open.dolphin.client.AbstractMainComponent;
 import open.dolphin.client.Dolphin;
+import open.dolphin.client.GUIConst;
 import open.dolphin.client.ImageBox;
 import open.dolphin.event.BadgeEvent;
 import open.dolphin.helper.WindowHolder;
@@ -34,6 +35,7 @@ public class OrcaController extends AbstractMainComponent {
     private OrconProperties orconProps;
     private OrconMacro orconMacro;
     private OrconKeyDispatcher keyDispatcher;
+    private WindowListener windowListener;
     private final Logger logger;
 
     public OrcaController() {
@@ -60,6 +62,7 @@ public class OrcaController extends AbstractMainComponent {
         orconProps.modelToView();
         orconMacro = new OrconMacro(this);
 
+
         // set default button
         getContext().getFrame().getRootPane().setDefaultButton(orconPanel.getLoginButton());
 
@@ -76,38 +79,37 @@ public class OrcaController extends AbstractMainComponent {
             keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
         });
 
-        // window inactive になったら disable する, active になったら元に戻す
-        getContext().getFrame().addWindowListener(new WindowAdapter() {
-            private OrconKeyDispatcher.Mode oldMode
-                = OrconKeyDispatcher.Mode.DISABLE;
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-                orconPanel.setActive(isEnabled());
-                keyDispatcher.setMode(oldMode);
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-                orconPanel.setActive(false);
-                oldMode = keyDispatcher.getMode();
-                keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
-            }
-        });
         // 他の panel に移ったら disable
         orconPanel.getPanel().addComponentListener(new ComponentListener() {
             @Override
             public void componentHidden(ComponentEvent e) {
                 keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+                getContext().getFrame().removeWindowListener(windowListener);
+                getContext().enableAction(GUIConst.ACTION_STEALTH_ORCON, true);
             }
-
             @Override
-            public void componentShown(ComponentEvent e) {}
+            public void componentShown(ComponentEvent e) {
+                getContext().getFrame().addWindowListener(windowListener);
+                getContext().enableAction(GUIConst.ACTION_STEALTH_ORCON, false);
+            }
             @Override
             public void componentResized(ComponentEvent e) {}
             @Override
             public void componentMoved(ComponentEvent e) {}
         });
+        // orcon パネルが表示されている間だけ有効な window listener. mode: FULL/DISABLE のみ
+        windowListener = new WindowAdapter() {
+            @Override
+            public void windowActivated(WindowEvent e) {
+                orconPanel.setActive(isEnabled());
+                keyDispatcher.setMode(isEnabled()? OrconKeyDispatcher.Mode.FULL : OrconKeyDispatcher.Mode.DISABLE);
+            }
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+                orconPanel.setActive(false);
+                keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+            }
+        };
     }
 
     /**
@@ -167,10 +169,14 @@ public class OrcaController extends AbstractMainComponent {
     public void enter() {
         logger.info("enter");
         // 入ってきたら key dispatcher enable
-        keyDispatcher.setMode(isEnabled()?
-            OrconKeyDispatcher.Mode.FULL : OrconKeyDispatcher.Mode.DISABLE);
-        // オルコン操作中はウインドウをできるだけ隠す
-        hideWindowsAsPossible(isEnabled());
+        if (isEnabled()) {
+            keyDispatcher.setMode(OrconKeyDispatcher.Mode.FULL);
+            // オルコン操作中はウインドウをできるだけ隠す
+            hideWindowsAsPossible(isEnabled());
+        } else {
+            keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+        }
+        orconPanel.setActive(isEnabled());
     }
 
     @Override

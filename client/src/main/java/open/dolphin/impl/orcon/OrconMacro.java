@@ -1,6 +1,7 @@
 package open.dolphin.impl.orcon;
 
 import open.dolphin.client.Dolphin;
+import open.dolphin.helper.WindowHolder;
 import open.dolphin.impl.psearch.PatientSearchImpl;
 import open.dolphin.impl.pvt.WaitingListImpl;
 import open.dolphin.infomodel.PatientModel;
@@ -215,20 +216,31 @@ public class OrconMacro {
      * elementId のフィールドに患者番号送信.
      */
     private void sendPtNumTo(String elementId) {
-        int selected = ((Dolphin)context.getContext()).getTabbedPane().getSelectedIndex();
-        if (selected == 0) {
-            WaitingListImpl waitingList = context.getContext().getPlugin(WaitingListImpl.class);
-            PatientVisitModel[] pvt = waitingList.getSelectedPvt();
-            if (pvt != null && pvt.length > 0) {
-                WebElement test = driver.findElement(By.id(elementId));
-                if (test.isDisplayed()) { test.sendKeys(pvt[0].getPatientId()); }
+        String ptnum = "";
+        if (WindowHolder.allCharts().size() > 0) {
+            // チャートが開いていれば, その番号を送る
+            ptnum = WindowHolder.allCharts().get(0).getPatient().getPatientId();
+        } else {
+            // チャートが開いていなければ, リストで選択された番号を送る
+            int selected = ((Dolphin) context.getContext()).getTabbedPane().getSelectedIndex();
+            if (selected == 0) {
+                WaitingListImpl waitingList = context.getContext().getPlugin(WaitingListImpl.class);
+                PatientVisitModel[] pvt = waitingList.getSelectedPvt();
+                if (pvt != null && pvt.length > 0) {
+                    ptnum = pvt[0].getPatientId();
+                }
+            } else if (selected == 1) {
+                PatientSearchImpl patientSearch = context.getContext().getPlugin(PatientSearchImpl.class);
+                PatientModel[] pm = patientSearch.getSelectedPatinet();
+                if (pm != null && pm.length > 0) {
+                    ptnum = pm[0].getPatientId();
+                }
             }
-        } else if (selected == 1) {
-            PatientSearchImpl patientSearch = context.getContext().getPlugin(PatientSearchImpl.class);
-            PatientModel[] pm = patientSearch.getSelectedPatinet();
-            if (pm != null && pm.length > 0) {
-                WebElement test = driver.findElement(By.id(elementId));
-                if (test.isDisplayed()) { test.sendKeys(pm[0].getPatientId()); }
+        }
+        if (!ptnum.isEmpty()) {
+            WebElement test = driver.findElement(By.id(elementId));
+            if (test.isDisplayed()) {
+                test.sendKeys(ptnum);
             }
         }
     }

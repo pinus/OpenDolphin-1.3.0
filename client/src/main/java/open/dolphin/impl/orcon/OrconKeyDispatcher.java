@@ -106,10 +106,9 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
         } else { // Mode.STEALTH
             // ショートカット、ファンクションキーだけ通す
             int c = e.getKeyCode();
-
             if (!( (ctrl && c == KeyEvent.VK_ENTER) || (ctrl && c == KeyEvent.VK_K) || (ctrl && c == KeyEvent.VK_B)
                 || (ctrl && c == KeyEvent.VK_0) || (ctrl && c == KeyEvent.VK_1) || (ctrl && c == KeyEvent.VK_2)
-                || (ctrl && c == KeyEvent.VK_V) || (shift && c == KeyEvent.VK_ENTER)
+                || (ctrl && c == KeyEvent.VK_V) || (shift && c == KeyEvent.VK_ENTER) || (shift && meta && c == KeyEvent.VK_A) || (shift && c == KeyEvent.VK_BACK_SPACE)
                 || c == KeyEvent.VK_F1 || c == KeyEvent.VK_F2|| c == KeyEvent.VK_F3|| c == KeyEvent.VK_F4|| c == KeyEvent.VK_F5 || c == KeyEvent.VK_F6
                 || c == KeyEvent.VK_F7 || c == KeyEvent.VK_F8 || c == KeyEvent.VK_F9 || c == KeyEvent.VK_F10 || c == KeyEvent.VK_F11 || c == KeyEvent.VK_F12)
             ) {
@@ -126,12 +125,6 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
                 if (orconMacro.whereAmI().equals("K02")) {
                     orconMacro.k20ChutoTenkai();
                 }
-            }
-
-        } else if (shift && e.getKeyCode() == KeyEvent.VK_ENTER) {
-            // shift + ENTER で orca enter 入力
-            if (e.getID() == KeyEvent.KEY_PRESSED) {
-                orconMacro.sendThrough(Keys.ENTER);
             }
 
         } else if (ctrl && e.getKeyCode() == KeyEvent.VK_K) {
@@ -165,7 +158,25 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
                     case "K02" -> orconMacro.k02SendPtNum();
                     case "C02" -> orconMacro.c02SendPtNum();
                 }
-                }
+            }
+
+        } else if (shift && e.getKeyCode() == KeyEvent.VK_ENTER) {
+            // shift + ENTER で orca enter 入力
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                orconMacro.sendThrough(Keys.ENTER);
+            }
+
+        } else if (shift && meta && e.getKeyCode() == KeyEvent.VK_A) {
+            // shift + command + A で 全選択
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                orconMacro.sendThrough(Keys.chord(Keys.META, "A"));
+            }
+
+        } else if (shift && e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+            // shift + backspace で backspace
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                orconMacro.sendThrough(Keys.BACK_SPACE);
+            }
 
         } else {
             // ショートカットキー以外は, そのまま流す
