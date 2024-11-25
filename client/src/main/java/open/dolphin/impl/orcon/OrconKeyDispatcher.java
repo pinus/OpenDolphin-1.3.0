@@ -118,8 +118,8 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
         //
         // ショートカットキーでマクロを呼ぶ
         //
-        if (ctrl && e.getKeyCode() == KeyEvent.VK_ENTER) {
-            // 中途終了展開 CTRL + ENTER
+        if (ctrl && shift && e.getKeyCode() == KeyEvent.VK_ENTER) {
+            // 中途終了展開 SHIFT + CTRL + ENTER
             if (e.getID() == KeyEvent.KEY_PRESSED) {
                 if (orconMacro.whereAmI().equals("K02")) {
                     orconMacro.k20ChutoTenkai();
