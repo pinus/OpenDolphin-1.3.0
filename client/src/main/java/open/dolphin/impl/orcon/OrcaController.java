@@ -43,8 +43,12 @@ public class OrcaController extends AbstractMainComponent {
 
     public OrcaController() {
         setName(NAME);
-        WebDriverManager.chromedriver().setup();
         logger = LoggerFactory.getLogger(OrcaController.class);
+        Thread.ofVirtual().start(() -> {
+            logger.info("Setting up chrome driver...");
+            WebDriverManager.chromedriver().setup();
+            logger.info("Chrome driver setting up done");
+        });
     }
 
     public OrconPanel getOrconPanel() { return orconPanel; }
