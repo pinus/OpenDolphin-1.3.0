@@ -252,7 +252,7 @@ public class OrconMacro {
     public void sendThrough(CharSequence chord) {
         try {
             WebElement activeElement = driver.switchTo().activeElement();
-            activeElement.sendKeys(Keys.chord(chord));
+            activeElement.sendKeys(chord);
         } catch (RuntimeException ex) {
             logger.error(ex.getMessage());
         }

@@ -59,6 +59,7 @@ public class ImageBox extends AbstractMainTool {
     public void enter() {
         if (frame != null) {
             frame.setVisible(true);
+            frame.setState(Frame.NORMAL);
         }
     }
 

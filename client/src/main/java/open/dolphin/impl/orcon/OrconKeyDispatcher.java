@@ -13,9 +13,7 @@ import java.util.stream.Stream;
  * @author pns
  */
 public class OrconKeyDispatcher implements KeyEventDispatcher {
-    public enum Mode { DISABLE, FULL, STEALTH }
-
-    private Mode mode;
+    private final OrcaController context;
     private final OrconMacro orconMacro;
     private final Logger logger = LoggerFactory.getLogger(OrconKeyDispatcher.class);
 
@@ -24,17 +22,9 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
     private boolean alt;
     private boolean meta;
 
-    public OrconKeyDispatcher(OrconMacro orconMacro) {
-        this.orconMacro = orconMacro;
-    }
-
-    public void setMode(Mode mode) {
-        logger.info("mode = " + mode);
-        this.mode = mode;
-    }
-
-    public Mode getMode(){
-        return mode;
+    public OrconKeyDispatcher(OrcaController context) {
+        this.context = context;
+        this.orconMacro = context.getOrconMacro();
     }
 
     /**
@@ -115,22 +105,25 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
         int keyCode = e.getKeyCode();
 
         // 横取りしないキーを false で返す
-        if (mode == Mode.DISABLE) {
+        if (context.getMode() == OrcaController.Mode.DISABLE) {
             // 横取りしない
             return false;
 
-        } else if (mode == Mode.FULL) {
+        } else if (context.getMode() == OrcaController.Mode.FULL) {
             // コマンドキーを横取りしない
             if (meta) { return false; }
 
         } else { // Mode.STEALTH
             // ショートカット、ファンクションキーだけ通す
-            if (Stream.of("ctrl shift ENTER", "ctrl K", "ctrl B", "ctrl 0", "ctrl 1", "ctrl 2", "ctrl V", "shift ENTER",
-                "shift meta A", "shift BACK_SPACE", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
+            if (Stream.of("ctrl shift ENTER", "ctrl K", "ctrl B", "ctrl 0", "ctrl 1", "ctrl 2", "ctrl V", "alt ENTER",
+                "alt meta A", "alt BACK_SPACE", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
                 .noneMatch(chord -> is(keyCode, chord))) {
                 return false;
             }
         }
+
+        // できるだけ window を片付ける
+        context.hideWindowsAsPossible(true);
 
         //
         // ショートカットキーでマクロを呼ぶ
@@ -175,21 +168,21 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
                 }
             }
 
-        } else if (is(keyCode, "shift ENTER")) {
-            // shift + ENTER で orca enter 入力
+        } else if (is(keyCode, "alt ENTER")) {
+            // alt + ENTER で orca enter 入力
             if (e.getID() == KeyEvent.KEY_PRESSED) {
                 orconMacro.sendThrough(Keys.ENTER);
             }
 
-        } else if (is(keyCode, "shift meta A")) {
+        } else if (is(keyCode, "alt meta A")) {
             // shift + command + A で 全選択
             if (e.getID() == KeyEvent.KEY_PRESSED) {
                 orconMacro.sendThrough(Keys.chord(Keys.META, "A"));
             }
 
-        } else if (is(keyCode, "shift BACK_SPACE")) {
-            // shift + backspace で backspace
-            if (e.getID() == KeyEvent.KEY_PRESSED) {
+        } else if (is(keyCode, "alt BACK_SPACE")) {
+            // alt + backspace だと KEY_RELEASED しか発生しない?
+            if (e.getID() == KeyEvent.KEY_RELEASED) {
                 orconMacro.sendThrough(Keys.BACK_SPACE);
             }
 

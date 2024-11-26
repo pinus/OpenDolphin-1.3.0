@@ -32,6 +32,9 @@ import java.util.prefs.Preferences;
  */
 public class OrcaController extends AbstractMainComponent {
     private static final String NAME = "オルコン";
+    public enum Mode { DISABLE, FULL, STEALTH }
+
+    private Mode mode;
     private OrconPanel orconPanel;
     private OrconProperties orconProps;
     private OrconMacro orconMacro;
@@ -51,9 +54,15 @@ public class OrcaController extends AbstractMainComponent {
         });
     }
 
+    public Mode getMode() {
+        return mode;
+    }
+
     public OrconPanel getOrconPanel() { return orconPanel; }
 
     public OrconProperties getOrconProps() { return orconProps; }
+
+    public OrconMacro getOrconMacro() { return orconMacro; }
 
     @Override
     public JPanel getUI() {
@@ -73,25 +82,24 @@ public class OrcaController extends AbstractMainComponent {
         getContext().getFrame().getRootPane().setDefaultButton(orconPanel.getLoginButton());
 
         // key dispatcher の動き
-        keyDispatcher = new OrconKeyDispatcher(orconMacro);
+        keyDispatcher = new OrconKeyDispatcher(this);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyDispatcher);
         // login したら　enables する
         orconPanel.getLoginButton().addActionListener(e -> {
             orconMacro.login();
-            keyDispatcher.setMode(OrconKeyDispatcher.Mode.FULL);
+            mode = Mode.FULL;
         });
         orconPanel.getCloseButton().addActionListener(e -> {
             orconMacro.close();
-            keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+            mode = Mode.DISABLE;
         });
 
         // 他の panel に移ったら disable
         orconPanel.getPanel().addComponentListener(new ComponentListener() {
             @Override
             public void componentHidden(ComponentEvent e) {
-                if (keyDispatcher.getMode() == OrconKeyDispatcher.Mode.FULL) {
-                    keyDispatcher.setMode(badgeEvent.getBadgeNumber() == -1
-                        ? OrconKeyDispatcher.Mode.STEALTH : OrconKeyDispatcher.Mode.DISABLE);
+                if (mode == Mode.FULL) {
+                    mode = badgeEvent.getBadgeNumber() == -1 ? Mode.STEALTH : Mode.DISABLE;
                 }
                 getContext().getFrame().removeWindowListener(windowListener);
                 getContext().enableAction(GUIConst.ACTION_STEALTH_ORCON, true);
@@ -112,12 +120,12 @@ public class OrcaController extends AbstractMainComponent {
             @Override
             public void windowActivated(WindowEvent e) {
                 orconPanel.setActive(isEnabled());
-                keyDispatcher.setMode(isEnabled()? OrconKeyDispatcher.Mode.FULL : OrconKeyDispatcher.Mode.DISABLE);
+                mode = isEnabled() ? Mode.FULL : Mode.DISABLE;
             }
             @Override
             public void windowDeactivated(WindowEvent e) {
                 orconPanel.setActive(false);
-                keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+                mode = Mode.DISABLE;
             }
         };
         // バッジ関連
@@ -139,7 +147,7 @@ public class OrcaController extends AbstractMainComponent {
      * ORCA を操作しやすくなるように, できるだけウインドウを隠す.
      * @param hide to hide windows
      */
-    private void hideWindowsAsPossible(boolean hide) {
+    public void hideWindowsAsPossible(boolean hide) {
         StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
         stampBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
         ImageBox imageBox = getContext().getPlugin(ImageBox.class);
@@ -155,15 +163,15 @@ public class OrcaController extends AbstractMainComponent {
      */
     public void toggleStealth() {
         if (isEnabled()) {
-            switch(keyDispatcher.getMode()) {
-                case OrconKeyDispatcher.Mode.DISABLE -> {
-                    keyDispatcher.setMode(OrconKeyDispatcher.Mode.STEALTH);
+            switch(mode) {
+                case Mode.DISABLE -> {
+                    mode = Mode.STEALTH;
                     hideWindowsAsPossible(true);
                     badgeEvent.setBadgeNumber(-1);
                     badgeListener.badgeChanged(badgeEvent);
                 }
-                case OrconKeyDispatcher.Mode.STEALTH -> {
-                    keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+                case Mode.STEALTH -> {
+                    mode = Mode.DISABLE;
                     hideWindowsAsPossible(false);
                     badgeEvent.setBadgeNumber(0);
                     badgeListener.badgeChanged(badgeEvent);
@@ -180,11 +188,11 @@ public class OrcaController extends AbstractMainComponent {
         logger.info("enter");
         // 入ってきたら key dispatcher enable
         if (isEnabled()) {
-            keyDispatcher.setMode(OrconKeyDispatcher.Mode.FULL);
+            mode = Mode.FULL;
             // オルコン操作中はウインドウをできるだけ隠す
             hideWindowsAsPossible(isEnabled());
         } else {
-            keyDispatcher.setMode(OrconKeyDispatcher.Mode.DISABLE);
+            mode = Mode.DISABLE;
         }
         orconPanel.setActive(isEnabled());
     }
