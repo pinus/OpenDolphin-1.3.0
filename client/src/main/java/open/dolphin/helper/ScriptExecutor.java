@@ -2,10 +2,7 @@ package open.dolphin.helper;
 
 import open.dolphin.client.Dolphin;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +33,39 @@ public class ScriptExecutor {
 
     private static final String DISPLAY_NOTIFICATION_SCRIPT =
             "display notification \"%s\" with title \"%s\" subtitle \"%s\"";
+
+    /**
+     * Text Input Source 切換サーバ
+     */
+    public static Process TISSERVER_PROCESS;
+    public static OutputStream TISSERVER_OUTPUTSTEREAM;
+
+    static {
+        try {
+            TISSERVER_PROCESS = new ProcessBuilder("./TISServer").start();
+            TISSERVER_OUTPUTSTEREAM = TISSERVER_PROCESS.getOutputStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void selectTis(String key) {
+        try {
+            TISSERVER_OUTPUTSTEREAM.write((key+"\n").getBytes());
+            TISSERVER_OUTPUTSTEREAM.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void destroyTis() {
+        try {
+            TISSERVER_OUTPUTSTEREAM.write("EXIT\n".getBytes());
+            TISSERVER_OUTPUTSTEREAM.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 通知センターに通知を表示する.
@@ -167,7 +197,10 @@ public class ScriptExecutor {
         //ScriptExecutor.setImeOff();
         //ScriptExecutor.displayNotification("message", "title", "subtitle");
         //imSelect("com.apple.keylayout.USExtended");
-        imSelect("com.justsystems.inputmethod.atok34.Japanese");
-        System.out.println(currentIm());
+        //imSelect("com.justsystems.inputmethod.atok34.Japanese");
+        //System.out.println(currentIm());
+
+        selectTis("K");
+        destroyTis();
     }
 }
