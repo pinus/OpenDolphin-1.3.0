@@ -6,8 +6,6 @@ import open.dolphin.client.GUIFactory;
 import open.dolphin.helper.GridBagBuilder;
 import open.dolphin.helper.WindowSupport;
 import open.dolphin.project.Project;
-import open.dolphin.ui.CompletableJTextField;
-import open.dolphin.ui.IMEControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,10 +33,6 @@ public class MiscSettingPanel extends AbstractSettingPanel {
 
     // コンソールのログ出力
     private JCheckBox redirectBox;
-
-    // im-select の inputSourceID 設定
-    private CompletableJTextField japaneseId;
-    private CompletableJTextField romanId;
 
     public MiscSettingPanel() {
         init();
@@ -125,25 +119,10 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         gbb.add(redirectBox, 0, 0, 1, 1, GridBagConstraints.EAST);
         JPanel redirectPanel = gbb.getProduct();
 
-        // im-select の inputSourceID の設定
-        gbb = new GridBagBuilder("inputSourceID for im-select");
-        JLabel japaneseLbl = new JLabel("ひらがな");
-        JLabel romanLbl = new JLabel("英字");
-        japaneseId = new CompletableJTextField(40);
-        romanId = new CompletableJTextField(40);
-        japaneseId.setPreferences(Preferences.userRoot().node(getClass() + "j"));
-        romanId.setPreferences(Preferences.userRoot().node(getClass() + "r"));
-        gbb.add(japaneseLbl, 0,0,1,1, GridBagConstraints.WEST);
-        gbb.add(japaneseId,0,1,1,1, GridBagConstraints.WEST);
-        gbb.add(romanLbl, 0,2,1,1, GridBagConstraints.WEST);
-        gbb.add(romanId,0,3,1,1, GridBagConstraints.WEST);
-        JPanel atokPanel = gbb.getProduct();
-
         // 全体のレイアウト
         getUI().setLayout(new BoxLayout(getUI(), BoxLayout.Y_AXIS));
         getUI().add(scrollUnitPanel);
         getUI().add(redirectPanel);
-        getUI().add(atokPanel);
         getUI().add(Box.createVerticalStrut(100));
         getUI().add(Box.createVerticalGlue());
     }
@@ -159,11 +138,6 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         diffY.setText(String.valueOf(prefs.getInt(Project.ARRANGE_INSPECTOR_DY, WindowSupport.INITIAL_DY)));
 
         redirectBox.setSelected(Preferences.userNodeForPackage(Dolphin.class).getBoolean(Project.REDIRECT_CONSOLE, false));
-
-        String japanese = Preferences.userNodeForPackage(Dolphin.class).get(Project.ATOK_JAPANESE_KEY, "com.justsystems.inputmethod.atok34.Japanese");
-        String roman = Preferences.userNodeForPackage(Dolphin.class).get(Project.ATOK_ROMAN_KEY, "com.justsystems.inputmethod.atok34.Roman");
-        japaneseId.setText(japanese);
-        romanId.setText(roman);
     }
 
     @Override
@@ -182,9 +156,5 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         prefs.putInt(Project.ARRANGE_INSPECTOR_DY, Integer.parseInt(diffY.getText()));
 
         Preferences.userNodeForPackage(Dolphin.class).putBoolean(Project.REDIRECT_CONSOLE, redirectBox.isSelected());
-
-        Preferences.userNodeForPackage(Dolphin.class).put(Project.ATOK_JAPANESE_KEY, japaneseId.getText());
-        Preferences.userNodeForPackage(Dolphin.class).put(Project.ATOK_ROMAN_KEY, romanId.getText());
-        IMEControl.reload();
     }
 }

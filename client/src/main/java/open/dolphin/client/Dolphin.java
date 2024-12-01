@@ -133,15 +133,15 @@ public class Dolphin implements MainWindow {
      * 初期化. 最初に呼ばれる.
      */
     private void initialize() {
+        // ClientContext を生成する
+        ClientContextStub stub = new ClientContextStub();
+        ClientContext.setClientContextStub(stub);
+
         if (forMac) { SettingForMac.set(this); }
         else { SettingForWin.set(this); }
 
         // default locale を設定する
         Locale.setDefault(new Locale("ja", "JP"));
-
-        // ClientContext を生成する
-        ClientContextStub stub = new ClientContextStub();
-        ClientContext.setClientContextStub(stub);
 
         // プロジェクトスタブを生成する
         Project.setProjectStub(new ProjectStub());

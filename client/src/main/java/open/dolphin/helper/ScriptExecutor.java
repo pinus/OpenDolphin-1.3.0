@@ -35,39 +35,6 @@ public class ScriptExecutor {
             "display notification \"%s\" with title \"%s\" subtitle \"%s\"";
 
     /**
-     * Text Input Source 切換サーバ
-     */
-    public static Process TISSERVER_PROCESS;
-    public static OutputStream TISSERVER_OUTPUTSTEREAM;
-
-    static {
-        try {
-            TISSERVER_PROCESS = new ProcessBuilder("./TISServer").start();
-            TISSERVER_OUTPUTSTEREAM = TISSERVER_PROCESS.getOutputStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void selectTis(String key) {
-        try {
-            TISSERVER_OUTPUTSTEREAM.write((key+"\n").getBytes());
-            TISSERVER_OUTPUTSTEREAM.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void destroyTis() {
-        try {
-            TISSERVER_OUTPUTSTEREAM.write("EXIT\n".getBytes());
-            TISSERVER_OUTPUTSTEREAM.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * 通知センターに通知を表示する.
      *
      * @param message  Message
@@ -107,30 +74,6 @@ public class ScriptExecutor {
         } else {
             executeShellScript("qlmanage", "-p", path);
         }
-    }
-
-    /**
-     * im-select を使って input method を切り替える.
-     * https://github.com/daipeihust/im-select
-     * curl -Ls https://raw.githubusercontent.com/daipeihust/im-select/master/install_mac.sh | sh
-     * @param inputSourceID 切り替えるID
-     * com.apple.keylayout.{US,USExtended},
-     * com.justsystems.inputmethod.atok33.{Roman,Japanese,Japanese.Katakana}
-     */
-    public static void imSelect(String inputSourceID) {
-        if (!StringTool.isEmpty(inputSourceID)) {
-            //System.out.println(inputSourceID.replaceFirst("^.*\\.", ""));
-            executeShellScript("/usr/local/bin/im-select", inputSourceID);
-        }
-    }
-
-    /**
-     * 現在の input method を返す.
-     *
-     * @return current input method
-     */
-    public static String currentIm() {
-        return ScriptExecutor.executeShellScriptWithResponce("/usr/local/bin/im-select").getFirst();
     }
 
     /**
@@ -199,8 +142,5 @@ public class ScriptExecutor {
         //imSelect("com.apple.keylayout.USExtended");
         //imSelect("com.justsystems.inputmethod.atok34.Japanese");
         //System.out.println(currentIm());
-
-        selectTis("K");
-        destroyTis();
-    }
+   }
 }

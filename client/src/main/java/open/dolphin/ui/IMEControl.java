@@ -1,7 +1,7 @@
 package open.dolphin.ui;
 
-import open.dolphin.client.Dolphin;
-import open.dolphin.helper.ScriptExecutor;
+import open.dolphin.client.ClientContext;
+import open.dolphin.client.ClientContextStub;
 import open.dolphin.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +9,9 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Objects;
-import java.util.prefs.Preferences;
 
 /**
  * Mac で IME on/off を切り替える.
@@ -23,31 +24,58 @@ import java.util.prefs.Preferences;
  * <li>ver 6: key combination での robot 入力うまくいかず, F12, F13 キーで切り替えるように ATOK 側で設定することにした
  * <li>ver 7: im-select 呼び出し法 (https://github.com/daipeihust/im-select)
  * <li>ver 8: FocusManger で一元管理バージョン
+ * <li>ver 9: TISServer バージョン</li>
  * </ul>
  *
  * @author pns
  */
 public class IMEControl {
-    private static String JAPANESE = Preferences.userNodeForPackage(Dolphin.class).get(Project.ATOK_JAPANESE_KEY, "com.justsystems.inputmethod.atok34.Japanese");
-    private static String ROMAN = Preferences.userNodeForPackage(Dolphin.class).get(Project.ATOK_ROMAN_KEY, "com.justsystems.inputmethod.atok34.Roman");
     private final Logger logger = LoggerFactory.getLogger(IMEControl.class);
 
     public IMEControl() {
+        Process tisServerProcess;
+        OutputStream tisServerOutputstream;
+        String tisDir = System.getProperty("user.dir");
+
+        // TISServer のある directory を調べる
+        ClientContextStub stub = ClientContext.getClientContextStub();
+        if (stub != null) {
+            tisDir = stub.getBaseDirectory(); // jar の場合 /Resources が返る
+        } else {
+            // IMEControl 単独でテストするとき client が付かないので付ける
+            if (!tisDir.contains("client")) { tisDir = tisDir + "/client"; }
+        }
+
+        try {
+            // TISServer 起動
+            tisServerProcess = new ProcessBuilder(tisDir + "/TISServer").start();
+            tisServerOutputstream = tisServerProcess.getOutputStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // 終了時に TISServer を destroy する
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> tisServerProcess.destroy()));
+
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
             if (Objects.nonNull(e.getNewValue())
                 && e.getNewValue() instanceof JTextComponent c
                 && !(c instanceof JPasswordField)
                 && Objects.isNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
-                ScriptExecutor.imSelect(JAPANESE);
+                try {
+                    tisServerOutputstream.write("J\n".getBytes());
+                    tisServerOutputstream.flush();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             } else {
-                ScriptExecutor.imSelect(ROMAN);
+                try {
+                    tisServerOutputstream.write("R\n".getBytes());
+                    tisServerOutputstream.flush();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
-    }
-
-    public static void reload() {
-        JAPANESE = Preferences.userNodeForPackage(Dolphin.class).get(Project.ATOK_JAPANESE_KEY, "com.justsystems.inputmethod.atok34.Japanese");
-        ROMAN = Preferences.userNodeForPackage(Dolphin.class).get(Project.ATOK_ROMAN_KEY, "com.justsystems.inputmethod.atok34.Roman");
     }
 
     public static void main(String[] argv) {
