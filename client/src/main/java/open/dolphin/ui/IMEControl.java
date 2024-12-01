@@ -11,6 +11,8 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
@@ -24,7 +26,7 @@ import java.util.Objects;
  * <li>ver 6: key combination での robot 入力うまくいかず, F12, F13 キーで切り替えるように ATOK 側で設定することにした
  * <li>ver 7: im-select 呼び出し法 (https://github.com/daipeihust/im-select)
  * <li>ver 8: FocusManger で一元管理バージョン
- * <li>ver 9: TISServer バージョン</li>
+ * <li>ver 9: TISServer (TextInputSources Server) バージョン
  * </ul>
  *
  * @author pns
@@ -46,36 +48,42 @@ public class IMEControl {
             if (!tisDir.contains("client")) { tisDir = tisDir + "/client"; }
         }
 
-        try {
-            // TISServer 起動
-            tisServerProcess = new ProcessBuilder(tisDir + "/TISServer").start();
-            tisServerOutputstream = tisServerProcess.getOutputStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        // 終了時に TISServer を destroy する
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> tisServerProcess.destroy()));
-
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
-            if (Objects.nonNull(e.getNewValue())
-                && e.getNewValue() instanceof JTextComponent c
-                && !(c instanceof JPasswordField)
-                && Objects.isNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
-                try {
-                    tisServerOutputstream.write("J\n".getBytes());
-                    tisServerOutputstream.flush();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            } else {
-                try {
-                    tisServerOutputstream.write("R\n".getBytes());
-                    tisServerOutputstream.flush();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+        // TISServer があれば起動する
+        String tisServer = tisDir + "/TISServer";
+        if (Files.exists(Paths.get(tisServer))) {
+            try {
+                // TISServer 起動
+                tisServerProcess = new ProcessBuilder(tisServer).start();
+                tisServerOutputstream = tisServerProcess.getOutputStream();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        });
+            // 終了時に TISServer を destroy する
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> tisServerProcess.destroy()));
+
+            KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
+                if (Objects.nonNull(e.getNewValue())
+                    && e.getNewValue() instanceof JTextComponent c
+                    && !(c instanceof JPasswordField)
+                    && Objects.isNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
+                    try {
+                        tisServerOutputstream.write("J\n".getBytes());
+                        tisServerOutputstream.flush();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                } else {
+                    try {
+                        tisServerOutputstream.write("R\n".getBytes());
+                        tisServerOutputstream.flush();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            });
+        } else {
+            logger.info("TISServer not found");
+        }
     }
 
     public static void main(String[] argv) {
