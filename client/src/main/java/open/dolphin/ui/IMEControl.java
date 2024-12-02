@@ -62,8 +62,9 @@ public class IMEControl {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> tisServerProcess.destroy()));
 
             KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
-                if (Objects.nonNull(e.getNewValue())
-                    && e.getNewValue() instanceof JTextComponent c
+                if (Objects.isNull(e.getNewValue())) { return; }
+
+                if (e.getNewValue() instanceof JTextComponent c
                     && !(c instanceof JPasswordField)
                     && Objects.isNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
                     try {

@@ -230,6 +230,8 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
         getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
 
         content = (JPanel) getContentPane();
+        content.setOpaque(true); // default button のちらつき防止
+        content.setBackground(new Color(0, 0, 0, 0));
         content.setLayout(new BorderLayout());
         animatingSheet = new AnimatingSheet();
         animationTimer = new Timer(ANIMATION_SLEEP, this);
