@@ -47,8 +47,8 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
     private boolean is(int code, String chord) {
         String[] token = chord.split("\\s");
         int keyValue = KeyUtils.getVKValue(token[token.length-1]);
-        // modifier が指定されていない場合は, modifier は考慮しない
-        if (token.length == 1) { return code == keyValue; }
+        // modifier が指定されていない場合は, modifier は考慮しない except meta
+        if (token.length == 1) { return code == keyValue && !meta; }
         // modifier が指定されている場合
         boolean s = chord.contains("shift");
         boolean c = chord.contains("ctrl");
