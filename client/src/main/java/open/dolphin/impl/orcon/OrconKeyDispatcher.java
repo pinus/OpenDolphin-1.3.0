@@ -115,7 +115,7 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
 
         } else { // Mode.STEALTH
             // ショートカット、ファンクションキーだけ通す
-            if (Stream.of("ctrl shift ENTER", "ctrl K", "ctrl B", "ctrl 0", "ctrl 1", "ctrl 2", "ctrl V", "alt ENTER",
+            if (Stream.of("ctrl shift ENTER", "ctrl K", "ctrl B", "ctrl 0", "ctrl 1", "ctrl 2", "ctrl 3", "ctrl V", "alt ENTER",
                 "alt meta A", "alt BACK_SPACE", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
                 .noneMatch(chord -> is(keyCode, chord))) {
                 return false;
@@ -151,7 +151,7 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
                     orconMacro.k02ToByomeiToroku();
                 }
             }
-        } else if (Stream.of("ctrl 0", "ctrl 1", "ctrl 2").anyMatch(chord -> is(keyCode, chord))) {
+        } else if (Stream.of("ctrl 0", "ctrl 1", "ctrl 2", "ctrl 3").anyMatch(chord -> is(keyCode, chord))) {
             // (K03)診療行為入力ｰ請求確認で, 領収書/明細書/処方箋を打ち出すかどうか
             if (e.getID() == KeyEvent.KEY_PRESSED) {
                 if (orconMacro.whereAmI().equals("K03")) {

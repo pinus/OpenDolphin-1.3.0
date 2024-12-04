@@ -23,8 +23,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-import static open.dolphin.impl.orcon.OrcaElements.*;
-
 /**
  * マクロ.
  * @author pns
@@ -87,7 +85,7 @@ public class OrconMacro {
      */
     public void loginMoveToGyomu() {
         logger.info("業務メニューまで進む");
-        WebElement m00selnum = driver.findElement(By.id(マスターメニュー選択番号.id));
+        WebElement m00selnum = driver.findElement(By.xpath("//*[@id=\"M00.fixed1.SELNUM\"]"));
         m00selnum.sendKeys("01", Keys.ENTER);
     }
 
@@ -96,16 +94,10 @@ public class OrconMacro {
      */
     public void backToGyomu() {
         logger.info("業務メニューに戻る");
-
-        PageUpdated pageUpdated = new PageUpdated();
-        String presentPageTitle = driver.getTitle();
-
-        while (!presentPageTitle.contains(業務メニューキー.id)) {
-            WebElement back = findButtonElement("戻る");
+        WebElement back = findButtonElement("戻る");
+        while (!back.getDomAttribute("id").contains("M01")) {
             back.click();
-            pageUpdated.setOldWhereAmI(presentPageTitle);
-            wait.until(pageUpdated);
-            presentPageTitle = driver.getTitle();
+            back = findButtonElement("戻る");
         }
     }
 
@@ -114,7 +106,8 @@ public class OrconMacro {
      */
     public void m01ToShinryoKoi() {
         logger.info("診療行為入力まで進む");
-        WebElement m01selnum = driver.findElement(By.id(業務メニュー選択番号.id));
+        // 業務メニュー選択番号
+        WebElement m01selnum = driver.findElement(By.xpath("//*[@id=\"M01.fixed1.SELNUM\"]"));
         m01selnum.sendKeys("21", Keys.ENTER);
     }
 
@@ -135,9 +128,9 @@ public class OrconMacro {
     public void k20ChutoTenkai() {
         logger.info("中途終了展開");
         try {
-            WebElement chutoButton = driver.findElement(By.id(中途表示ボタン.id));
+            WebElement chutoButton = driver.findElement(By.xpath("//*[@id=\"K02.fixed2.B12CS\"]"));
             chutoButton.click();
-            By chutoField = By.id(中途終了選択番号.id);
+            By chutoField = By.xpath("//*[@id=\"K10.fixed1.SELNUM\"]");
             wait.until(ExpectedConditions.presenceOfElementLocated(chutoField));
 
             // 選択番号1番入力, ENTER ２回で展開
@@ -177,9 +170,9 @@ public class OrconMacro {
      */
     public void k03SelectPrintForms(int n) {
         logger.info("印刷帳票選択");
-        WebElement ryosyusyoElement = driver.findElement(By.id(領収書.id));
-        WebElement meisaisyoElement = driver.findElement(By.id(明細書.id));
-        WebElement syohoElement = driver.findElement(By.id(処方箋.id));
+        WebElement ryosyusyoElement = driver.findElement(By.xpath("//*[@id=\"K03.fixed3.HAKFLGCOMBO.HAKFLG\"]"));
+        WebElement meisaisyoElement = driver.findElement(By.xpath("//*[@id=\"K03.fixed3.MEIPRTFLG_COMB.MEIPRTFLG\"]"));
+        WebElement syohoElement = driver.findElement(By.xpath("//*[@id=\"K03.fixed3.SYOHOPRTFLGCOMBO.SYOHOPRTFLG\"]"));
 
         String ryosyusyo, meisaisyo, syoho;
         switch (n) {
@@ -201,7 +194,7 @@ public class OrconMacro {
      */
     public void k02SendPtNum() {
         logger.info("患者番号送信");
-        sendPtNumTo(診療行為患者番号.id);
+        sendPtNumTo("//*[@id=\"K02.fixed2.PTNUM\"]");
     }
 
     /**
@@ -209,13 +202,13 @@ public class OrconMacro {
      */
     public void c02SendPtNum() {
         logger.info("患者番号送信");
-        sendPtNumTo(病名登録患者番号.id);
+        sendPtNumTo("//*[@id=\"C02.fixed6.PTNUM\"]");
     }
 
     /**
      * elementId のフィールドに患者番号送信.
      */
-    private void sendPtNumTo(String elementId) {
+    private void sendPtNumTo(String elementXpath) {
         String ptnum = "";
         if (WindowHolder.allCharts().size() > 0) {
             // チャートが開いていれば, その番号を送る
@@ -238,7 +231,7 @@ public class OrconMacro {
             }
         }
         if (!ptnum.isEmpty()) {
-            WebElement test = driver.findElement(By.id(elementId));
+            WebElement test = driver.findElement(By.xpath(elementXpath));
             if (test.isDisplayed()) {
                 test.sendKeys(ptnum);
             }
