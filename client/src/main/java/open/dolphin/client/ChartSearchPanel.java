@@ -1,7 +1,6 @@
 package open.dolphin.client;
 
 import open.dolphin.helper.TextComponentUndoManager;
-import open.dolphin.project.Project;
 import open.dolphin.ui.CompletableSearchField;
 import org.apache.commons.lang3.StringUtils;
 
