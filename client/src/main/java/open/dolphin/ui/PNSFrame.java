@@ -24,7 +24,7 @@ import java.util.Objects;
  * @author pns
  */
 public class PNSFrame extends JFrame {
-    // "apple.awt.windowTitleVisible" = false で JLabel をウインドウタイトルとして使う場合
+    // "apple.awt.windowTitleVisible" = false で JLabel をウインドウタイトルとして使う場合 (StampBox)
     private JLabel titleLabel;
 
     // Panels
@@ -57,6 +57,7 @@ public class PNSFrame extends JFrame {
                 @Override
                 public void windowActivated(WindowEvent e) {
                     titleLabel.setForeground(GUIConst.TITLE_BAR_ACTIVE_COLOR);
+                    setState(Frame.NORMAL);
                 }
                 @Override
                 public void windowDeactivated(WindowEvent e) {
