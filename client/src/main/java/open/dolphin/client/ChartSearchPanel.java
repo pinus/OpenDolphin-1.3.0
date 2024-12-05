@@ -64,11 +64,11 @@ public class ChartSearchPanel extends JPanel {
                     handler.importData(new TransferHandler.TransferSupport(c, ev.getTransferable()));
                     // transfer 後にキーワードフィールドをクリアする
                     stampSearchField.setText("");
+                    // ATOK のフォーカスが残るのを防ぐ
+                    KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
                 });
 
                 if (popup.getComponentCount() != 0) {
-                    // 直後のショートカット入力で　ATOK ウインドウが出ないように
-                    stampSearchField.putClientProperty(Project.ATOK_ROMAN_KEY, true);
                     popup.show(stampSearchField,0, stampSearchField.getHeight());
                 }
             }
