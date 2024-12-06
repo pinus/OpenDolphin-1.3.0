@@ -56,7 +56,7 @@ public class CompletableJTextFieldWithLabel extends CompletableJTextField {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                if (getText() != null && !getText().equals("") && getWidth() - e.getX() <= 20) {
+                if (getText() != null && !getText().isEmpty() && getWidth() - e.getX() <= 20) {
                     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 } else {
                     setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
@@ -72,6 +72,7 @@ public class CompletableJTextFieldWithLabel extends CompletableJTextField {
      */
     public void setLabel(String s) {
         label = s;
+        repaint();
     }
 
     /**
@@ -99,7 +100,7 @@ public class CompletableJTextFieldWithLabel extends CompletableJTextField {
 
         int verticalCentering = (getHeight() - icon.getHeight()) / 2;
 
-        if (getText() == null || getText().equals("")) {
+        if (getText() == null || getText().isEmpty()) {
             // 虫眼鏡とラベル
             FontMetrics fm = g.getFontMetrics();
             int iconWidth = icon.getWidth();

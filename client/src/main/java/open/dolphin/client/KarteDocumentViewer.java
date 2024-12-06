@@ -114,10 +114,10 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     public void findFirst() {
         ChartImpl chart = (ChartImpl) getContext();
         ChartSearchPanel panel = chart.getChartSearchPanel();
-        panel.show(ChartSearchPanel.Card.KARTE);
+        panel.setMode(ChartSearchPanel.Mode.KARTE);
 
-        CompletableSearchField searchField = panel.getKarteSearchField();
-        searchField.setText("");
+        CompletableSearchField searchField = panel.getSearchField();
+        //searchField.setText("");
         Focuser.requestFocus(searchField);
     }
 

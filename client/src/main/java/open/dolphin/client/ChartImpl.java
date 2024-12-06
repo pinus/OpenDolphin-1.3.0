@@ -610,7 +610,7 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
 
         // 検索フィールド
         searchPanel = new ChartSearchPanel(this);
-        searchPanel.show(ChartSearchPanel.Card.KARTE);
+        searchPanel.setMode(ChartSearchPanel.Mode.KARTE);
 
         JPanel keywordPanel = new JPanel();
         keywordPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
