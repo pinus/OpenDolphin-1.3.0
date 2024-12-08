@@ -5,7 +5,10 @@ import open.dolphin.client.ClientContextStub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -13,10 +16,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * IMEServer is responsible for managing interactions with the TISServer for
- * input method selection, specifically handling Japanese and Roman input modes.
- * It starts and stops the TISServer process, sends selection commands, and handles
- * server responses asynchronously.
+ * The IMEServer class is responsible for managing an Input Method Editor (IME) server
+ * that supports selection between Japanese and Roman input methods. It initializes
+ * and controls the lifecycle of the TIS server process used for handling input method
+ * commands and responses.
+ * <p>
+ * The class includes functionality to:
+ * - Start and stop the TIS server process.
+ * - Select between different language input modes.
+ * - Handle server responses and timeout events reliably.
  */
 public class IMEServer {
     private final byte[] JAPANESE = "J\n".getBytes();
@@ -27,6 +35,18 @@ public class IMEServer {
     private final BlockingQueue<String> res = new ArrayBlockingQueue<>(1);
     private final Logger logger = LoggerFactory.getLogger(IMEServer.class);
 
+    /**
+     * Constructs an instance of the IMEServer class.
+     * <p>
+     * This constructor initializes the TIS server directory path based on the current
+     * working directory or the client context stub if available. If the application
+     * is being tested standalone and the directory does not include "client", it appends
+     * "/client" to the path to ensure proper server access.
+     * <p>
+     * Additionally, the constructor sets up a shutdown hook that guarantees the server
+     * process is destroyed when the application exits. This ensures the cleanup of
+     * resources associated with the server.
+     */
     public IMEServer() {
         // TISServer のある directory を調べる
         String tisDir = System.getProperty("user.dir");
@@ -40,16 +60,20 @@ public class IMEServer {
             }
         }
         tisServer = tisDir + "/TISServer";
+
+        // 終了時 destroy する
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
     /**
-     * Initiates the start of the TIS server by first checking for the server's existence
-     * and then launching the server process. This method sets up a virtual thread to
-     * listen for output from the server process and queues any response received.
-     * It also sets up a shutdown hook to ensure the server process is terminated
-     * gracefully upon application termination.
+     * Starts the TIS server process if it exists.
+     * <p>
+     * The method checks for the existence of the TIS server file. If the file is present,
+     * it attempts to start the server process using a {@link ProcessBuilder}. It also starts a
+     * separate virtual thread to continuously read the server's output for an "OK" response,
+     * which is then offered to a response queue.
      *
-     * @return true if the TIS server was successfully started, false otherwise.
+     * @return {@code true} if the server starts successfully, otherwise {@code false}.
      */
     public boolean start() {
         // TISServer 実体がなければ false
@@ -79,9 +103,6 @@ public class IMEServer {
                     logger.info("stdin reader closed");
                 }
             });
-            // 終了時 destroy する
-            Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
-
         } catch (IOException e) {
             e.printStackTrace(System.err);
             return false;
