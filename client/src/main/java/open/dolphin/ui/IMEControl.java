@@ -1,7 +1,5 @@
 package open.dolphin.ui;
 
-import open.dolphin.client.ClientContext;
-import open.dolphin.client.ClientContextStub;
 import open.dolphin.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,25 +7,21 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
- * Mac で IME on/off を切り替える.
- * <ul>
- * <li>ver 1: AppleScript で on/off するバージョン: 遅すぎてストレスたまる
- * <li>ver 2: InputContext.selectInputMethod バージョン: 調子よかったが，1.6.0_29 で使えなくなる
- * <li>ver 3: Robot version 切り替わったかどうか判定するために event queue システム導入
- * <li>ver 4: enableInputMethod(true/false) バージョン: short-cut が効かなくなったり不安定
- * <li>ver 5: Robot version 復活. 物理キーが押されていると誤動作するのでキー入力でフォーカスが当たるところには使えない
- * <li>ver 6: key combination での robot 入力うまくいかず, F12, F13 キーで切り替えるように ATOK 側で設定することにした
- * <li>ver 7: im-select 呼び出し法 (https://github.com/daipeihust/im-select)
- * <li>ver 8: FocusManger で一元管理バージョン
- * <li>ver 9: TISServer (TextInputSources Server) バージョン
- * </ul>
+ * The IMEControl class is responsible for managing the input method editor (IME) on Mac systems.
+ * It toggles IME on and off based on the focus changes in text components.
+ * <p>
+ * - ver 1: AppleScript で on/off するバージョン: 遅すぎてストレスたまる
+ * - ver 2: InputContext.selectInputMethod バージョン: 調子よかったが，1.6.0_29 で使えなくなる
+ * - ver 3: Robot version 切り替わったかどうか判定するために event queue システム導入
+ * - ver 4: enableInputMethod(true/false) バージョン: short-cut が効かなくなったり不安定
+ * - ver 5: Robot version 復活. 物理キーが押されていると誤動作するのでキー入力でフォーカスが当たるところには使えない
+ * - ver 6: key combination での robot 入力うまくいかず, F12, F13 キーで切り替えるように ATOK 側で設定することにした
+ * - ver 7: im-select 呼び出し法 (https://github.com/daipeihust/im-select)
+ * - ver 8: FocusManger で一元管理バージョン
+ * - ver 9: TISServer (TextInputSources Server) バージョン
  *
  * @author pns
  */
@@ -35,55 +29,19 @@ public class IMEControl {
     private final Logger logger = LoggerFactory.getLogger(IMEControl.class);
 
     public IMEControl() {
-        Process tisServerProcess;
-        OutputStream tisServerOutputstream;
-        String tisDir = System.getProperty("user.dir");
-
-        // TISServer のある directory を調べる
-        ClientContextStub stub = ClientContext.getClientContextStub();
-        if (stub != null) {
-            tisDir = stub.getBaseDirectory(); // jar の場合 /Resources が返る
-        } else {
-            // IMEControl 単独でテストするとき client が付かないので付ける
-            if (!tisDir.contains("client")) { tisDir = tisDir + "/client"; }
-        }
-
-        // TISServer があれば起動する
-        String tisServer = tisDir + "/TISServer";
-        if (Files.exists(Paths.get(tisServer))) {
-            try {
-                // TISServer 起動
-                tisServerProcess = new ProcessBuilder(tisServer).start();
-                tisServerOutputstream = tisServerProcess.getOutputStream();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            // 終了時に TISServer を destroy する
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> tisServerProcess.destroy()));
-
+        IMEServer server = new IMEServer();
+        if (server.start()) {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
-                if (Objects.isNull(e.getNewValue())) { return; }
-
-                if (e.getNewValue() instanceof JTextComponent c
-                    && !(c instanceof JPasswordField)
-                    && Objects.isNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
-                    try {
-                        tisServerOutputstream.write("J\n".getBytes());
-                        tisServerOutputstream.flush();
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                } else {
-                    try {
-                        tisServerOutputstream.write("R\n".getBytes());
-                        tisServerOutputstream.flush();
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                if (Objects.nonNull(e.getNewValue())) {
+                    if (e.getNewValue() instanceof JTextComponent c
+                        && !(c instanceof JPasswordField)
+                        && Objects.isNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
+                        server.selectJapanese();
+                    } else {
+                        server.selectRoman();
                     }
                 }
             });
-        } else {
-            logger.info("TISServer not found");
         }
     }
 
@@ -120,7 +78,7 @@ public class IMEControl {
         f.getRootPane().add(p2);
         f.getRootPane().add(p3);
         f.pack();
-        f.setLocation(200,100);
+        f.setLocation(200, 100);
         f.setVisible(true);
     }
 }
