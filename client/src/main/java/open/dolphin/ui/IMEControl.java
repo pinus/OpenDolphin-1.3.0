@@ -33,12 +33,14 @@ public class IMEControl {
         if (server.start()) {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
                 if (Objects.nonNull(e.getNewValue())) {
-                    if (e.getNewValue() instanceof JTextComponent c
-                        && !(c instanceof JPasswordField)
-                        && Objects.isNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
-                        server.selectJapanese();
+                    if (e.getNewValue() instanceof JTextComponent c) {
+                        if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
+                            server.selectABC();
+                        } else {
+                            server.selectJapanese();
+                        }
                     } else {
-                        server.selectRoman();
+                        server.selectABC();
                     }
                 }
             });

@@ -29,6 +29,9 @@ import java.util.concurrent.TimeUnit;
 public class IMEServer {
     private final byte[] JAPANESE = "J\n".getBytes();
     private final byte[] ROMAN = "R\n".getBytes();
+    private final byte[] ABC = "A\n".getBytes();
+    private final byte[] US = "U\n".getBytes();
+    private final byte[] US_EXT = "X\n".getBytes();
     private final String tisServer;
     private Process process;
     private OutputStream output;
@@ -137,6 +140,27 @@ public class IMEServer {
      */
     public void selectRoman() {
         select(ROMAN);
+    }
+
+    /**
+     * Selects the com.apple.keylayout.ABC on the IMEServer instance.
+     */
+    public void selectABC() {
+        select(ABC);
+    }
+
+    /**
+     * Selects the com.apple.keylayout.US on the IMEServer instance.
+     */
+    public void selectUS() {
+        select(US);
+    }
+
+    /**
+     * Selects the com.apple.keylayout.USExtended on the IMEServer instance.
+     */
+    public void selectUSExt() {
+        select(US_EXT);
     }
 
     /**
