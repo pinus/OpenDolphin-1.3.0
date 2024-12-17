@@ -37,6 +37,9 @@ public class IMEControl {
                         if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
                             server.selectABC();
                         } else {
+                            // メニューバーのアイコンは切り替わってるのに, 実際の入力が切り替わってないことがあるのの workaround
+                            server.selectJapanese();
+                            server.selectRoman();
                             server.selectJapanese();
                         }
                     } else {
