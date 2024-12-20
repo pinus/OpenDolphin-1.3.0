@@ -334,7 +334,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
     private class RevertBoundsAction extends AbstractAction {
         public RevertBoundsAction() {
             putValue(Action.NAME, "ウインドウの位置を戻す");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift meta UNDERSCORE"));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift meta W"));
         }
         @Override
         public void actionPerformed(ActionEvent e) {

@@ -515,8 +515,8 @@ public class MenuFactory {
         tool.add(createMenuItem("シェーマ箱", GUIConst.ACTION_SHOW_SCHEMABOX, "2"));
         tool.add(createMenuItem("患者検索", GUIConst.ACTION_SHOW_PATIENT_SEARCH, "3"));
         tool.add(createMenuItem("スタンプ箱", GUIConst.ACTION_SHOW_STAMPBOX, "4"));
-        tool.add(createMenuItem("オルコン", GUIConst.ACTION_SHOW_ORCON, "shift R"));
-        tool.add(createMenuItem("ステルスオルコン", GUIConst.ACTION_STEALTH_ORCON, "R"));
+        tool.add(createMenuItem("オルコン", GUIConst.ACTION_SHOW_ORCON, "R"));
+        tool.add(createMenuItem("ステルスオルコン", GUIConst.ACTION_STEALTH_ORCON, "shift R"));
         tool.addSeparator();
         tool.add(createMenuItem("プロフィール変更", GUIConst.ACTION_CHANGE_PASSWORD));
         tool.add(createMenuItem("院内ユーザー登録", GUIConst.ACTION_ADD_USER));
