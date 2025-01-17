@@ -593,7 +593,12 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
 
         Date pvtDate = ModelUtils.getDateTimeAsObject(pvt.getPvtDate());
         if (pvtDate != null && pvt.getState() == KarteState.CLOSE_NONE) { // window open 前に呼ばれる
-            String waitingTime = DurationFormatUtils.formatPeriod(pvtDate.getTime(), new Date().getTime(), "HH:mm");
+            String waitingTime = "00:00";
+            long pvtTime = pvtDate.getTime();
+            long nowTime = new Date().getTime();
+            if (pvtTime < nowTime) { // サーバ・クライアント時間がずれて反転することがある
+                waitingTime = DurationFormatUtils.formatPeriod(pvtTime, nowTime, "HH:mm");
+            }
             statusPanel.addSeparator();
             statusPanel.add("待ち時間 " + waitingTime);
         }
