@@ -678,10 +678,12 @@ public class Dolphin implements MainWindow {
 
     /**
      * Orca Controller を表示する. MenuSupport から reflection で呼ばれる.
+     * 既に表示されていた場合は, WaitingList に戻る.
      */
     public void showOrcaController() {
         windowSupport.getFrame().toFront();
-        tabbedPane.setSelectedIndex(3);
+        int selectedIndex = tabbedPane.getSelectedIndex();
+        tabbedPane.setSelectedIndex(selectedIndex == 3 ? 0 : 3);
     }
 
     /**
