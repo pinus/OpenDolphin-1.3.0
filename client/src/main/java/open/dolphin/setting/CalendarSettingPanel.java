@@ -144,8 +144,8 @@ public class CalendarSettingPanel extends AbstractSettingPanel {
         calendarIdField.setText(calendarIdField.getText().trim());
         credentialField.setText(credentialField.getText().trim());
 
-        if (StringUtils.isEmpty(holidayCalendarIdField.getText())
-            || StringUtils.isEmpty(calendarIdField.getText())
+        //if (StringUtils.isEmpty(holidayCalendarIdField.getText())
+        if (StringUtils.isEmpty(calendarIdField.getText())
             || StringUtils.isEmpty(credentialField.getText())) {
             showMessage("必要項目が入力されていません", PNSOptionPane.ERROR_MESSAGE);
             return;
@@ -199,14 +199,17 @@ public class CalendarSettingPanel extends AbstractSettingPanel {
                     .setOrderBy("startTime")
                     .setSingleEvents(Boolean.TRUE).execute();
 
-                Events holidays = service.events().list(holidayCalendarIdField.getText())
-                    .setTimeMin(new DateTime(prevYear.getTime()))
-                    .setTimeMax(new DateTime(nextYear.getTime()))
-                    .setOrderBy("startTime")
-                    .setSingleEvents(Boolean.TRUE).execute();
-
                 List<Event> eventList = events.getItems();
-                eventList.addAll(holidays.getItems());
+
+                if (!holidayCalendarIdField.getText().isEmpty()) {
+                    Events holidays = service.events().list(holidayCalendarIdField.getText())
+                        .setTimeMin(new DateTime(prevYear.getTime()))
+                        .setTimeMax(new DateTime(nextYear.getTime()))
+                        .setOrderBy("startTime")
+                        .setSingleEvents(Boolean.TRUE).execute();
+
+                    eventList.addAll(holidays.getItems());
+                }
 
                 return eventList;
             }
