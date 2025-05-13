@@ -13,27 +13,37 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 /**
- * CompletableJTextField.
- * modified from JAVA SWING HACKS.
+ * A custom text field component with auto-completion functionality.
+ * Displays completion candidates in a popup window based on user input
+ * and provides the ability to save and load input history.
+ *
+ * Key features:
+ * - Dynamic candidate display based on input text
+ * - Candidate selection using up/down keys
+ * - Input history persistence (using Preferences)
+ * - Maximum history storage of 50 items
+ * - Keyboard shortcuts support
+ *   - Ctrl+D: Delete selected item
+ *   - ESC: Close popup
  *
  * @author pns
  */
 public class CompletableJTextField extends JTextField
         implements ListSelectionListener, FocusListener, KeyListener, ComponentListener, ActionListener {
-        private static final String PREFS = "prefs";
 
+    private static final String PREFS = "prefs";
     private Completer completer;
     private JList<String> completionList;
     private DefaultListModel<String> completionListModel;
     private JWindow listWindow;
     private Window parentFrame;
-    private int keyCode;
     private Preferences prefs;
 
     public CompletableJTextField(int col) {
@@ -92,19 +102,15 @@ public class CompletableJTextField extends JTextField
         StringBuilder sb = new StringBuilder();
         List<String> items = getCompletions();
         items.forEach(s -> sb.append(s).append("\t"));
-
-        prefs.put(PREFS, StringUtils.chop(sb.toString()));
+        SwingUtilities.invokeLater(() -> prefs.put(PREFS, StringUtils.chop(sb.toString())));
     }
 
     private void loadPrefs() {
-        String str = prefs.get(PREFS, "");
-        String[] items = str.split("\t");
-        // 古い方から登録
-        for (int i = items.length - 1; i >= 0; i--) {
-            if (!items[i].matches("^ *$")) { // 空行は除く
-                completer.addCompletion(items[i]);
-            }
-        }
+        SwingUtilities.invokeLater(() -> {
+            String str = prefs.get(PREFS, "");
+            String[] items = str.split("\t");
+            completer.loadCompletions(items);
+        });
     }
 
     public void addCompletion(String s) {
@@ -216,7 +222,7 @@ public class CompletableJTextField extends JTextField
      */
     @Override
     public void keyPressed(KeyEvent e) {
-        keyCode = e.getKeyCode();
+        int keyCode = e.getKeyCode();
         int modifier = e.getModifiersEx();
 
         // リストが表示されているとき
@@ -302,28 +308,33 @@ public class CompletableJTextField extends JTextField
     }
 
     /**
-     * inner class does the matching of the JTextField's
+     * the inner class does the matching of the JTextField's
      * document to completion strings kept in an ArrayList.
      */
     private class Completer implements DocumentListener {
-
+        private static final int MAX_COMPLETIONS = 50;
         private final List<String> completions;
         private boolean update = true;
-        private Pattern pattern;
 
         public Completer() {
             completions = new ArrayList<>();
         }
 
+        public void loadCompletions(String[] list) {
+            int min = Math.min(list.length, MAX_COMPLETIONS);
+            completions.clear();
+            completions.addAll(Arrays.asList(list).subList(0, min));
+            buildAndShowPopup();
+        }
+
         public void addCompletion(String s) {
             // 新しく追加したものが最初に来る
             completions.remove(s);
-            completions.add(0, s);
+            completions.addFirst(s);
             // 50項目まで保存
-            if (completions.size() > 50) {
-                completions.remove(50);
+            if (completions.size() > MAX_COMPLETIONS) {
+                completions.remove(MAX_COMPLETIONS);
             }
-
             buildAndShowPopup();
         }
 
@@ -351,7 +362,7 @@ public class CompletableJTextField extends JTextField
             //System.out.println("buildPopup for " + completions.size() + " completions");
             //pattern = Pattern.compile(getText() + ".*");
             String text = StringTool.escapeRegex(getText());
-            pattern = Pattern.compile(text + ".+");
+            Pattern pattern = Pattern.compile(text + ".+");
 
             for (String s : completions) {
                 if (pattern.matcher(s).matches()) {
@@ -384,7 +395,7 @@ public class CompletableJTextField extends JTextField
         }
 
         private void showAll() {
-            // complitionListModel に completions 全部入れる
+            // completionListModel に completions 全部入れる
             completionListModel.clear();
             completions.forEach(completion -> completionListModel.add(completionListModel.getSize(), completion));
             showPopup();
