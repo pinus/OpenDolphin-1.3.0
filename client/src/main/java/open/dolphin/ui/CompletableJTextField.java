@@ -308,11 +308,21 @@ public class CompletableJTextField extends JTextField
     }
 
     /**
-     * the inner class does the matching of the JTextField's
-     * document to completion strings kept in an ArrayList.
+     * A helper class that provides autocompletion functionality for a text field.
+     * The class listens for changes in the document and displays a list of matching
+     * completions based on the input text.
+     *
+     * This class maintains a limited number of completions and responds to user
+     * input using a time delay mechanism to mitigate performance issues.
+     *
+     * Implements the {@link DocumentListener} interface to react to document
+     * updates.
      */
     private class Completer implements DocumentListener {
         private static final int MAX_COMPLETIONS = 50;
+        // DELAY msec 以内の複数入力はまとめて処理する (ATOK がばたつくのを防ぐため)
+        private static final int DELAY = 30;
+        private final Timer timer = new Timer(DELAY, e -> flush());
         private final List<String> completions;
         private boolean update = true;
 
@@ -382,9 +392,14 @@ public class CompletableJTextField extends JTextField
         }
 
         private void buildAndShowPopup() {
-            if (!update) {
-                return;
-            }
+            // DELAY msec 後に flush() で処理される
+            timer.restart();
+        }
+
+        public void flush() {
+            timer.stop();
+
+            if (!update) { return; }
 
             if (getText().isEmpty()) {
                 listWindow.setVisible(false);

@@ -44,39 +44,18 @@ public class ChartSearchPanel extends JPanel {
         connect();
     }
 
-    /**
-     * Initializes the components for the ChartSearchPanel.
-     * This method creates and configures the search field, adds undo functionality,
-     * and sets its size preferences. It then adds the search field to the panel and
-     * sets the initial mode of the panel to Mode.KARTE.
-     *
-     * The search field is an instance of CompletableSearchField, initialized with
-     * a column width of 15. An undoable edit listener is attached to manage text
-     * changes, allowing for undo operations. The preferred size of the search field
-     * is set, although the width is determined by the column setting of the JTextField.
-     */
     private void initComponents() {
         searchField = new CompletableSearchField(15);
-        searchField.getDocument().addUndoableEditListener(TextComponentUndoManager.createManager(searchField));
         searchField.setPreferredSize(new Dimension(300, 26)); // width は JTextField の columns が優先される
         add(searchField);
         setMode(Mode.KARTE);
     }
 
-    /**
-     * Establishes action listeners and input mappings for the search functionality within the ChartSearchPanel.
-     * This method binds actions to the search field, allowing for interactions based on user input. It also
-     * configures key combinations to trigger search functions.
-     *
-     * The connection is conditional based on the current mode of the panel:
-     * - In STAMP mode, it creates and displays a diagnosis popup based on the search pattern derived from user input.
-     * - In KARTE mode, it processes options for searching specific aspects of the chart document, such as including
-     *   subjective/objective (s) and plan (p) sections, and then triggers an appropriate search display.
-     *
-     * Additionally, adjusts the input map of the search field to treat Ctrl+Enter as equivalent to Enter, allowing
-     * for consistent input handling.
-     */
     private void connect() {
+        // undo listener 登録
+        searchField.getDocument().addUndoableEditListener(TextComponentUndoManager.createManager(searchField));
+
+        // リターンを押したときの動作
         searchField.addActionListener(e -> {
             String keyWord = searchField.getText();
             if (keyWord == null || keyWord.isEmpty()) { return; }
@@ -116,10 +95,10 @@ public class ChartSearchPanel extends JPanel {
 
     /**
      * Sets the current mode of the ChartSearchPanel. This method updates the
-     * search field's label and preferences based on the new mode, and applies
+     * search field's label and preferences based on the new mode and applies
      * a visual effect if the search field contains text.
      *
-     * @param mode The new mode to set. This determines which label and preferences
+     * @param mode The new mode to set. This determines which labels and preferences
      *             are applied to the search field.
      */
     public void setMode(Mode mode) {
