@@ -2,7 +2,7 @@
 jakarta = "10.0.0"
 hibernate-orm = "6.6.1.Final"
 resteasy = "6.2.10.Final"
-intellij = "24.0.0"
+intellij = "26.0.2"
 
 ## server ##
 jackson = "2.17.0"
@@ -12,16 +12,16 @@ postgres = "42.7.4"
 jdom2 = "2.0.6"
 
 ## client ##
-tyrus = "2.1.2"
+tyrus = "2.2.0"
 google-client = "1.30.9"
 google-oauth = "1.23.0"
 google-calendar = "v3-rev305-1.23.0"
-logback = "1.4.14"
-j2html = "1.5.0"
+logback = "1.5.18"
+j2html = "1.6.0"
 angus-mail = "2.0.3"
-flatlaf = "3.5"
-commons-io = "2.16.1"
-selenium = "4.26.0"
+flatlaf = "3.6"
+commons-io = "2.19.0"
+selenium = "4.34.0"
 
 [libraries]
 jakarta = { module = "jakarta.platform:jakarta.jakartaee-api", version.ref = "jakarta" }

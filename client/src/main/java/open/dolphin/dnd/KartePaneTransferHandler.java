@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class KartePaneTransferHandler extends DolphinTransferHandler {
-        private Logger logger = LoggerFactory.getLogger(KartePaneTransferHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(KartePaneTransferHandler.class);
 
-    private KartePane kartePane;
+    private final KartePane kartePane;
     private JTextPane source;
     private boolean shouldRemove;
 
@@ -115,8 +115,12 @@ public class KartePaneTransferHandler extends DolphinTransferHandler {
     public int getSourceActions(JComponent c) {
         // 選択テキストのイメージを作る
         String text = ((JTextPane) c).getSelectedText();
-        setDragImage(text);
-        return COPY_OR_MOVE;
+        if (Objects.isNull(text)) {
+            return NONE;
+        } else {
+            setDragImage(text);
+            return COPY_OR_MOVE;
+        }
     }
 
     /**
@@ -176,7 +180,7 @@ public class KartePaneTransferHandler extends DolphinTransferHandler {
                 && IInfoModel.ROLE_P.equals(myRole)) {
                 return true;
             }
-            // StampTreeNode needs furthur inspection
+            // StampTreeNode needs further inspection
             if (DolphinDataFlavor.stampTreeNodeFlavor.equals(flavor)) {
                 try {
                     StampTreeNode testNode = null;
