@@ -393,13 +393,11 @@ public class CompletableJTextField extends JTextField
 
         private void buildAndShowPopup() {
             // DELAY msec 後に flush() で処理される
-            timer.restart();
+            if (update) { timer.restart(); }
         }
 
         public void flush() {
             timer.stop();
-
-            if (!update) { return; }
 
             if (getText().isEmpty()) {
                 listWindow.setVisible(false);

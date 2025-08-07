@@ -6,27 +6,38 @@ import open.dolphin.delegater.OrcaDelegater;
 import open.dolphin.event.BadgeEvent;
 import open.dolphin.helper.PNSTask;
 import open.dolphin.helper.StringTool;
+import open.dolphin.helper.TextComponentUndoManager;
 import open.dolphin.orca.orcadao.bean.OnshiKenshin;
 import open.dolphin.orca.orcadao.bean.OnshiYakuzai;
 import open.dolphin.ui.PNSScrollPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * オン資 ChartDocument.
  */
 public class Onshi extends AbstractChartDocument {
+    private Logger logger;
     // Title
     private static final String TITLE = "オン資";
 
     private JTextPane textPane;
 
-    public Onshi() { setTitle(TITLE); }
+    public Onshi() {
+        setTitle(TITLE);
+        logger = LoggerFactory.getLogger(Onshi.class);
+    }
 
     @Override
     public void start() {
@@ -42,6 +53,49 @@ public class Onshi extends AbstractChartDocument {
         buttonPanel.add(Box.createHorizontalGlue());
 
         textPane = new JTextPane();
+        textPane.getDocument().addUndoableEditListener(TextComponentUndoManager.createManager(textPane));
+
+        // クリップボードへ送る内容を、カルテにペーストしやすい形式に変換する
+        textPane.setTransferHandler(new TransferHandler() {
+            @Override
+            public void exportToClipboard(JComponent comp, Clipboard clip, int action) {
+                JTextPane pane = (JTextPane) comp;
+                String selectedText = pane.getSelectedText();
+
+                if (selectedText != null) {
+                    // テキストを加工
+                    String processedText = processText(selectedText);
+
+                    // クリップボードに送信
+                    StringSelection selection = new StringSelection(processedText);
+                    clip.setContents(selection, selection);
+                }
+            }
+
+            private String processText(String text) {
+                // エルデカルシトールカプセル０．７５μｇ「日医工」 1カプセル １日１回朝食後服用 63日分
+                text = text.replaceAll("([０-９．]+)ｍｇ", "($1)");
+                text = text.replaceAll("([０-９．]+)μｇ", "($1)");
+                text = text.replaceAll("[０-９．]+％", "");
+                text = text.replaceAll("．", ".");
+
+                text = text.replaceAll("／.*", "");
+
+                text = text.replaceAll("１日", "");
+                text = text.replaceAll("回.*服用", "x");
+                text = text.replaceAll("カプセル", "Cap");
+                text = text.replaceAll("日分", "TD");
+
+                text = text.replaceAll("「.*」", " ");
+                text = text.replaceAll("（.*）", " ");
+
+                text = StringTool.toHankakuNumber(text);
+                text = StringTool.toHankakuUpperLower(text);
+
+                return text;
+            }
+        });
+
         textPane.setMargin(new Insets(7, 7, 7, 7));
         PNSScrollPane scroller = new PNSScrollPane(textPane);
         scroller.setVerticalScrollBarPolicy(PNSScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -92,10 +146,10 @@ public class Onshi extends AbstractChartDocument {
 
             @Override
             public void succeeded(List<OnshiYakuzai> onshiYakuzai) {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder byDate = new StringBuilder();
 
                 // 日付順
-                sb.append("日付順\n");
+                byDate.append("日付順\n");
                 String date = "";
                 String prevLabel = "";
 
@@ -111,45 +165,82 @@ public class Onshi extends AbstractChartDocument {
                     if (!date.equals(o.getIsoDate()) || !prevLabel.equals(label)) {
                         date = o.getIsoDate();
                         prevLabel = label;
-                        sb.append(String.format("\n%s %s\n", date, label));
+                        byDate.append(String.format("\n%s %s\n", date, label));
                     }
 
                     String yakuzainame = o.getYakuzainame();
-                    sb.append(String.format("    %s ", yakuzainame));
+                    byDate.append(String.format("    %s ", yakuzainame));
                     String suryo = Float.toString(o.getSuryo()).replaceAll(".0$", "");
                     if (o.getYohoname().isEmpty()) {
                         // 外用剤
-                        sb.append(String.format("%s%s %s\n", suryo, o.getTaniname(), o.getShiji()));
+                        byDate.append(String.format("%s%s %s\n", suryo, o.getTaniname(), o.getShiji()));
                     } else {
-                        sb.append(String.format("%s%s %s %s日分\n", suryo, o.getTaniname(), o.getYohoname(), o.getKaisu()));
+                        byDate.append(String.format("%s%s %s %s日分\n", suryo, o.getTaniname(), o.getYohoname(), o.getKaisu()));
                     }
                 }
 
                 // 薬剤別
-                sb.append("\n薬剤別\n\n");
+                StringBuilder byDrug = new StringBuilder();
+                byDrug.append("\n薬剤別\n\n");
                 // sort
                 onshiYakuzai.sort((o1, o2) -> {
                     int dat = o1.getIsoDate().compareTo(o2.getIsoDate());
-                    int name = o1.getYakuzainame().compareTo(o2.getYakuzainame());
+                    int name = o1.getYakuzainame().replaceAll("「.*」", "") // メーカー名は削除してソート
+                        .compareTo(o2.getYakuzainame().replaceAll("「.*」", ""));
                     int yoho = o1.getYohocd().compareTo(o2.getYohocd());
                     return yoho == 0 ? name == 0 ? dat : name : yoho;
                 });
 
+//                for (OnshiYakuzai o : onshiYakuzai) {
+//                    logger.info("yakuzai: {} {} {} {} {}", o.getYakuzainame(), o.getIsoDate(), o.getKaisu(), o.getYohocd(), o.getYohoname());
+//                }
+
+                List<OnshiYakuzai> drugs = new ArrayList<>();
+
                 for (OnshiYakuzai o : onshiYakuzai) {
                     String yakuzainame = toHankaku(o.getYakuzainame());
-                    String suryo = Float.toString(o.getSuryo()).replaceAll(".0$", "");
-                    if (o.getYohocd().equals("900")) {
-                        // 外用剤
-                        sb.append(String.format("%s %s%s, %s\n", yakuzainame, suryo, o.getTaniname(), o.getIsoDate()));
+
+                    OnshiYakuzai o2 = new OnshiYakuzai();
+                    o2.setYakuzainame(yakuzainame.replaceAll("｢.*｣", ""));
+                    o2.setIsoDate(o.getIsoDate());
+                    o2.setKaisu(o.getKaisu()); // int
+
+                    if (!drugs.isEmpty() && drugs.getLast().getYakuzainame().equals(o2.getYakuzainame())) {
+                        // 同じ薬が連続して処方されている場合は統合する
+                        OnshiYakuzai last = drugs.getLast();
+                        LocalDate lastStartDate = LocalDate.parse(last.getIsoDate());
+                        LocalDate thisStartDate = LocalDate.parse(o2.getIsoDate());
+                        int daysBetween = (int) ChronoUnit.DAYS.between(lastStartDate, thisStartDate);
+                        int diff = daysBetween - last.getKaisu();
+                        if (diff < 0) { // 薬切れる前に処方になっている場合
+                            diff = 0;
+                        }
+                        if (diff < 30) { // １ヶ月以内の処方は連続していると判断
+                            last.setKaisu(diff + last.getKaisu() + o2.getKaisu());
+                        } else {
+                            drugs.add(o2);
+                        }
+
                     } else {
-                        LocalDate startDate = LocalDate.parse(o.getIsoDate());
-                        LocalDate endDate = startDate.plusDays(o.getKaisu());
-                        date = String.format("%s ~ %s", startDate.format(DateTimeFormatter.ISO_DATE), endDate.format(DateTimeFormatter.ISO_DATE));
-                        sb.append(String.format("%s, %s\n", yakuzainame, date));
+                        drugs.add(o2);
                     }
                 }
 
-                textPane.setText(sb.toString());
+                // 内服薬のパース
+                drugs.forEach(o -> {
+                    if (o.getKaisu() > 1) { // 回数１の処方 (外用剤等) は除外
+                        LocalDate today = LocalDate.now();
+                        LocalDate startDate = LocalDate.parse(o.getIsoDate());
+                        long yearsBetween = ChronoUnit.YEARS.between(startDate, today);
+                        if (yearsBetween < 1) { // １年以上の古いデータは除外
+                            LocalDate endDate = startDate.plusDays(o.getKaisu());
+                            String period = String.format("%s ~ %s", startDate.format(DateTimeFormatter.ISO_DATE), endDate.format(DateTimeFormatter.ISO_DATE));
+                            byDrug.append(String.format("%s, %s\n", o.getYakuzainame(), period));
+                        }
+                    }
+                });
+
+                textPane.setText(byDate.toString() + byDrug);
             }
         };
         task.execute();
