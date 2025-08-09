@@ -80,12 +80,22 @@ public class CompletableJTextField extends JTextField
         getDocument().addDocumentListener(completer);
         addFocusListener(this);
         addKeyListener(this);
-        addComponentListener(this);
         addActionListener(this);
     }
 
-    public void dispose() {
+    @Override
+    public void addNotify() {
+        parentFrame = SwingUtilities.getWindowAncestor(this);
+        parentFrame.addComponentListener(this);
+        super.addNotify();
+    }
+
+    @Override
+    public void removeNotify() {
+        parentFrame.removeComponentListener(this);
         listWindow.dispose();
+        completer.stop();
+        super.removeNotify();
     }
 
     /**
@@ -285,11 +295,6 @@ public class CompletableJTextField extends JTextField
     // window が動いたら listWindow は消す
     @Override
     public void componentResized(ComponentEvent e) {
-        if (parentFrame == null) {
-            parentFrame = SwingUtilities.getWindowAncestor(this);
-            removeComponentListener(this);
-            parentFrame.addComponentListener(this);
-        }
         listWindow.setVisible(false);
     }
 
@@ -322,7 +327,9 @@ public class CompletableJTextField extends JTextField
         private static final int MAX_COMPLETIONS = 50;
         // DELAY msec 以内の複数入力はまとめて処理する (ATOK がばたつくのを防ぐため)
         private static final int DELAY = 30;
-        private final Timer timer = new Timer(DELAY, e -> flush());
+        public void stop() {
+            timer.stop();
+        }        private final Timer timer = new Timer(DELAY, e -> flush());
         private final List<String> completions;
         private boolean update = true;
 
@@ -413,6 +420,8 @@ public class CompletableJTextField extends JTextField
             completions.forEach(completion -> completionListModel.add(completionListModel.getSize(), completion));
             showPopup();
         }
+
+
 
         // DocumentListener implementation
         @Override
