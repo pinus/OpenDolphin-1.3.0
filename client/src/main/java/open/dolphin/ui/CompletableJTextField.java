@@ -327,9 +327,7 @@ public class CompletableJTextField extends JTextField
         private static final int MAX_COMPLETIONS = 50;
         // DELAY msec 以内の複数入力はまとめて処理する (ATOK がばたつくのを防ぐため)
         private static final int DELAY = 30;
-        public void stop() {
-            timer.stop();
-        }        private final Timer timer = new Timer(DELAY, e -> flush());
+        private final Timer timer = new Timer(DELAY, e -> flush());
         private final List<String> completions;
         private boolean update = true;
 
@@ -421,7 +419,9 @@ public class CompletableJTextField extends JTextField
             showPopup();
         }
 
-
+        public void stop() {
+            timer.stop();
+        }
 
         // DocumentListener implementation
         @Override
