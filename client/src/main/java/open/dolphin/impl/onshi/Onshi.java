@@ -28,15 +28,13 @@ import java.util.List;
  * オン資 ChartDocument.
  */
 public class Onshi extends AbstractChartDocument {
-    private Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(Onshi.class);
     // Title
     private static final String TITLE = "オン資";
-
     private JTextPane textPane;
 
     public Onshi() {
         setTitle(TITLE);
-        logger = LoggerFactory.getLogger(Onshi.class);
     }
 
     @Override
@@ -120,8 +118,7 @@ public class Onshi extends AbstractChartDocument {
                 loadDrugHistoryButton.setEnabled(hasDrugHistory);
                 loadKenshinButton.setEnabled(hasKenshin);
 
-                int badgeNum = (hasDrugHistory? 1:0) + (hasKenshin? 1:0);
-                return badgeNum;
+                return (hasDrugHistory ? 1 : 0) + (hasKenshin ? 1 : 0);
             }
 
             public void succeeded(Integer badgeNum) {
@@ -149,7 +146,7 @@ public class Onshi extends AbstractChartDocument {
                 StringBuilder byDate = new StringBuilder();
 
                 // 日付順
-                byDate.append("日付順\n");
+                //byDate.append("日付順\n");
                 String date = "";
                 String prevLabel = "";
 
@@ -171,8 +168,8 @@ public class Onshi extends AbstractChartDocument {
                     String yakuzainame = o.getYakuzainame();
                     byDate.append(String.format("    %s ", yakuzainame));
                     String suryo = Float.toString(o.getSuryo()).replaceAll(".0$", "");
-                    if (o.getYohoname().isEmpty()) {
-                        // 外用剤
+                    if (o.getKaisu() <= 1) {
+                        // 外用剤・頓用
                         byDate.append(String.format("%s%s %s\n", suryo, o.getTaniname(), o.getShiji()));
                     } else {
                         byDate.append(String.format("%s%s %s %s日分\n", suryo, o.getTaniname(), o.getYohoname(), o.getKaisu()));
@@ -181,7 +178,6 @@ public class Onshi extends AbstractChartDocument {
 
                 // 薬剤別
                 StringBuilder byDrug = new StringBuilder();
-                byDrug.append("\n薬剤別\n\n");
                 // sort
                 onshiYakuzai.sort((o1, o2) -> {
                     int dat = o1.getIsoDate().compareTo(o2.getIsoDate());
@@ -198,8 +194,13 @@ public class Onshi extends AbstractChartDocument {
                 List<OnshiYakuzai> drugs = new ArrayList<>();
 
                 for (OnshiYakuzai o : onshiYakuzai) {
+                    if (o.getKaisu() <= 1) {
+                        continue;
+                    } // 回数１の処方 (外用剤等) は除外
+
                     String yakuzainame = toHankaku(o.getYakuzainame());
 
+                    // 薬剤別用の OnshiYakuzai を新たに作る
                     OnshiYakuzai o2 = new OnshiYakuzai();
                     o2.setYakuzainame(yakuzainame.replaceAll("｢.*｣", ""));
                     o2.setIsoDate(o.getIsoDate());
@@ -218,6 +219,7 @@ public class Onshi extends AbstractChartDocument {
                         if (diff < 30) { // １ヶ月以内の処方は連続していると判断
                             last.setKaisu(diff + last.getKaisu() + o2.getKaisu());
                         } else {
+                            // 非連続処方と判断
                             drugs.add(o2);
                         }
 
@@ -226,19 +228,33 @@ public class Onshi extends AbstractChartDocument {
                     }
                 }
 
-                // 内服薬のパース
-                drugs.forEach(o -> {
-                    if (o.getKaisu() > 1) { // 回数１の処方 (外用剤等) は除外
+                // 処方終了日でソートしなおす
+                drugs.sort((o1, o2) -> {
+                    LocalDate endDate1 = LocalDate.parse(o1.getIsoDate()).plusDays(o1.getKaisu());
+                    LocalDate endDate2 = LocalDate.parse(o2.getIsoDate()).plusDays(o2.getKaisu());
+                    return endDate1.compareTo(endDate2); // 昇順
+                });
+
+//                byDrug.append("\n全部\n\n");
+//                for (OnshiYakuzai o: onshiYakuzai) {
+//                    LocalDate today = LocalDate.now();
+//                    LocalDate startDate = LocalDate.parse(o.getIsoDate());
+//                    LocalDate endDate = startDate.plusDays(o.getKaisu());
+//                    String period = String.format("%s ~ %s", startDate.format(DateTimeFormatter.ISO_DATE), endDate.format(DateTimeFormatter.ISO_DATE));
+//                    byDrug.append(String.format("%s, %s\n", o.getYakuzainame(), period));
+//                }
+
+                // 半年以内の内服薬
+                byDrug.append("\n直近の薬歴\n\n");
+                for (OnshiYakuzai o : drugs) {
                         LocalDate today = LocalDate.now();
-                        LocalDate startDate = LocalDate.parse(o.getIsoDate());
-                        long yearsBetween = ChronoUnit.YEARS.between(startDate, today);
-                        if (yearsBetween < 1) { // １年以上の古いデータは除外
-                            LocalDate endDate = startDate.plusDays(o.getKaisu());
-                            String period = String.format("%s ~ %s", startDate.format(DateTimeFormatter.ISO_DATE), endDate.format(DateTimeFormatter.ISO_DATE));
+                    LocalDate endDate = LocalDate.parse(o.getIsoDate()).plusDays(o.getKaisu());
+                    long yearsBetween = ChronoUnit.MONTHS.between(endDate, today);
+                    if (yearsBetween < 6) { // 半年以上古いデータは除外
+                        String period = String.format("%s ~ %s", o.getIsoDate(), endDate.format(DateTimeFormatter.ISO_DATE));
                             byDrug.append(String.format("%s, %s\n", o.getYakuzainame(), period));
                         }
-                    }
-                });
+                }
 
                 textPane.setText(byDate.toString() + byDrug);
             }
@@ -345,8 +361,8 @@ public class Onshi extends AbstractChartDocument {
      */
     private String valToString(String str, String val) {
         String[] item = str.split("、");
-        for (int i = 0; i<item.length; i++) {
-            String[] map = item[i].split(":");
+        for (String s : item) {
+            String[] map = s.split(":");
             if (val.equals(map[0])) {
                 return map[1];
             }
