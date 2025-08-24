@@ -206,6 +206,16 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
                 // dialog-close
                 closeDialog.actionPerformed();
             });
+
+            // dialog が modal を維持したまま deactivate されて, 操作不能になる現象が稀に発生するのの対策
+            dialog.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowDeactivated(WindowEvent e) {
+                    logger.info("dialog deactivated");
+                    closeDialog.actionPerformed();
+                }
+            });
+
             dialog.add(tf);
             dialog.pack();
 

@@ -12,6 +12,7 @@ import javax.swing.text.Position;
 import javax.swing.undo.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 
 /**
  * ComponentHolder. StampHolder と SchemaHolder.
@@ -226,8 +227,10 @@ public abstract class AbstractComponentHolder<T> extends JLabel
      * Undo / Redo 関連のメニューを update する.
      */
     public void updateMenuState() {
-        actionMap.get(GUIConst.ACTION_UNDO).setEnabled(undoManager.canUndo());
-        actionMap.get(GUIConst.ACTION_REDO).setEnabled(undoManager.canRedo());
+        if (Objects.nonNull(actionMap)) {
+            actionMap.get(GUIConst.ACTION_UNDO).setEnabled(undoManager.canUndo());
+            actionMap.get(GUIConst.ACTION_REDO).setEnabled(undoManager.canRedo());
+        }
     }
 
     /**
