@@ -46,7 +46,8 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
     // component bounds manager
     final private Preferences pref;
     final private String keyX, keyY, keyW, keyH; // preference keys
-    final private Deque<Rectangle> undoHistory; // bounds history
+    final private Deque<Rectangle> undoHistory; // bounds' history
+    private boolean suppressHistory = false; // suppress history update during undo
     private Rectangle prevBounds;
     final private RevertBoundsAction revertBoundsAction;
     private boolean boundChanged;
@@ -172,7 +173,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         long freeMemory = Runtime.getRuntime().freeMemory() / 1048576L;
         long maxMemory = Runtime.getRuntime().maxMemory() / 1048576L;
         //logger.info(message);
-        logger.info(String.format("free/max %d/%d MB (%d)", freeMemory, maxMemory, Window.getOwnerlessWindows().length));
+        logger.info("free/max {}/{} MB ({})", freeMemory, maxMemory, Window.getOwnerlessWindows().length);
     }
 
     /**
@@ -204,6 +205,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
 
     @Override
     public void componentMoved(ComponentEvent e) {
+        if (suppressHistory) { return; }
         if (!boundChanged) {
             // この時点で、frame は既に少し動いている
             undoHistory.addLast(new Rectangle(prevBounds));
@@ -339,7 +341,23 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (!undoHistory.isEmpty()) {
-                frame.setBounds(undoHistory.removeLast());
+                // Undo による移動は履歴に積まない
+                suppressHistory = true;
+                Rectangle r = undoHistory.removeLast();
+                try {
+                    frame.setBounds(r);
+                    // 直前状態も更新し、タイマーも止めてフラッシュを抑止
+                    prevBounds = new Rectangle(r);
+                    boundChanged = false;
+                    if (Objects.nonNull(timer)) {
+                        timer.cancel();
+                        timer.purge();
+                        timer = null;
+                    }
+                } finally {
+                    // イベントディスパッチの完了後に抑止解除
+                    SwingUtilities.invokeLater(() -> suppressHistory = false);
+                }
             }
         }
     }
