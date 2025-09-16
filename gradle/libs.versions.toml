@@ -7,9 +7,9 @@ intellij = "26.0.2"
 ## server ##
 jackson = "2.17.0"
 hibernate-search = "7.2.1.Final"
-commons-lang3 = "3.15.0"
+commons-lang3 = "3.18.0"
 postgres = "42.7.4"
-jdom2 = "2.0.6"
+jdom2 = "2.0.6.1"
 
 ## client ##
 tyrus = "2.2.0"
@@ -21,7 +21,8 @@ j2html = "1.6.0"
 angus-mail = "2.0.3"
 flatlaf = "3.6"
 commons-io = "2.19.0"
-selenium = "4.34.0"
+selenium = "4.35.0"
+webdriver-manager = "6.3.2"
 
 [libraries]
 jakarta = { module = "jakarta.platform:jakarta.jakartaee-api", version.ref = "jakarta" }
@@ -53,6 +54,7 @@ angus-mail = { module = "org.eclipse.angus:angus-mail", version.ref = "angus-mai
 flatlaf = { module = "com.formdev:flatlaf", version.ref = "flatlaf" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 selenium = { module = "org.seleniumhq.selenium:selenium-java", version.ref = "selenium" }
+webdriver-manager = { module = "io.github.bonigarcia:webdrivermanager", version.ref = "webdriver-manager" }
 
 [bundles]
 google = [ "google-client", "google-oauth", "google-calendar" ]

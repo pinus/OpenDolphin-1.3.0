@@ -25,7 +25,7 @@ application {
 javafx {
     version = "21"
     modules("javafx.controls", "javafx.graphics", "javafx.swing")
-    setPlatform(this@Build_gradle.platform.removeSurrounding("\""))
+    //setPlatform(this@Build_gradle.platform.removeSurrounding("\""))
 }
 
 tasks {
@@ -103,5 +103,5 @@ dependencies {
     implementation(libs.commons.io)
     implementation(libs.commons.lang3)
     implementation(libs.selenium)
-    implementation("io.github.bonigarcia:webdrivermanager:5.9.2")
+    implementation(libs.webdriver.manager)
 }
