@@ -12,7 +12,7 @@ plugins {
     application
     kotlin("jvm") version "2.0.21"
     id("org.openjfx.javafxplugin") version "0.1.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.2.2"
 }
 
 application {
@@ -31,6 +31,7 @@ javafx {
 tasks {
     named<ShadowJar>("shadowJar") {
         // quisque "META-INF/services/jakarta.ws.rs.ext.Providers" should be merged
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE // The default strategy.
         mergeServiceFiles()
         manifest {
             attributes(mapOf("Main-Class" to application.mainClass))
