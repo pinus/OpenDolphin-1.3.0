@@ -10,7 +10,7 @@ val buildDate:String = SimpleDateFormat("yyyyMMddHHmm").format(Date())
 
 plugins {
     application
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.2.20"
     id("org.openjfx.javafxplugin") version "0.1.0"
     id("com.gradleup.shadow") version "9.2.2"
 }
@@ -23,7 +23,7 @@ application {
 }
 
 javafx {
-    version = "21"
+    version = "25"
     modules("javafx.controls", "javafx.graphics", "javafx.swing")
     //setPlatform(this@Build_gradle.platform.removeSurrounding("\""))
 }
