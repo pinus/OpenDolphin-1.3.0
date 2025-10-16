@@ -160,7 +160,7 @@ public class StampTree extends JTree implements TreeModelListener {
             tip.append(getToolTipText());
         }
 
-        return (tip.toString().equals("")) ? null : tip.toString();
+        return (tip.toString().isEmpty()) ? null : tip.toString();
     }
 
     /**
@@ -435,7 +435,7 @@ public class StampTree extends JTree implements TreeModelListener {
                             JOptionPane.INFORMATION_MESSAGE);
                 });
             }
-            logger.info("dropped Entity= " + info.getEntity() + "  this entity = " + this.getEntity());
+            logger.info("dropped Entity= {} this entry = {}", info.getEntity(), this.getEntity());
         }
     }
 
@@ -607,7 +607,7 @@ public class StampTree extends JTree implements TreeModelListener {
      * @return true if succeeded
      */
     public boolean addTextStamp(String text, final StampTreeNode selected) {
-        if (text == null || text.length() == 0) { return false; }
+        if (text == null || text.isEmpty()) { return false; }
 
         TextStampModel module = new TextStampModel();
         module.setText(text);

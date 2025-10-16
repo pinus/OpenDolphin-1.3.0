@@ -141,7 +141,8 @@ public class Dolphin implements MainWindow {
         else { SettingForWin.set(this); }
 
         // default locale を設定する
-        Locale.setDefault(new Locale("ja", "JP"));
+        //Locale.setDefault(new Locale("ja", "JP"));
+        Locale.setDefault(Locale.of("ja", "JP"));
 
         // プロジェクトスタブを生成する
         Project.setProjectStub(new ProjectStub());
@@ -169,7 +170,7 @@ public class Dolphin implements MainWindow {
 
         // ロガーを取得する
         logger = LoggerFactory.getLogger(Dolphin.class);
-        logger.info("selected logger = " + logger.getClass());
+        logger.info("selected logger = {}", logger.getClass());
 
         // ドキュメントフォルダの有無をチェック
         checkDocumentFolder();
@@ -417,7 +418,7 @@ public class Dolphin implements MainWindow {
      * @param valid ValidListener validity
      */
     private void controlService(boolean valid) {
-        logger.info("Environment setting validity: " + valid);
+        logger.info("Environment setting validity: {}", valid);
     }
 
     /**
@@ -700,7 +701,7 @@ public class Dolphin implements MainWindow {
         Path path = Paths.get(ClientContext.getDocumentDirectory());
         try (Stream<Path> s = Files.list(path)) {
             if (s.findAny().isPresent()) {
-                logger.info("document folder = " + path);
+                logger.info("document folder = {}", path);
                 return;
             }
         } catch (IOException e) {
@@ -847,7 +848,7 @@ public class Dolphin implements MainWindow {
 
         @Override
         public void paintDirtyRegions() {
-            // Unfortunately most of the RepaintManager state is package
+            // Unfortunately, most of the RepaintManager state is package
             // private and not accessible from the subclass at the moment,
             // so we can't print more info about what's being painted.
             super.paintDirtyRegions();

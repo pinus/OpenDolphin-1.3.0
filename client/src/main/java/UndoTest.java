@@ -19,15 +19,14 @@ import java.lang.reflect.Field;
 import java.text.AttributedCharacterIterator;
 import java.text.CharacterIterator;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class UndoTest {
-    private Logger logger = LoggerFactory.getLogger(UndoTest.class);
-    private static KeyStroke CTRL_BACKSPACE = KeyStroke.getKeyStroke("ctrl pressed BACK_SPACE");
-    private static KeyStroke KANA = KeyStroke.getKeyStroke("released KATAKANA");
-    private static KeyStroke EISU = KeyStroke.getKeyStroke("released ALPHANUMERIC");
-    private static Pattern ALPHABET = Pattern.compile("^[a-z,A-Z]*$");
+    private final Logger logger = LoggerFactory.getLogger(UndoTest.class);
+    private static final KeyStroke CTRL_BACKSPACE = KeyStroke.getKeyStroke("ctrl pressed BACK_SPACE");
+    private static final KeyStroke KANA = KeyStroke.getKeyStroke("released KATAKANA");
+    private static final KeyStroke EISU = KeyStroke.getKeyStroke("released ALPHANUMERIC");
+    private static final Pattern ALPHABET = Pattern.compile("^[a-z,A-Z]*$");
 
     public class TextComponentUndoManager extends UndoManager {
 
@@ -70,16 +69,16 @@ public class UndoTest {
                 long timeFromImeTextChange = System.currentTimeMillis() - timeImeTextChanged;
                 long timeFromKeyPress = System.currentTimeMillis() - timeKeyPressed;
 
-                logger.info("textchanged " + event);
-                logger.info("time from key press = " + timeFromKeyPress + ", time from text change = " + timeFromImeTextChange +
-                    ", ctrl-backspace = " + ctrlBackspace + ", doubleKana = " + doubleKana);
+                logger.info("textchanged {}", event);
+                logger.info("time from key press = {}, ime from text change = {}, ctrl-backspace = {}, doubleKana = {}",
+                    timeFromKeyPress, timeFromImeTextChange, ctrlBackspace, doubleKana);
 
                 // キー押してすぐ入ってきてなかったら無視
                 ctrlBackspace = ctrlBackspace && timeFromKeyPress < 300;
 
                 // 確定アンドゥは commit されたら終了
                 if (isInKakuteiUndo && event.getCommittedCharacterCount() > 0) {
-                    logger.info("Kakutei-undo done: " + event.getCommittedCharacterCount());
+                    logger.info("Kakutei-undo done: {}", event.getCommittedCharacterCount());
                     isInKakuteiUndo = false;
                 }
 
@@ -93,7 +92,7 @@ public class UndoTest {
                 } else if (isInKakuteiUndo && timeFromImeTextChange < 10) {
                     // 2回目以降の ctrl-backspace キーは ATOK に取られて検出できないが，
                     // timeFromTextChange が非常に短く入ってくるので検出できる
-                    logger.info("Kakutei-undo cont'd: " + timeFromImeTextChange);
+                    logger.info("Kakutei-undo cont'd: {}", timeFromImeTextChange);
                     undo();
                 }
 
@@ -137,7 +136,7 @@ public class UndoTest {
                         int start = end;
                         while (start-- > 0) {
                             char c = textComponent.getText(start, 1).charAt(0);
-                            logger.info(start + ": " + c);
+                            logger.info("{}:{}", start, c);
                             if (!StringTool.isHanakuLower(c) && !StringTool.isHankakuUpper(c) && !StringTool.isHankakuNumber(c)) {
                                 break;
                             }
@@ -151,7 +150,7 @@ public class UndoTest {
                     // (1) は何もしなくていい (textCommitted != textInProcess)
                     // (2) は確定終了, 未 flush の状態になっている
                     else if (doubleEisu) {
-                        logger.error("double eisu detected: " + textCommitted + "/"+ textInProcess);
+                        logger.error("double eisu detected: {}/{}", textCommitted, textInProcess);
                         if (textCommitted.equals(textInProcess)) {
                             // flush すると "tうぃってrtwitter" の状態になる
                             flush();
@@ -215,7 +214,7 @@ public class UndoTest {
 
             @Override
             public void caretPositionChanged(InputMethodEvent event) {
-                logger.info("caretchanged " + event);
+                logger.info("caretchanged {}", event);
             }
 
             @Override
@@ -270,12 +269,12 @@ public class UndoTest {
         }
 
         /**
-         * While timer is running,
-         * stop timer, discard current, and then discardAllEdits.
+         * While the timer is running,
+         * stop the timer, discard current, and then discardAllEdits.
          */
         @Override
         public void discardAllEdits() {
-            logger.info("timer running: " + timer.isRunning());
+            logger.info("timer running: {}", timer.isRunning());
             if (timer.isRunning()) {
                 timer.stop();
                 current = new TextComponentUndoableEdit();
@@ -292,7 +291,7 @@ public class UndoTest {
          */
         private boolean toMergeEdit(UndoableEdit cur, UndoableEdit last) {
             // last が canUndo でなければ merge しない
-            logger.info("last undoable? " + (last ==null? "null" : last.canUndo()));
+            logger.info("last undoable? {}", last ==null? "null" : last.canUndo());
             if (last == null || !last.canUndo()) { return false; }
 
             // 両方とも TextComponentUndoableEdit でなければ merge しない
@@ -311,7 +310,7 @@ public class UndoTest {
 
             try {
                 if (curEvent.getType() == DocumentEvent.EventType.REMOVE) {
-                    logger.info("curEvent = REMOVE, " + " lastEvent = " + lastEvent.getType());
+                    logger.info("curEvent = REMOVE, lastEvent = {}", lastEvent.getType());
                     // REMOVE が続いている場合はまとめる
                     if (lastEvent.getType() == DocumentEvent.EventType.REMOVE) { return true; }
 
@@ -320,9 +319,8 @@ public class UndoTest {
                         // Alphabet 入力が続いていたらまとめる
                         String curText = curEvent.getDocument().getText(curEvent.getOffset(), curEvent.getLength());
                         String lastText = lastEvent.getDocument().getText(lastEvent.getOffset(), lastEvent.getLength());
-                        logger.info("curText = " + curText + " match " + ALPHABET.matcher(curText).matches()
-                            + ", lastText = " + lastText + " match " + ALPHABET.matcher(lastText).matches()
-                        );
+                        logger.info("curText = {} match {}, lastText = {} match {}",
+                            curText, ALPHABET.matcher(curText).matches(), lastText, ALPHABET.matcher(lastText).matches());
                         if (ALPHABET.matcher(curText).matches() && ALPHABET.matcher(lastText).matches()) { return true; }
                     }
                 }

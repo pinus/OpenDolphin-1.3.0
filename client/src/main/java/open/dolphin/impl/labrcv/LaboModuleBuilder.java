@@ -101,14 +101,14 @@ public class LaboModuleBuilder {
 
         try {
             String name = file.getName();
-            logger.info(name + " のパースを開始します");
+            logger.info("{} のパースを開始します", name);
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding))) {
                 parse(reader);
             }
 
         } catch (Exception e) {
             e.printStackTrace(System.err);
-            logger.warn("Exception while building LaboModules" + e.toString());
+            logger.warn("Exception while building LaboModules {}", e.toString());
         }
 
         return getProduct();
@@ -132,9 +132,9 @@ public class LaboModuleBuilder {
         }
         if (encoding == null) {
             encoding = "UTF-8";
-            logger.debug("デフォルトのエンコーディング" + encoding + "を使用します");
+            logger.debug("デフォルトのエンコーディング {} を使用します", encoding);
         } else {
-            logger.debug("エンコーディングは" + encoding + "が指定されています");
+            logger.debug("エンコーディングは {} が指定されています", encoding);
         }
 
         // パース及び登録に成功したデータの情報リストを生成する
@@ -147,7 +147,7 @@ public class LaboModuleBuilder {
             try {
                 // ファイル名を出力する
                 String name = file.getName();
-                logger.info(name + " のパースを開始します");
+                logger.info("{} のパースを開始します", name);
 
                 // 一つのファイルに含まれる全LaboModuleのリストを生成する
                 // パース結果のLaboModuleValueを格納するリストである
@@ -188,12 +188,12 @@ public class LaboModuleBuilder {
                 if (laboDelegater.isNoError()) {
                     summary.setPatient(reply);
                     summary.setResult("成功");
-                    logger.info("LaboModuleを登録しました. 患者ID :" + module.getPatientId());
+                    logger.info("LaboModuleを登録しました. 患者ID: {}", module.getPatientId());
 
                     ret.add(summary);
 
                 } else {
-                    logger.warn("LaboModule を登録できませんでした. 患者ID :" + module.getPatientId());
+                    logger.warn("LaboModule を登録できませんでした. 患者ID: {}", module.getPatientId());
                     logger.warn(laboDelegater.getErrorMessage());
                     summary.setResult("エラー");
                 }
@@ -240,9 +240,9 @@ public class LaboModuleBuilder {
             patientIdType = id.getAttributeValue("type", mmlCm);
             patientIdTypeTableId = id.getAttributeValue("tableId", mmlCm);
 
-            logger.debug("patientId = " + patientId);
-            logger.debug("patientIdType = " + patientIdType);
-            logger.debug("patientId TableId = " + patientIdTypeTableId);
+            logger.debug("patientId = {}", patientId);
+            logger.debug("patientIdType = {}", patientIdType);
+            logger.debug("patientId TableId = {}", patientIdTypeTableId);
         }
     }
 
@@ -272,19 +272,19 @@ public class LaboModuleBuilder {
             if (attr.equals("test")) {
                 // uuid を取得する
                 moduleUUID = docInfo.getChild("docId").getChildTextTrim("uid");
-                logger.debug("module UUID = " + moduleUUID);
+                logger.debug("module UUID = {}", moduleUUID);
                 if (moduleUUID == null || moduleUUID.length() != 32) {
                     moduleUUID = GUIDGenerator.generate(this);
-                    logger.debug("Changed module UUID to " + moduleUUID);
+                    logger.debug("Changed module UUID to {}", moduleUUID);
                 }
 
                 // 確定日を取得する
                 confirmDate = docInfo.getChildTextTrim("confirmDate");
-                logger.debug("confirmDate = " + confirmDate);
+                logger.debug("confirmDate = {}", confirmDate);
                 int tIndex = confirmDate.indexOf("T");
                 if (tIndex < 0) {
                     confirmDate += "T00:00:00";
-                    logger.debug("Changed confirmDate to " + confirmDate);
+                    logger.debug("Changed confirmDate to {}", confirmDate);
                 }
 
                 // 解析するモジュールはmmlLb:TestModule
@@ -338,64 +338,64 @@ public class LaboModuleBuilder {
                     // mmlLb:information要素をパースする
                     // 登録ID属性を取得する
                     val = child.getAttributeValue("registId", ns);
-                    logger.debug("registId = " + val);
+                    logger.debug("registId = {}", val);
                     laboModule.setRegistId(val);
                     // サンプルタイム属性を取得する
                     val = child.getAttributeValue("sampleTime", ns);
-                    logger.debug("sampleTime = " + val);
+                    logger.debug("sampleTime = {}", val);
                     laboModule.setSampleTime(val);
                     // 登録時刻属性を取得する
                     val = child.getAttributeValue("registTime", ns);
-                    logger.debug("registTime = " + val);
+                    logger.debug("registTime = {}", val);
                     laboModule.setRegistTime(val);
                     // 報告時間属性を取得する
                     val = child.getAttributeValue("reportTime", ns);
-                    logger.debug("reportTime = " + val);
+                    logger.debug("reportTime = {}", val);
                     laboModule.setReportTime(val);
                     break;
                 case "mmlLb:reportStatus":
                     // mmlLb:reportStatus要素をパースする
                     // レポートステータスを取得する
                     val = child.getTextTrim();
-                    logger.debug("reportStatus = " + val);
+                    logger.debug("reportStatus = {}", val);
                     laboModule.setReportStatus(val);
                     // statusCodeを取得する
                     val = child.getAttributeValue("statusCode", ns);
-                    logger.debug("statusCode = " + val);
+                    logger.debug("statusCode = {}", val);
                     laboModule.setReportStatusCode(val);
                     // statusCodeIdを取得する
                     val = child.getAttributeValue("statusCodeId", ns);
-                    logger.debug("statusCodeId = " + val);
+                    logger.debug("statusCodeId = {}", val);
                     laboModule.setReportStatusCodeId(val);
                     break;
                 case "mmlLb:facility":
                     // クライアント施設情報をパースする
                     // 施設を取得する
                     val = child.getTextTrim();
-                    logger.debug("facility = " + val);
+                    logger.debug("facility = {}", val);
                     laboModule.setClientFacility(val);
                     // 施設コード属性を取得する
                     val = child.getAttributeValue("facilityCode", ns);
-                    logger.debug("facilityCode = " + val);
+                    logger.debug("facilityCode = {}", val);
                     laboModule.setClientFacilityCode(val);
                     // 施設コード体系を登録する
                     val = child.getAttributeValue("facilityCodeId", ns);
-                    logger.debug("facilityCodeId = " + val);
+                    logger.debug("facilityCodeId = {}", val);
                     laboModule.setClientFacilityCodeId(val);
                     break;
                 case "mmlLb:laboratoryCenter":
                     // ラボセンター情報をパースする
                     // ラボセンターを取得する
                     val = child.getTextTrim();
-                    logger.debug("laboratoryCenter = " + val);
+                    logger.debug("laboratoryCenter = {}", val);
                     laboModule.setLaboratoryCenter(val);
                     // ラボコードを取得する
                     val = child.getAttributeValue("centerCode", ns);
-                    logger.debug("centerCode = " + val);
+                    logger.debug("centerCode = {}", val);
                     laboModule.setLaboratoryCenterCode(val);
                     // ラボコード体系を取得する
                     val = child.getAttributeValue("centerCodeId", ns);
-                    logger.debug("centerCodeId = " + val);
+                    logger.debug("centerCodeId = {}", val);
                     laboModule.setLaboratoryCenterCodeId(val);
                     break;
                 case "mmlLb:laboTest":
@@ -410,15 +410,15 @@ public class LaboModuleBuilder {
                 case "mmlLb:specimenName":
                     // 検体名を取得する
                     val = child.getTextTrim();
-                    logger.debug("specimenName = " + val);
+                    logger.debug("specimenName = {}", val);
                     laboSpecimen.setSpecimenName(val);
                     // spCodeを取得する
                     val = child.getAttributeValue("spCode", ns);
-                    logger.debug("spCode = " + val);
+                    logger.debug("spCode = {}", val);
                     laboSpecimen.setSpecimenCode(val);
                     // spCodeIdを取得する
                     val = child.getAttributeValue("spCodeId", ns);
-                    logger.debug("spCodeId = " + val);
+                    logger.debug("spCodeId = {}", val);
                     laboSpecimen.setSpecimenCodeId(val);
                     break;
                 case "mmlLb:item":
@@ -432,60 +432,60 @@ public class LaboModuleBuilder {
                     // 検査項目名をパースする
                     // 検査項目名を取得する
                     val = child.getTextTrim();
-                    logger.debug("itemName = " + val);
+                    logger.debug("itemName = {}", val);
                     laboItem.setItemName(val);
                     // 項目コードを取得する
                     val = child.getAttributeValue("itCode", ns);
-                    logger.debug("itCode = " + val);
+                    logger.debug("itCode = {}", val);
                     laboItem.setItemCode(val);
                     // 項目コード体系を取得する
                     val = child.getAttributeValue("itCodeId", ns);
-                    logger.debug("itCodeId = " + val);
+                    logger.debug("itCodeId = {}", val);
                     laboItem.setItemCodeId(val);
                     break;
                 case "mmlLb:value":
                     // 検査値をパースする
                     // 値を取得する
                     val = child.getTextTrim();
-                    logger.debug("value = " + val);
+                    logger.debug("value = {}", val);
                     laboItem.setItemValue(val);
                     break;
                 case "mmlLb:numValue":
                     // 数値要素をパースする
                     // 値を取得する
                     val = child.getTextTrim();
-                    logger.debug("numValue = " + val);
+                    logger.debug("numValue = {}", val);
                     // TODO laboItem.setValue()***************************
                     // up
                     val = child.getAttributeValue("up", ns);
-                    logger.debug("up = " + val);
+                    logger.debug("up = {}", val);
                     laboItem.setUp(val);
                     // low
                     val = child.getAttributeValue("low", ns);
-                    logger.debug("low = " + val);
+                    logger.debug("low = {}", val);
                     laboItem.setLow(val);
                     // normal
                     val = child.getAttributeValue("normal", ns);
-                    logger.debug("low = " + val);
+                    logger.debug("low = {}", val);
                     laboItem.setNormal(val);
                     // out
                     val = child.getAttributeValue("out", ns);
-                    logger.debug("out = " + val);
+                    logger.debug("out = {}", val);
                     laboItem.setNout(val);
                     break;
                 case "mmlLb:unit":
                     // 単位情報を取得する
                     // value
                     val = child.getTextTrim();
-                    logger.debug("unit = " + val);
+                    logger.debug("unit = {}", val);
                     laboItem.setUnit(val);
                     // uCode
                     val = child.getAttributeValue("uCode", ns);
-                    logger.debug("uCode = " + val);
+                    logger.debug("uCode = {}", val);
                     laboItem.setUnitCode(val);
                     // uCodeId
                     val = child.getAttributeValue("uCodeId", ns);
-                    logger.debug("uCodeId = " + val);
+                    logger.debug("uCodeId = {}", val);
                     laboItem.setUnitCodeId(val);
                     break;
                 default:

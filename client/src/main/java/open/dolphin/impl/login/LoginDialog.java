@@ -145,11 +145,11 @@ public class LoginDialog {
                 if (userModel != null) {
 
                     Project.UserType userType = Project.UserType.valueOf(userModel.getMemberType());
-                    logger.info("User Type = " + userType);
+                    logger.info("User Type = {}", userType);
 
                     // 認証成功
                     String time = ModelUtils.getDateTimeAsString(new Date());
-                    logger.info(time + ": " + userModel.getUserId() + " がログインしました");
+                    logger.info("{}: {} がログインしました", time, userModel.getUserId());
 
                     // ユーザID，施設ID，ユーザモデルを ProjectStub へ保存する
                     Project.getProjectStub().setUserId(principal.getUserId());

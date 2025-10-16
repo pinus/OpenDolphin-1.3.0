@@ -41,7 +41,7 @@ public class DiagnosisOutcomeGenerator {
     public String standard() {
         LocalDate startDate = Objects.nonNull(lv.getLastVisitInHistory()) ? lv.getLastVisitInHistory() : lv.getLastVisit();
         long monthBetween = ChronoUnit.MONTHS.between(startDate.withDayOfMonth(1), lv.getLastVisit().withDayOfMonth(1));
-        logger.info("monthBetween " + monthBetween);
+        logger.info("monthBetween {}", monthBetween);
 
         int n = 1; // month interval
 

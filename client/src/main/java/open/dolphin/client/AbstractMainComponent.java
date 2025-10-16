@@ -122,7 +122,7 @@ public abstract class AbstractMainComponent extends MouseAdapter implements Main
 
                 } else {
                     // 来院している場合, 最初の pvt を採用
-                    pvtToOpen = pvtModels.get(0);
+                    pvtToOpen = pvtModels.getFirst();
                 }
 
                 // すでに OPEN ならどっかで開いているということなので編集不可に設定
@@ -164,7 +164,7 @@ public abstract class AbstractMainComponent extends MouseAdapter implements Main
                 //logger.info("get state");
                 PvtDelegater pvdl = new PvtDelegater();
                 int state = pvdl.getPvtState(pvtModel.getId());
-                // 読んだら table を update 　　　→ カルテが開くと update がよばれるのでここでは不要
+                // 読んだら table を update → カルテが開くと update がよばれるのでここでは不要
                 //int row = getRowForPvt(pvtModel);
                 //pvtModel.setState(state);
                 //pvtTableModel.fireTableRowsUpdated(row, row);

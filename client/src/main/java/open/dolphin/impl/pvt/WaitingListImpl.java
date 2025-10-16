@@ -92,7 +92,7 @@ public class WaitingListImpl extends AbstractMainComponent {
     private final Logger logger = LoggerFactory.getLogger(WaitingListImpl.class);
 
     /**
-     * Creates new WaitingList.
+     * Creates a new WaitingList.
      */
     public WaitingListImpl() {
         setName(NAME);
@@ -176,7 +176,7 @@ public class WaitingListImpl extends AbstractMainComponent {
                 if (column >= 0 && column < getModelWrapper().getColumnCount() && isSortable(column)) {
                     List<RowSorter.SortKey> keys = new ArrayList<>(getSortKeys());
                     if (!keys.isEmpty()) {
-                        RowSorter.SortKey sortKey = keys.get(0);
+                        RowSorter.SortKey sortKey = keys.getFirst();
                         if (sortKey.getColumn() == column && sortKey.getSortOrder() == SortOrder.DESCENDING) {
                             setSortKeys(null);
                             return;
@@ -252,22 +252,24 @@ public class WaitingListImpl extends AbstractMainComponent {
         });
 
         // SPACE でカルテオープン
-        pvtTable.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "openKarte");
-        pvtTable.getActionMap().put("openKarte", new ProxyAction(this::openKarte));
-
-        // command-F で search field にフォーカスする裏コマンド
-        pvtTable.getInputMap().put(KeyStroke.getKeyStroke("meta F"), "showWaitingList");
-        pvtTable.getActionMap().put("showWaitingList", new ProxyAction(((Dolphin)getContext())::showPatientSearch));
+        InputMap im = pvtTable.getInputMap(JComponent.WHEN_FOCUSED);
+        ActionMap am = pvtTable.getActionMap();
+        im.put(KeyStroke.getKeyStroke("SPACE"), "openKarte");
+        am.put("openKarte", new ProxyAction(this::openKarte));
 
         // ENTER の行送りをやめる
-        pvtTable.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "doNothing");
-        pvtTable.getInputMap().put(KeyStroke.getKeyStroke("shift ENTER"), "doNothing");
-        pvtTable.getActionMap().put("doNothing", new ProxyAction(() -> {}));
+        im.put(KeyStroke.getKeyStroke("ENTER"), "doNothing");
+        im.put(KeyStroke.getKeyStroke("shift ENTER"), "doNothing");
+        am.put("doNothing", new ProxyAction(() -> {}));
 
         // Tab キー
-        pvtTable.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "focusPrevious");
-        pvtTable.getInputMap().put(KeyStroke.getKeyStroke("shift TAB"), "focusPrevious");
-        pvtTable.getActionMap().put("focusPrevious", new ProxyAction(KeyboardFocusManager.getCurrentKeyboardFocusManager()::focusPreviousComponent));
+        im.put(KeyStroke.getKeyStroke("TAB"), "focusPrevious");
+        im.put(KeyStroke.getKeyStroke("shift TAB"), "focusPrevious");
+        am.put("focusPrevious", new ProxyAction(KeyboardFocusManager.getCurrentKeyboardFocusManager()::focusPreviousComponent));
+
+        // command-F で search field にフォーカスする裏コマンド
+        im.put(KeyStroke.getKeyStroke("meta F"), "showWaitingList");
+        am.put("showWaitingList", new ProxyAction(((Dolphin)getContext())::showPatientSearch));
 
         // pvt 受信待ち endpoint
         PvtEndpoint endpoint = new PvtEndpoint();
@@ -450,7 +452,7 @@ public class WaitingListImpl extends AbstractMainComponent {
     }
 
     /**
-     * Read Only でカルテを開く.
+     * Read-Only でカルテを開く.
      *
      * @param pvtModel PatientVisitModel
      * @param state State
@@ -516,7 +518,7 @@ public class WaitingListImpl extends AbstractMainComponent {
         ActionMap am = dialog.getRootPane().getActionMap();
         InputMap im = dialog.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         im.put(KeyStroke.getKeyStroke("E"), "force-edit");
-        im.put(KeyStroke.getKeyStroke("SPACE"), "force-edit");
+        //im.put(KeyStroke.getKeyStroke("SPACE"), "force-edit");
         am.put("force-edit", new ProxyAction(forceEditBtn::doClick));
 
         dialog.setVisible(true);

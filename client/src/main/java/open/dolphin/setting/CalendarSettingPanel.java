@@ -172,12 +172,12 @@ public class CalendarSettingPanel extends AbstractSettingPanel {
                 final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
                 GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, reader);
 
-                // Build flow and trigger user authorization request.
+                // Build flow and trigger the user authorization request.
                 GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                     httpTransport, JSON_FACTORY, clientSecrets, SCOPES)
                     .setDataStoreFactory(new FileDataStoreFactory(new File(TOKENS_DIRECTORY_PATH)))
                     .setAccessType("offline").build();
-                logger.info("tokens path = " + TOKENS_DIRECTORY_PATH);
+                logger.info("tokens path = {}", TOKENS_DIRECTORY_PATH);
 
                 LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
                 Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
@@ -189,7 +189,7 @@ public class CalendarSettingPanel extends AbstractSettingPanel {
                 LocalDate today = LocalDate.now();
                 Number toPlus = (Number) toYearSpinner.getValue();
                 Number toMinus = (Number) fromYearSpinner.getValue();
-                logger.info("Fetch from -" + toMinus.intValue() + " year to " + toPlus.intValue() + " year.");
+                logger.info("Fetch from -{} year to {} year.", toMinus.intValue(), toPlus.intValue());
                 Date nextYear = Date.from(today.plusYears(toPlus.longValue()).atStartOfDay(ZoneId.systemDefault()).toInstant());
                 Date prevYear = Date.from(today.minusYears(toMinus.longValue()).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
@@ -281,14 +281,14 @@ public class CalendarSettingPanel extends AbstractSettingPanel {
 
         @Override
         protected void failed(Throwable cause) {
-            logger.info("failed " + cause);
+            logger.info("failed {}", cause.toString());
             cause.printStackTrace(System.err);
             showMessage("データ取得に失敗しました", PNSOptionPane.ERROR_MESSAGE);
         }
 
         @Override
         protected void interrupted(InterruptedException ex) {
-            logger.info("interrupted " + ex);
+            logger.info("interrupted {}", ex.toString());
         }
     }
 

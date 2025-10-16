@@ -131,7 +131,7 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
             // 数字キーで用量, 日数変更
             if (!kartePane.getTextPane().isEditable()
                 || !StampHolder.this.isEditable()
-                || !(stamp.getModel() instanceof BundleMed)) { return; }
+                || !(stamp.getModel() instanceof BundleMed bundle)) { return; }
 
             Color translucent = new Color(0, 0, 0, 0);
             Color lightGray = new Color(238, 238, 238);
@@ -167,7 +167,6 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
                     String num = tf.getText();
                     Float.parseFloat(num);
 
-                    BundleMed bundle = (BundleMed) stamp.getModel();
                     if (ClaimConst.RECEIPT_CODE_NAIYO.equals(bundle.getClassCode()) ||
                         ClaimConst.RECEIPT_CODE_TONYO.equals(bundle.getClassCode())) {
                         // 投与日数を変更する
@@ -178,7 +177,7 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
                             distBundle.setBundleNumber(num);
                             undoableUpdateModel(distModel);
                             kartePane.setDirty(true);
-                            logger.info("bundle number changed to " + num);
+                            logger.info("bundle number changed to {}", num);
                         }
 
                     } else {
@@ -197,7 +196,7 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
                         if (dirty) {
                             undoableUpdateModel(distModel);
                             kartePane.setDirty(true);
-                            logger.info("item number changed to " + num);
+                            logger.info("item number changed to {}", num);
                         }
                     }
                 } catch (NumberFormatException ex) {
@@ -390,7 +389,7 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
             // ダブルクリックで EditorFrame に入力
             List<EditorFrame> allFrames = WindowHolder.allEditorFrames();
             if (!allFrames.isEmpty()) {
-                EditorFrame frame = allFrames.get(0);
+                EditorFrame frame = allFrames.getFirst();
                 if (this.isEditable()) {
                     KartePane pane = frame.getEditor().getPPane();
                     // caret を最後に送ってから import する
@@ -457,7 +456,7 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
 
         IInfoModel bundle = getModel().getModel(); // BundleMed > BundleDolphin > ClaimBundle
         String stampName = getModel().getModuleInfo().getStampName();
-        logger.debug("bundle = " + bundle.getClass().getName() + ", stampName = " + stampName);
+        logger.debug("bundle = {}, stampName = {}", bundle.getClass().getName(), stampName);
 
         String text;
 

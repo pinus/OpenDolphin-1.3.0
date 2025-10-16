@@ -5,7 +5,7 @@ import java.util.*
 val conveyorCommand = "/Applications/Conveyor.app/Contents/MacOS/conveyor"
 val conveyorInputDir = "${projectDir}/output"
 // win, mac, mac-aarch64
-val platform = if ("${System.getenv()["PLATFORM"]}" != "null") "${System.getenv()["PLATFORM"]}" else "mac-aarch64"
+val targetPlatform = if ("${System.getenv()["PLATFORM"]}" != "null") "${System.getenv()["PLATFORM"]}" else "mac-aarch64"
 val buildDate:String = SimpleDateFormat("yyyyMMddHHmm").format(Date())
 
 plugins {
@@ -19,13 +19,14 @@ application {
     mainClass = "open.dolphin.client.Dolphin"
     applicationDefaultJvmArgs = listOf(
         "--add-opens=java.desktop/javax.swing.undo=ALL-UNNAMED",
+        "--enable-native-access=javafx.graphics",
     )
 }
 
 javafx {
     version = "25"
     modules("javafx.controls", "javafx.graphics", "javafx.swing")
-    //setPlatform(this@Build_gradle.platform.removeSurrounding("\""))
+    setPlatform(targetPlatform.removeSurrounding("\""))
 }
 
 tasks {
@@ -50,7 +51,7 @@ tasks {
         val projectVersion = project.property("version")
         val javaVersion = project.property("java.version")
         // win.amd64:windows-msix, mac.amd64:mac-app, mac.aarch64:mac-app
-        val target = when(platform.removeSurrounding("\"")) {
+        val target = when(targetPlatform.removeSurrounding("\"")) {
             "win" -> arrayOf("win.amd64", "windows-msix")
             "mac" -> arrayOf("mac.amd64", "mac-app")
             else -> arrayOf("mac.aarch64", "mac-app")

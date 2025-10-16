@@ -429,11 +429,11 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         String note = patientName + "を開いています...";
 
         PNSTask<KarteBean> task = new PNSTask<>(null, message, note, maxEstimation) {
-            private long start;
+            //private long start;
             @Override
             protected KarteBean doInBackground() {
-                start = System.currentTimeMillis();
-                logger.info("ChartImpl start task doInBackground");
+                //start = System.currentTimeMillis();
+                //logger.info("ChartImpl start task doInBackground");
                 //
                 // Database から患者のカルテを取得する
                 //
@@ -450,7 +450,7 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
 
             @Override
             protected void succeeded(KarteBean karteBean) {
-                logger.info("ChartImpl start task succeeded in {} msec", System.currentTimeMillis() - start);
+                //logger.info("ChartImpl start task succeeded in {} msec", System.currentTimeMillis() - start);
 
                 karteBean.setPatient(getPatientVisit().getPatient());
                 setKarte(karteBean);

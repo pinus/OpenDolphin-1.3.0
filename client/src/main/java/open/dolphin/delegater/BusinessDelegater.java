@@ -54,7 +54,7 @@ public class BusinessDelegater<T> {
                 e.printStackTrace(System.err);
                 if (retry > 1) {
                     retry --;
-                    logger.info("retry: " + (RETRY - retry));
+                    logger.info("retry: {}", (RETRY - retry));
 
                 } else {
                     int ans = JOptionPane.showConfirmDialog(

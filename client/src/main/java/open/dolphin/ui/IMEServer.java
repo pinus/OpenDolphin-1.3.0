@@ -98,7 +98,7 @@ public class IMEServer {
                             if (line.equals("OK")) {
                                 res.offer(line);
                             } else {
-                                logger.info("server response: " + line);
+                                logger.info("server response: {}", line);
                             }
                         }
                     }

@@ -35,6 +35,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -691,7 +692,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
      * @param stampInfo ModuleInfoBean
      */
     private void editStamp(ModuleInfoBean stampInfo) {
-        logger.info("launch stampEditor entity: " + stampInfo.getEntity());
+        logger.info("launch stampEditor entity: {}", stampInfo.getEntity());
         ModuleModel stamp = new ModuleModel();
         stamp.setModuleInfo(stampInfo);
 
@@ -719,7 +720,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         }
 
         // リストの最初の StampInfo を取り出す
-        ModuleInfoBean stampInfo = addList.get(0);
+        ModuleInfoBean stampInfo = addList.getFirst();
 
         // serialize されていなければエディタを起動
         if (!stampInfo.isSerialized()) {
@@ -895,7 +896,8 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
             @Override
             protected ImageIcon doInBackground() throws Exception {
 
-                URL url = new URL(entry.getUrl());
+                //URL url = new URL(entry.getUrl());
+                URL url = URI.create(entry.getUrl()).toURL();
                 BufferedImage importImage = ImageIO.read(url);
 
                 int width = importImage.getWidth();
@@ -972,7 +974,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         }
 
         ImageReader reader = readers.next();
-        logger.debug("reader = " + reader.getClass().getName());
+        logger.debug("reader = {}", reader.getClass().getName());
         int width, height;
         String name;
         try {

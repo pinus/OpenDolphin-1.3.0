@@ -16,7 +16,7 @@ import jakarta.websocket.Session;
 public class PvtEndpoint extends Endpoint {
 
     private PvtListener pvtListener;
-    private Logger logger = LoggerFactory.getLogger(PvtEndpoint.class);
+    private final Logger logger = LoggerFactory.getLogger(PvtEndpoint.class);
 
     public PvtEndpoint() {
         super();
@@ -42,6 +42,6 @@ public class PvtEndpoint extends Endpoint {
 
     @Override
     public void onClose(Session session, CloseReason reason) {
-        logger.info("websocket closed: " + reason.getReasonPhrase());
+        logger.info("websocket closed: {}", reason.getReasonPhrase());
     }
 }

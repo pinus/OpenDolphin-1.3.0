@@ -92,7 +92,7 @@ public class PatientSearchImpl extends AbstractMainComponent {
         // 別の MainComponent に tab が切り替わったらクリアする
         tab.addChangeListener(e -> {
             // オルコンの時は keywordfield にフォーカス取らせない
-            view.getKeywordFld().setEnabled(tab.getSelectedIndex() == 3? false : true);
+            view.getKeywordFld().setEnabled(tab.getSelectedIndex() != 3);
 
             if (tab.getSelectedIndex() != tab.indexOfTab(getName())) {
                 view.getKeywordFld().setText("");
@@ -184,7 +184,7 @@ public class PatientSearchImpl extends AbstractMainComponent {
                     }
                     keys.remove(index);
                 }
-                keys.add(0, key);
+                keys.addFirst(key);
                 setSortKeys(keys);
             }
         };
@@ -310,22 +310,24 @@ public class PatientSearchImpl extends AbstractMainComponent {
         });
 
         // SPACE でカルテオープン
-        table.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "openKarte");
-        table.getActionMap().put("openKarte", new ProxyAction(this::openKarte));
-
-        // command-F で search field にフォーカスする裏コマンド
-        table.getInputMap().put(KeyStroke.getKeyStroke("meta F"), "showWaitingList");
-        table.getActionMap().put("showWaitingList", new ProxyAction(((Dolphin)getContext())::showPatientSearch));
+        InputMap focused = table.getInputMap(JComponent.WHEN_FOCUSED);
+        ActionMap am = table.getActionMap();
+        focused.put(KeyStroke.getKeyStroke("SPACE"), "openKarte");
+        am.put("openKarte", new ProxyAction(this::openKarte));
 
         // ENTER の行送りをやめる
-        table.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "doNothing");
-        table.getInputMap().put(KeyStroke.getKeyStroke("shift ENTER"), "doNothing");
-        table.getActionMap().put("doNothing", new ProxyAction(() -> {}));
+        focused.put(KeyStroke.getKeyStroke("ENTER"), "doNothing");
+        focused.put(KeyStroke.getKeyStroke("shift ENTER"), "doNothing");
+        am.put("doNothing", new ProxyAction(() -> {}));
 
         // Tab キー
-        table.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "focusPrevious");
-        table.getInputMap().put(KeyStroke.getKeyStroke("shift TAB"), "focusPrevious");
-        table.getActionMap().put("focusPrevious", new ProxyAction(KeyboardFocusManager.getCurrentKeyboardFocusManager()::focusPreviousComponent));
+        focused.put(KeyStroke.getKeyStroke("TAB"), "focusPrevious");
+        focused.put(KeyStroke.getKeyStroke("shift TAB"), "focusPrevious");
+        am.put("focusPrevious", new ProxyAction(KeyboardFocusManager.getCurrentKeyboardFocusManager()::focusPreviousComponent));
+
+        // command-F で search field にフォーカスする裏コマンド
+        focused.put(KeyStroke.getKeyStroke("meta F"), "showWaitingList");
+        am.put("showWaitingList", new ProxyAction(((Dolphin)getContext())::showPatientSearch));
     }
 
     /**
