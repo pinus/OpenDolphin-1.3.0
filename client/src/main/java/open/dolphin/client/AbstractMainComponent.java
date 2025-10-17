@@ -153,32 +153,21 @@ public abstract class AbstractMainComponent extends MouseAdapter implements Main
      */
     public void openKarte(final PatientVisitModel pvtModel) {
         if (canOpen(pvtModel)) {
-            // isReadOnly対応
-            Thread t = new Thread(() -> {
+            int state = pvtModel.getState();
+            if (KarteState.isOpen(state)) {
+                // すでに OPEN ならどっかで開いているということなので編集不可に設定
+                openReadOnlyKarte(pvtModel, state);
+            } else {
+                getContext().openKarte(pvtModel);
+            }
+
+            // 健康保険情報をフェッチする
+            Thread.ofVirtual().start(() -> {
                 // 健康保険情報をフェッチする
                 //logger.info("fetch insurance");
                 PatientDelegater ptdl = new PatientDelegater();
                 ptdl.fetchHealthInsurance(pvtModel.getPatient());
-
-                // 現在の state をサーバからとってくる
-                //logger.info("get state");
-                PvtDelegater pvdl = new PvtDelegater();
-                int state = pvdl.getPvtState(pvtModel.getId());
-                // 読んだら table を update → カルテが開くと update がよばれるのでここでは不要
-                //int row = getRowForPvt(pvtModel);
-                //pvtModel.setState(state);
-                //pvtTableModel.fireTableRowsUpdated(row, row);
-
-                // すでに OPEN ならどっかで開いているということなので編集不可に設定
-                if (KarteState.isOpen(state)) {
-                    openReadOnlyKarte(pvtModel, state);
-                }
-                // OPEN でなければ, 通常どおりオープン （Dolphin#openKarte を呼ぶ）
-                else {
-                    getContext().openKarte(pvtModel);
-                }
             });
-            t.start();
 
         } else {
             // 既に開かれていれば, そのカルテを前に
