@@ -11,144 +11,112 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.*;
 
-/**
- * An infinite progress panel displays a rotating figure and
- * a message to notice the user of a long, duration unknown
- * task. The shape and the text are drawn upon a white veil
- * which alpha level (or shield value) lets the underlying
- * component shine through. This panel is meant to be used
- * asa <i>glass pane</i> in the window performing the long
- * operation.
- * <br><br>
- * On the contrary to regular glass panes, you don't need to
- * set it visible or not by yourself. Once you've started the
- * animation all the mouse events are intercepted by this
- * panel, preventing them from being forwared to the
- * underlying components.
- * <br><br>
- * The panel can be controlled by the <code>start()</code>,
- * <code>stop()</code> and <code>interrupt()</code> methods.
- * <br><br>
- * Example:
- * <br><br>
- * <pre>BlockGlass pane = new BlockGlass();
- * frame.setGlassPane(pane);
- * pane.start()</pre>
- * <br><br>
- * Several properties can be configured at creation time. The
- * message and its font can be changed at runtime. Changing the
- * font can be done using <code>setFont()</code> and
- * <code>setForeground()</code>.
- *
- * @author Romain Guy, modified by pns
- * @version 2.0-pns
- */
-
+/// An infinite progress panel displays a rotating figure and
+/// a message to notice the user of a long and duration unknown
+/// task. The shape and the text are drawn upon a white veil
+/// which alpha level (or shield value) lets the underlying
+/// component shine through. This panel is meant to be used
+/// as a `glass pane` in the window performing the long operation.
+///
+/// On the contrary to regular glass panes, you don't need to
+/// set it visible or not by yourself. Once you've started the
+/// animation, all the mouse events are intercepted by this
+/// panel, preventing them from being forward to the
+/// underlying components.
+///
+/// The panel can be controlled by the `start()`, `stop()`
+/// and `interrupt()` methods.
+///
+/// Example:
+/// ```
+/// BlockGlass pane = new BlockGlass();
+/// frame.setGlassPane(pane);
+/// pane.setVisible(true);
+/// ```
+///
+/// Several properties can be configured at creation time. The
+/// message and its font can be changed at runtime. Changing the
+/// font can be done using `setFont()` and `setForeground()`.
+///
+/// @author Romain Guy, modified by pns
+/// @version 2.0-pns
 public class BlockGlass2 extends JComponent implements MouseListener {
-    /**
-     * Contains the bars composing the circular shape.
-     */
+    /// Contains the bars composing the circular shape.
     protected Area[] ticker = null;
-    /**
-     * The animation thread is responsible for fade in/out and rotation.
-     */
+
+    /// The animation thread is responsible for fade in/out and rotation.
     protected Thread animationThread = null;
-    /**
-     * Runnable for the animation thread.
-     */
+
+    /// Runnable for the animation thread.
     private Animator animator;
-    /**
-     * Notifies whether the animation is running or not.
-     */
+
+    /// Notifies whether the animation is running or not.
     protected boolean started = false;
-    /**
-     * Alpha level of the veil, used for fade in/out.
-     */
+
+    /// Alpha level of the veil, used for fade in/out.
     protected int alphaLevel = 0;
-    /**
-     * Initial delay before ramp up
-     */
+
+    /// Initial delay before ramp up
     private final int initialDelay = 300;
-    /**
-     * Duration of the veil's fade in/out.
-     */
+
+    /// Duration of the veil's fade in/out.
     protected int rampDelay = 100;
-    /**
-     * Color of the veil.
-     */
+
+    /// Color of the veil.
     private final int veilColor = 200;
-    /**
-     * Alpha level of the veil.
-     */
+
+    /// Alpha level of the veil.
     protected float shield = 0.70f;
-    /**
-     * Message displayed below the circular shape.
-     */
+
+    /// Message displayed below the circular shape.
     protected String text = "";
-    /**
-     * Amount of bars composing the circular shape.
-     */
+
+    /// Number of bars composing the circular shape.
     protected int barsCount = 14;
-    /**
-     * Amount of frames per seconde. Lowers this to save CPU.
-     */
+
+    /// Number of frames per seconde. Lowers this to save CPU.
     protected float fps = 15.0f;
-    /**
-     * Rendering hints to set anti aliasing.
-     */
+
+    /// Rendering hints to set antialiasing.
     protected RenderingHints hints = null;
-    /**
-     * Frame width and height
-     */
+
+    /// Frame width and height
     private int frameWidth;
     private int frameHeight;
-    /**
-     * Show ticker.
-     */
+
+    /// Show ticker.
     private boolean showTicker = true;
 
     private final Logger logger = LoggerFactory.getLogger(BlockGlass2.class);
 
-    /**
-     * Creates a new progress panel with default values:<br>
-     * <ul>
-     * <li>No message</li>
-     * <li>14 bars</li>
-     * <li>Veil's alpha level is 70%</li>
-     * <li>15 frames per second</li>
-     * <li>Fade in/out last 300 ms</li>
-     * </ul>
-     */
+    /// Creates a new progress panel with default values:
+    ///   - No message
+    ///   - 14 bars
+    ///   - Veil's alpha level is 70%
+    ///   - 15 frames per second
+    ///   - Fade in/out last 300 ms
     public BlockGlass2() {
         this("");
     }
 
-    /**
-     * Creates a new progress panel with default values:<br>
-     * <ul>
-     * <li>14 bars</li>
-     * <li>Veil's alpha level is 70%</li>
-     * <li>15 frames per second</li>
-     * <li>Fade in/out last 300 ms</li>
-     * </ul>
-     *
-     * @param text The message to be displayed. Can be null or empty.
-     */
+    /// Creates a new progress panel with default values:
+    ///   - 14 bars
+    ///   - Veil's alpha level is 70%
+    ///   - 15 frames per second
+    ///   - Fade in/out last 300 ms
+    ///
+    /// @param text The message to be displayed. Can be null or empty.
     public BlockGlass2(String text) {
         this(text, 14);
     }
 
-    /**
-     * Creates a new progress panel with default values:<br>
-     * <ul>
-     * <li>Veil's alpha level is 70%</li>
-     * <li>15 frames per second</li>
-     * <li>Fade in/out last 300 ms</li>
-     * </ul>
-     *
-     * @param text      The message to be displayed. Can be null or empty.
-     * @param barsCount The amount of bars composing the circular shape
-     */
+    /// Creates a new progress panel with default values:
+    ///   - Veil's alpha level is 70%
+    ///   - 15 frames per second
+    ///   - Fade in/out last 300 ms
+    ///
+    /// @param text      The message to be displayed. Can be null or empty.
+    /// @param barsCount The number of bars composing the circular shape
     public BlockGlass2(String text, int barsCount) {
         this(text, barsCount, 0.70f);
     }
@@ -161,7 +129,7 @@ public class BlockGlass2 extends JComponent implements MouseListener {
      * </ul>
      *
      * @param text      The message to be displayed. Can be null or empty.
-     * @param barsCount The amount of bars composing the circular shape.
+     * @param barsCount The number of bars composing the circular shape.
      * @param shield    The alpha level between 0.0 and 1.0 of the colored
      *                  shield (or veil).
      */
@@ -169,35 +137,29 @@ public class BlockGlass2 extends JComponent implements MouseListener {
         this(text, barsCount, shield, 15.0f);
     }
 
-    /**
-     * Creates a new progress panel with default values:<br>
-     * <ul>
-     * <li>Fade in/out last 300 ms</li>
-     * </ul>
-     *
-     * @param text      The message to be displayed. Can be null or empty.
-     * @param barsCount The amount of bars composing the circular shape.
-     * @param shield    The alpha level between 0.0 and 1.0 of the colored
-     *                  shield (or veil).
-     * @param fps       The number of frames per second. Lower this value to
-     *                  decrease CPU usage.
-     */
+    /// Creates a new progress panel with default values:
+    ///   - Fade in/out last 300 ms
+    ///
+    /// @param text      The message to be displayed. Can be null or empty.
+    /// @param barsCount The number of bars composing the circular shape.
+    /// @param shield    The alpha level between 0.0 and 1.0 of the colored
+    ///                  shield (or veil).
+    /// @param fps       The number of frames per second. Lower this value to
+    ///                  decrease CPU usage.
     public BlockGlass2(String text, int barsCount, float shield, float fps) {
         this(text, barsCount, shield, fps, 300);
     }
 
-    /**
-     * Creates a new progress panel.
-     *
-     * @param text      The message to be displayed. Can be null or empty.
-     * @param barsCount The amount of bars composing the circular shape.
-     * @param shield    The alpha level between 0.0 and 1.0 of the colored
-     *                  shield (or veil).
-     * @param fps       The number of frames per second. Lower this value to
-     *                  decrease CPU usage.
-     * @param rampDelay The duration, in milliseconds, of the fade in and
-     *                  the fade out of the veil.
-     */
+    /// Creates a new progress panel.
+
+    /// @param text      The message to be displayed. Can be null or empty.
+    /// @param barsCount The number of bars composing the circular shape.
+    /// @param shield    The alpha level between 0.0 and 1.0 of the colored
+    ///                  shield (or veil).
+    /// @param fps       The number of frames per second. Lower this value to
+    ///                  decrease CPU usage.
+    /// @param rampDelay The duration, in milliseconds, of the fade in and
+    ///                  the fade out of the veil.
     public BlockGlass2(String text, int barsCount, float shield, float fps, int rampDelay) {
         this.text = text;
         this.rampDelay = Math.max(rampDelay, 0);
@@ -210,46 +172,35 @@ public class BlockGlass2 extends JComponent implements MouseListener {
         this.hints.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
 
-    /**
-     * Returns the current displayed message.
-     *
-     * @return text
-     */
+    /// Returns the current displayed message.
+    ///
+    /// @return text
     public String getText() {
         return text;
     }
 
-    /**
-     * Changes the displayed message at runtime.
-     *
-     * @param text The message to be displayed. Can be null or empty.
-     */
+    /// Changes the displayed message at runtime.
+    ///
+    /// @param text The message to be displayed. Can be null or empty.
     public void setText(String text) {
         this.text = text;
         repaint();
     }
 
-    /**
-     * Starts / stops the waiting animation according to the visibility.
-     *
-     * @param visible  true to make the component visible; false to make it invisible
-     */
+    /// Starts / stops the waiting animation according to the visibility.
+    ///
+    /// @param visible  true to make the component visible; false to make it invisible
     @Override
     public void setVisible(boolean visible) {
-        synchronized (this) {
-            if (visible) {
-                start();
-            } else {
-                stop();
-            }
+        if (visible != isVisible()) {
+            if (visible) { start(); }
+            else { stop(); }
         }
     }
 
-    /**
-     * Starts the waiting animation by fading the veil in, then rotating the ticker.
-     * Ticker visibility can be controlled by the client property blockglass.show.ticker.
-     * This method handles the visibility of the glass pane.
-     */
+    /// Starts the waiting animation by fading the veil in, then rotating the ticker.
+    /// Ticker visibility can be controlled by the client property blockglass.show.ticker.
+    /// This method handles the visibility of the glass pane.
     private void start() {
         super.setVisible(true);
         showTicker = getClientProperty("blockglass.show.ticker") instanceof Boolean b ? b : true;
@@ -263,11 +214,9 @@ public class BlockGlass2 extends JComponent implements MouseListener {
         animationThread.start();
     }
 
-    /**
-     * Stops the waiting animation by stopping the rotation
-     * of the circular shape and then by fading out the veil.
-     * This methods sets the panel invisible at the end.
-     */
+    /// Stops the waiting animation by stopping the rotation
+    /// of the circular shape and then by fading out the veil.
+    /// This method sets the panel invisible at the end.
     private void stop() {
         if (animationThread != null && animator.rampUp) {
             animationThread.interrupt();
@@ -278,12 +227,10 @@ public class BlockGlass2 extends JComponent implements MouseListener {
         }
     }
 
-    /**
-     * Interrupts the animation, whatever its state is. You
-     * can use it when you need to stop the animation without
-     * running the fade out phase.
-     * This methods sets the panel invisible at the end.
-     */
+    /// Interrupts the animation, whatever its state is. You
+    /// can use it when you need to stop the animation without
+    /// running the fade-out phase.
+    /// This method sets the panel invisible at the end.
     public void interrupt() {
         synchronized (this) {
             if (animationThread != null) {
@@ -332,11 +279,8 @@ public class BlockGlass2 extends JComponent implements MouseListener {
         }
     }
 
-    /**
-     * Builds the circular shape and returns the result as an array of
-     * <code>Area</code>. Each <code>Area</code> is one of the bars
-     * composing the shape.
-     */
+    /// Builds the circular shape and returns the result as an array of
+    /// `Area`. Each `Area` is one of the bars composing the shape.
     private Area[] buildTicker() {
         Area[] tickers = new Area[barsCount];
         Point2D.Double center = new Point2D.Double((double) frameWidth / 2, (double) frameHeight / 2);
@@ -363,9 +307,7 @@ public class BlockGlass2 extends JComponent implements MouseListener {
         return tickers;
     }
 
-    /**
-     * Builds a bar.
-     */
+    /// Builds a bar.
     private Area buildPrimitive() {
         Rectangle2D.Double body = new Rectangle2D.Double(2, 0, 10, 4);
         Ellipse2D.Double head = new Ellipse2D.Double(0, 0, 4, 4);
@@ -403,9 +345,7 @@ public class BlockGlass2 extends JComponent implements MouseListener {
     public void mouseExited(MouseEvent e) {
     }
 
-    /**
-     * Animation thread.
-     */
+    /// Animation thread.
     private class Animator implements Runnable {
         public boolean rampUp;
 
