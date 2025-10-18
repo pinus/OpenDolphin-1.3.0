@@ -161,6 +161,7 @@ public class BlockGlass2 extends JComponent implements MouseListener {
     /// @param rampDelay The duration, in milliseconds, of the fade in and
     ///                  the fade out of the veil.
     public BlockGlass2(String text, int barsCount, float shield, float fps, int rampDelay) {
+        super();
         this.text = text;
         this.rampDelay = Math.max(rampDelay, 0);
         this.shield = Math.max(shield, 0.0f);
@@ -192,6 +193,24 @@ public class BlockGlass2 extends JComponent implements MouseListener {
     /// @param visible  true to make the component visible; false to make it invisible
     @Override
     public void setVisible(boolean visible) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            doSetVisibleOnEdt(visible);
+        } else {
+            try {
+                SwingUtilities.invokeAndWait(() -> doSetVisibleOnEdt(visible));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /// Updates the visibility of the component on the Event Dispatch Thread (EDT).
+    /// If the desired visibility is different from the current visibility,
+    /// it either starts or stops the waiting animation correspondingly.
+    ///
+    /// @param visible true to make the component visible by starting the animation;
+    ///                false to make it invisible by stopping the animation.
+    private void doSetVisibleOnEdt(boolean visible) {
         if (visible != isVisible()) {
             if (visible) { start(); }
             else { stop(); }
@@ -218,7 +237,9 @@ public class BlockGlass2 extends JComponent implements MouseListener {
     /// of the circular shape and then by fading out the veil.
     /// This method sets the panel invisible at the end.
     private void stop() {
-        if (animationThread != null && animator.rampUp) {
+        if (animationThread == null) {
+            interrupt();
+        } else if (animator.rampUp) {
             animationThread.interrupt();
             animator = new Animator(false);
             animationThread = new Thread(animator);

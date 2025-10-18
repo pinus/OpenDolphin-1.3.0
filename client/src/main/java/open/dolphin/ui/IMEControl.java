@@ -9,22 +9,20 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.Objects;
 
-/**
- * The IMEControl class is responsible for managing the input method editor (IME) on Mac systems.
- * It toggles IME on and off based on the focus changes in text components.
- * <p>
- * - ver 1: AppleScript で on/off するバージョン: 遅すぎてストレスたまる
- * - ver 2: InputContext.selectInputMethod バージョン: 調子よかったが，1.6.0_29 で使えなくなる
- * - ver 3: Robot version 切り替わったかどうか判定するために event queue システム導入
- * - ver 4: enableInputMethod(true/false) バージョン: short-cut が効かなくなったり不安定
- * - ver 5: Robot version 復活. 物理キーが押されていると誤動作するのでキー入力でフォーカスが当たるところには使えない
- * - ver 6: key combination での robot 入力うまくいかず, F12, F13 キーで切り替えるように ATOK 側で設定することにした
- * - ver 7: im-select 呼び出し法 (https://github.com/daipeihust/im-select)
- * - ver 8: FocusManger で一元管理バージョン
- * - ver 9: TISServer (TextInputSources Server) バージョン
- *
- * @author pns
- */
+/// The IMEControl class is responsible for managing the input method editor (IME) on Mac systems.
+/// It toggles IME on and off based on the focus changes in text components.
+///
+/// - ver 1: AppleScript で on/off するバージョン: 遅すぎてストレスたまる
+/// - ver 2: InputContext.selectInputMethod バージョン: 調子よかったが，1.6.0_29 で使えなくなる
+/// - ver 3: Robot version 切り替わったかどうか判定するために event queue システム導入
+/// - ver 4: enableInputMethod(true/false) バージョン: short-cut が効かなくなったり不安定
+/// - ver 5: Robot version 復活. 物理キーが押されていると誤動作するのでキー入力でフォーカスが当たるところには使えない
+/// - ver 6: key combination での robot 入力うまくいかず, F12, F13 キーで切り替えるように ATOK 側で設定することにした
+/// - ver 7: im-select 呼び出し法 (https://github.com/daipeihust/im-select)
+/// - ver 8: FocusManger で一元管理バージョン
+/// - ver 9: TISServer (TextInputSources Server) バージョン
+///
+/// @author pns
 public class IMEControl {
     private final Logger logger = LoggerFactory.getLogger(IMEControl.class);
 
@@ -38,7 +36,7 @@ public class IMEControl {
                             server.selectABC();
                         } else {
                             // メニューバーのアイコンは切り替わってるのに, 実際の入力が切り替わってないことがあるのの workaround
-                            server.selectJapanese();
+                            //server.selectJapanese();
                             server.selectRoman();
                             server.selectJapanese();
                         }
@@ -50,7 +48,7 @@ public class IMEControl {
         }
     }
 
-    public static void main(String[] argv) {
+    void main() {
         new IMEControl();
 
         JFrame f = new JFrame();
