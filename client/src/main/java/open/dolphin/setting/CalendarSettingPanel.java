@@ -8,14 +8,13 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.Events;
 import com.google.api.services.calendar.model.Event;
-
+import com.google.api.services.calendar.model.Events;
 import open.dolphin.client.GUIConst;
 import open.dolphin.delegater.PnsDelegater;
 import open.dolphin.helper.GridBagBuilder;
@@ -28,15 +27,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.List;
-import java.util.prefs.Preferences;
-import java.awt.event.ActionEvent;
-import java.io.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * Calendar Setting Panel.
@@ -48,21 +51,21 @@ public class CalendarSettingPanel extends AbstractSettingPanel {
     private static final String TITLE = "カレンダー";
     private static final ImageIcon ICON = GUIConst.ICON_CALENDAR_32;
     private static final int TEXT_FIELD_WIDTH = 40;
-    private static long DAY_LENGTH = 86400000L;
+    private static final long DAY_LENGTH = 86400000L;
 
     // Google Calendar
     private static final String APPLICATION_NAME = "open.dolphin";
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final List<String> SCOPES = List.of(CalendarScopes.CALENDAR_READONLY);
     private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
     private static final String TOKENS_DIRECTORY_PATH = TMP_DIR + "com.google.calendar.tokens";
 
     // Keys for preferences
-    private static String CALENDAR_ID = "calendar.id";
-    private static String HOLIDAY_CALENDAR_ID = "holidayCalendar.id";
-    private static String CREDENTIAL = "calendar.credential";
-    private static String FROM_YEAR = "from.year";
-    private static String TO_YEAR = "to.year";
+    private static final String CALENDAR_ID = "calendar.id";
+    private static final String HOLIDAY_CALENDAR_ID = "holidayCalendar.id";
+    private static final String CREDENTIAL = "calendar.credential";
+    private static final String FROM_YEAR = "from.year";
+    private static final String TO_YEAR = "to.year";
 
     // GUI
     private CompletableJTextField holidayCalendarIdField;

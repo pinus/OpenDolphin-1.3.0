@@ -9,7 +9,7 @@ import java.util.prefs.Preferences;
 /// @author Kazushi Minagawa, Digital Globe, Inc.
 public class Project {
 
-    /// Propject Name
+    /// Project Name
     public static final String PROJECT_NAME = "name";
 
     /// USER
