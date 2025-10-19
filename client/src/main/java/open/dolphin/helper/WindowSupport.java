@@ -4,10 +4,9 @@ import open.dolphin.client.*;
 import open.dolphin.project.Project;
 import open.dolphin.ui.PNSFrame;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
@@ -15,36 +14,33 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.*;
 import java.util.List;
 import java.util.Timer;
 import java.util.prefs.Preferences;
 
-/**
- * Window Menu をサポートするためのクラス.
- *
- * @author Minagawa, Kazushi
- * @author pns
- */
+/// Window Menu をサポートするためのクラス.
+///
+/// @author Minagawa, Kazushi
+/// @author pns
 public class WindowSupport<T> implements MenuListener, ComponentListener {
-    // frame を整列させるときの初期位置と移動幅
+    /// frame を整列させるときの初期位置と移動幅
     final public static int INITIAL_X = 256, INITIAL_Y = 40, INITIAL_DX = 96, INITIAL_DY = 48;
     final private static String WINDOW_MENU_NAME = "ウインドウ";
-    // メニューバーの増えた分の高さをセットするプロパティ名
+    /// メニューバーの増えた分の高さをセットするプロパティ名
     final public static String MENUBAR_HEIGHT_OFFSET_PROP = "menubar.height.offset";
-
-    // Window support が提供するスタッフ
-    // フレーム
-    private PNSFrame frame;
-    // メニューバー
-    private JMenuBar menuBar;
-    // ウインドウメニュー
-    private JMenu windowMenu;
-    // Window Action
+    /// Window Action
     final private Action windowAction;
-    // 内容 Dolphin (MainWindow), ChartImpl, EditorFrame, etc
+    /// 内容 Dolphin (MainWindow), ChartImpl, EditorFrame, etc
     final private T content;
-    // component bounds manager
+    /// component bounds manager
     final private Preferences pref;
+    /// フレーム
+    private PNSFrame frame;
+    /// メニューバー
+    private JMenuBar menuBar;
+    /// ウインドウメニュー
+    private JMenu windowMenu;
     final private String keyX, keyY, keyW, keyH; // preference keys
     final private Deque<Rectangle> undoHistory; // bounds' history
     private boolean suppressHistory = false; // suppress history update during undo
@@ -106,36 +102,28 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         //logMemory(content.getClass().getName() + " created no." + WindowHolder.size());
     }
 
-    /**
-     * この window の内容を返す.
-     *
-     * @return content
-     */
+    /// この window の内容を返す.
+    ///
+    /// @return content
     public T getContent() {
         return content;
     }
 
-    /**
-     * Returns frame.
-     *
-     * @return 管理している frame
-     */
+    /// Returns frame.
+    ///
+    /// @return 管理している frame
     public PNSFrame getFrame() {
         return frame;
     }
 
-    /**
-     * Returns JMenuBar.
-     *
-     * @return 管理している JMenuBar
-     */
+    /// Returns JMenuBar.
+    ///
+    /// @return 管理している JMenuBar
     public JMenuBar getMenuBar() {
         return menuBar;
     }
 
-    /**
-     * 終了処理
-     */
+    /// 終了処理
     public void dispose() {
         if (Objects.nonNull(timer)) {
             timer.cancel();
@@ -165,10 +153,9 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         logMemory(content.getClass().getName() + " closed");
     }
 
-    /**
-     * show memory status.
-     * @param message additional message to show
-     */
+    /// show memory status.
+    ///
+    /// @param message additional message to show
     private void logMemory(String message) {
         long freeMemory = Runtime.getRuntime().freeMemory() / 1048576L;
         long maxMemory = Runtime.getRuntime().maxMemory() / 1048576L;
@@ -176,24 +163,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         logger.info("free/max {}/{} MB ({})", freeMemory, maxMemory, Window.getOwnerlessWindows().length);
     }
 
-    /**
-     * save new bounds to preferences.
-     */
-    private class FlushTask extends TimerTask {
-        @Override
-        public void run() {
-            if (boundChanged) {
-                prevBounds = new Rectangle(frame.getBounds());
-            }
-            boundChanged = false;
-            timer = null;
-            //logger.info(content.getClass().getName() + ":: " + frame.getBounds());
-        }
-    }
-
-    /**
-     * 500 msec 以内の変更は記録しない処理.
-     */
+    /// 500 msec 以内の変更は記録しない処理.
     private void restartTimer() {
         if (Objects.nonNull(timer)) {
             timer.cancel();
@@ -201,6 +171,21 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         }
         timer = new Timer();
         timer.schedule(new FlushTask(), 500);
+    }
+
+    /// Stage Manager を使用していると, 起動時に左寄りのウインドウが勝手に右側に動かされてしまう.
+    /// それを戻すために, Dolphin.java からここを呼んで元に戻す.
+    public void revertBounds() {
+        revertBoundsAction.actionPerformed(null);
+    }
+
+    /// target frame を画面中央に設定する.
+    public void toCenter() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = frame.getSize();
+        int x = (screenSize.width - size.width) / 2;
+        int y = (screenSize.height - size.height) / (Dolphin.forMac? 3:2);
+        frame.setBounds(x, y, size.width, size.height);
     }
 
     @Override
@@ -235,22 +220,8 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
     public void componentHidden(ComponentEvent e) {
     }
 
-    /**
-     * target frame を画面中央に設定する.
-     */
-    public void toCenter() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension size = frame.getSize();
-        int x = (screenSize.width - size.width) / 2;
-        int y = (screenSize.height - size.height) / (Dolphin.forMac? 3:2);
-        frame.setBounds(x, y, size.width, size.height);
-    }
-
-    /**
-     * ウインドウメニューが選択された場合，現在オープンしているウインドウのリストを使用し，
-     * それらを選択するための MenuItem を追加する.
-     * リストをインスペクタとカルテに整理 by pns
-     */
+    /// ウインドウメニューが選択された場合，現在オープンしているウインドウのリストを使用し，
+    /// それらを選択するための MenuItem を追加する.
     @Override
     public void menuSelected(MenuEvent e) {
         // 全てリムーブする
@@ -307,9 +278,20 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         }
     }
 
-    /**
-     * ウインドウの大きさ・位置変更 undo のための deque.
-     */
+    /// save new bounds to preferences.
+    private class FlushTask extends TimerTask {
+        @Override
+        public void run() {
+            if (boundChanged) {
+                prevBounds = new Rectangle(frame.getBounds());
+            }
+            boundChanged = false;
+            timer = null;
+            //logger.info(content.getClass().getName() + ":: " + frame.getBounds());
+        }
+    }
+
+    /// ウインドウの大きさ・位置変更 undo のための deque.
     private class UndoHistory extends ArrayDeque<Rectangle> {
         @Override
         public void addLast(@NotNull Rectangle r) {
@@ -330,9 +312,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         }
     }
 
-    /**
-     * ウインドウの大きさ・位置変更 undo action.
-     */
+    /// ウインドウの大きさ・位置変更 undo action.
     private class RevertBoundsAction extends AbstractAction {
         public RevertBoundsAction() {
             putValue(Action.NAME, "ウインドウの位置を戻す");
@@ -362,9 +342,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         }
     }
 
-    /**
-     * インスペクタを整列する action.
-     */
+    /// インスペクタを整列する action.
     private class ArrangeInspectorAction extends AbstractAction {
 
         public ArrangeInspectorAction() {

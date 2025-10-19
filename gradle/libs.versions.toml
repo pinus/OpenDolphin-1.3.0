@@ -21,7 +21,7 @@ j2html = "1.6.0"
 angus-mail = "2.0.3"
 flatlaf = "3.6"
 commons-io = "2.19.0"
-selenium = "4.35.0"
+selenium = "4.37.0"
 webdriver-manager = "6.3.2"
 
 [libraries]

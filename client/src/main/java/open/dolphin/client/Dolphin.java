@@ -3,9 +3,9 @@ package open.dolphin.client;
 import open.dolphin.helper.*;
 import open.dolphin.impl.labrcv.LaboTestImporter;
 import open.dolphin.impl.login.LoginDialog;
+import open.dolphin.impl.orcon.OrcaController;
 import open.dolphin.impl.psearch.PatientSearchImpl;
 import open.dolphin.impl.pvt.WaitingListImpl;
-import open.dolphin.impl.orcon.OrcaController;
 import open.dolphin.infomodel.PatientVisitModel;
 import open.dolphin.infomodel.RoleModel;
 import open.dolphin.project.AbstractProjectFactory;
@@ -33,47 +33,46 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 
-/**
- * アプリケーションのメインウインドウクラス.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- * @author pns
- */
+/// アプリケーションのメインウインドウクラス.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
+/// @author pns
 public class Dolphin implements MainWindow {
     public static final boolean forMac = System.getProperty("os.name").startsWith("Mac");
     public static final boolean forWin = !forMac;
 
-    // Window と Menu サポート
+    /// Window と Menu サポート
     private WindowSupport<Dolphin> windowSupport;
-    // Mediator
+    /// Mediator
     private Mediator mediator;
-    // 状態制御
+    /// 状態制御
     private StateManager stateMgr;
-    // プラグインのプロバイダ
+    /// プラグインのプロバイダ
     private HashMap<Class<? extends MainTool>, MainTool> providers;
-    // pluginを格納する tabbedPane
+    /// pluginを格納する tabbedPane
     private PNSBadgeTabbedPane tabbedPane;
-    // ロガー
+    /// ロガー
     private Logger logger;
-    // 環境設定用の Properties
+    /// 環境設定用の Properties
     private Properties saveEnv;
-    // SchemaBox
+    /// SchemaBox
     private ImageBox imageBox;
-    // StampBox
+    /// StampBox
     private StampBoxPlugin stampBox;
-    // dirty 警告を出す Frame を保持
+    /// dirty 警告を出す Frame を保持
     private Chart dirtyChart;
 
     public Dolphin() {
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         // コンソールのリダイレクト
         redirectConsole();
 
@@ -86,9 +85,7 @@ public class Dolphin implements MainWindow {
         d.startup();
     }
 
-    /**
-     * システムの出力を console.log にリダイレクトする.
-     */
+    /// システムの出力を console.log にリダイレクトする.
     private static void redirectConsole() {
         if (Preferences.userNodeForPackage(Dolphin.class).getBoolean(Project.REDIRECT_CONSOLE, false)) {
             try {
@@ -112,16 +109,14 @@ public class Dolphin implements MainWindow {
         }
     }
 
-    /**
-     * bash script "startup.sh" を実行する.
-     */
+    /// bash script "startup.sh" を実行する.
     private static void executeStartupScript() {
         String scriptName = System.getProperty("user.dir") + "/startup.sh";
         Path path = Paths.get(scriptName);
         if (Files.exists(path)) {
             try {
                 String command = String.join("\n", Files.readAllLines(path));
-                List<String> response = ScriptExecutor.executeShellScriptWithResponce(new String[]{"bash", "-c", command});
+                List<String> response = ScriptExecutor.executeShellScriptWithResponce("bash", "-c", command);
                 response.stream().forEach(System.out::println);
 
             } catch (IOException e) {
@@ -129,9 +124,7 @@ public class Dolphin implements MainWindow {
         }
     }
 
-    /**
-     * 初期化. 最初に呼ばれる.
-     */
+    /// 初期化. 最初に呼ばれる.
     private void initialize() {
         // ClientContext を生成する
         ClientContextStub stub = new ClientContextStub();
@@ -176,9 +169,7 @@ public class Dolphin implements MainWindow {
         checkDocumentFolder();
     }
 
-    /**
-     * initialize() の次に呼ばれる.
-     */
+    /// initialize() の次に呼ばれる.
     private void startup() {
         // ログインダイアログを表示し認証を行う
         LoginDialog login = new LoginDialog();
@@ -195,9 +186,7 @@ public class Dolphin implements MainWindow {
         login.start();
     }
 
-    /**
-     * 起動時のバックグラウンドで実行されるべきタスクを行う. ログイン後に startup() から呼ばれる.
-     */
+    /// 起動時のバックグラウンドで実行されるべきタスクを行う. ログイン後に startup() から呼ばれる.
     private void startServices() {
         // プラグインのプロバイダマップを生成する
         providers = new HashMap<>();
@@ -207,9 +196,7 @@ public class Dolphin implements MainWindow {
         Holiday.setupCalendarData();
     }
 
-    /**
-     * GUI を構築して最初の画面を表示する. ログイン後に startup() から呼ばれる.
-     */
+    /// GUI を構築して最初の画面を表示する. ログイン後に startup() から呼ばれる.
     private void initComponents() {
 
         // デバッグ用-------------------------
@@ -291,14 +278,10 @@ public class Dolphin implements MainWindow {
         stateMgr = new StateManager();
         stateMgr.processLogin(true);
 
-        /*
-         * スタンプ箱の作成・表示
-         */
+        // スタンプ箱の作成・表示
         stampBox = new StampBoxPlugin();
         stampBox.setContext(Dolphin.this);
-
-        final Callable<Boolean> task = stampBox.getStartingTask();
-
+        final Callable<Boolean> stampBoxStartingTask = stampBox.getStartingTask();
         String message = "スタンプ箱";
         String note = "スタンプツリーを読み込んでいます...";
 
@@ -306,7 +289,7 @@ public class Dolphin implements MainWindow {
             @Override
             protected Boolean doInBackground() throws Exception {
                 logger.debug("stampTask doInBackground");
-                return task.call();
+                return stampBoxStartingTask.call();
             }
 
             @Override
@@ -340,32 +323,42 @@ public class Dolphin implements MainWindow {
         };
         //stampTask.setMillisToPopup(200);
         stampTask.execute();
+
+        // Orcon 自動起動
+        if (Project.getPreferences().getBoolean(Project.ORCON_AUTO_START, false)) {
+            Callable<Boolean> orcaStartingTask = getPlugin(OrcaController.class).getStartingTask();
+            Executors.newVirtualThreadPerTaskExecutor().submit(orcaStartingTask);
+        }
+
+        // StageManager を使用していると, 左寄りのウィンドウの位置が勝手に右側に動かされてしまう.
+        // その動きは windowSupport で 500 msec 後に undo に記録されるので, それを 1秒後に呼び出して元に戻す
+        Thread.ofVirtual().start(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+            }
+            windowSupport.revertBounds();
+        });
     }
 
-    /**
-     * MainComponent を入れる TabbedPane を返す.
-     *
-     * @return PNSBadgeTabbedPane
-     */
+    /// MainComponent を入れる TabbedPane を返す.
+    ///
+    /// @return PNSBadgeTabbedPane
     public PNSBadgeTabbedPane getTabbedPane() {
         return tabbedPane;
     }
 
-    /**
-     * get plugin object.
-     *
-     * @param id class of the plugin
-     * @param <T> class of the plugin
-     * @return plugin object
-     */
+    /// get plugin object.
+    ///
+    /// @param id  class of the plugin
+    /// @param <T> class of the plugin
+    /// @return plugin object
     @Override
     public <T extends MainTool> T getPlugin(Class<T> id) { return (T) providers.get(id); }
 
-    /**
-     * カルテをオープンする.
-     *
-     * @param pvt 患者来院情報
-     */
+    /// カルテをオープンする.
+    ///
+    /// @param pvt 患者来院情報
     @Override
     public void openKarte(PatientVisitModel pvt) {
         //logger.info("openKarte");
@@ -394,38 +387,30 @@ public class Dolphin implements MainWindow {
         return windowSupport.getFrame();
     }
 
-    /**
-     * 使ってない. (MainWindow の implement に必要)
-     *
-     * @return PageFormat
-     */
+    /// 使ってない. (MainWindow の implement に必要)
+    ///
+    /// @return PageFormat
     @Override
     public PageFormat getPageFormat() {
         return PrinterJob.getPrinterJob().getPageFormat(null);
     }
 
-    /**
-     * 環境設定を行う.
-     * desktop PreferencesHandler  から呼ばれる.
-     */
+    /// 環境設定を行う.
+    /// desktop PreferencesHandler  から呼ばれる.
     public void doPreference() {
         setKarteEnvironment();
     }
 
-    /**
-     * 環境設定から呼ばれる. 値によりサービスを制御する.
-     *
-     * @param valid ValidListener validity
-     */
+    /// 環境設定から呼ばれる. 値によりサービスを制御する.
+    ///
+    /// @param valid ValidListener validity
     private void controlService(boolean valid) {
         logger.info("Environment setting validity: {}", valid);
     }
 
-    /**
-     * Dirty check.
-     *
-     * @return dirty or not
-     */
+    /// Dirty check.
+    ///
+    /// @return dirty or not
     private boolean isDirty() {
 
         // 未保存のカルテがある場合は警告しリターンする
@@ -441,11 +426,9 @@ public class Dolphin implements MainWindow {
         return false;
     }
 
-    /**
-     * MainTool の StoppingTask を集めた Callable リストを生成する.
-     *
-     * @return 作った Callable のリスト
-     */
+    /// MainTool の StoppingTask を集めた Callable リストを生成する.
+    ///
+    /// @return 作った Callable のリスト
     private List<Callable<Boolean>> getStoppingTask() {
 
         // StoppingTask を集める
@@ -467,9 +450,7 @@ public class Dolphin implements MainWindow {
         return stoppingTasks;
     }
 
-    /**
-     * 終了処理中にエラーが生じた場合の警告をダイアログを表示する.
-     */
+    /// 終了処理中にエラーが生じた場合の警告をダイアログを表示する.
     private void doStoppingAlert() {
 
         String msg1 = ClientContext.getString("exitDolphin.err.msg1");
@@ -498,9 +479,7 @@ public class Dolphin implements MainWindow {
         } // キャンセル=0, ESC キー = -1
     }
 
-    /**
-     * 最終 exit.
-     */
+    /// 最終 exit.
     private void exit() {
         if (providers != null) {
             providers.values().forEach(MainTool::stop);
@@ -514,9 +493,7 @@ public class Dolphin implements MainWindow {
         System.exit(0);
     }
 
-    /**
-     * カルテの環境設定を行う. MenuSupport から reflection で呼ばれる.
-     */
+    /// カルテの環境設定を行う. MenuSupport から reflection で呼ばれる.
     public void setKarteEnvironment() {
         KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         ProjectSettingDialog sd = new ProjectSettingDialog(focusManager.getActiveWindow());
@@ -526,9 +503,7 @@ public class Dolphin implements MainWindow {
         sd.start();
     }
 
-    /**
-     * 終了処理. MenuSupport から reflection で呼ばれる.
-     */
+    /// 終了処理. MenuSupport から reflection で呼ばれる.
     public void processExit() {
 
         if (isDirty()) {
@@ -604,27 +579,21 @@ public class Dolphin implements MainWindow {
         }
     }
 
-    /**
-     * ユーザのパスワードを変更する. MenuSupport から reflection で呼ばれる.
-     */
+    /// ユーザのパスワードを変更する. MenuSupport から reflection で呼ばれる.
     public void changePassword() {
         ChangePassword cp = new ChangePassword();
         cp.setContext(this);
         cp.start();
     }
 
-    /**
-     * ユーザ登録を行う. 管理者メニュー. メニューから reflection で呼ばれる.
-     */
+    /// ユーザ登録を行う. 管理者メニュー. メニューから reflection で呼ばれる.
     public void addUser() {
         AddUser au = new AddUser();
         au.setContext(this);
         au.start();
     }
 
-    /**
-     * About を表示する. MenuSupport から reflection で呼ばれる.
-     */
+    /// About を表示する. MenuSupport から reflection で呼ばれる.
     public void showAbout() {
         Window activeWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
         AbstractProjectFactory f = Project.getProjectFactory();
@@ -632,9 +601,7 @@ public class Dolphin implements MainWindow {
         activeWindow.toFront();
     }
 
-    /**
-     * シェーマボックスを表示する. MenuSupport から reflection で呼ばれる.
-     */
+    /// シェーマボックスを表示する. MenuSupport から reflection で呼ばれる.
     @Override
     public void showSchemaBox() {
         if (imageBox == null) {
@@ -647,9 +614,7 @@ public class Dolphin implements MainWindow {
         }
     }
 
-    /**
-     * スタンプボックスを表示する. MenuSupport から reflection で呼ばれる.
-     */
+    /// スタンプボックスを表示する. MenuSupport から reflection で呼ばれる.
     @Override
     public void showStampBox() {
         if (stampBox != null) {
@@ -657,9 +622,7 @@ public class Dolphin implements MainWindow {
         }
     }
 
-    /**
-     * Waiting list を表示する. MenuSupport から reflection で呼ばれる.
-     */
+    /// Waiting list を表示する. MenuSupport から reflection で呼ばれる.
     public void showWaitingList() {
         // Search field に focus させるためのトリック
         windowSupport.getFrame().toFront();
@@ -667,9 +630,7 @@ public class Dolphin implements MainWindow {
         tabbedPane.setSelectedIndex(0);
     }
 
-    /**
-     * Patient search を表示する. MenuSupport から reflection で呼ばれる.
-     */
+    /// Patient search を表示する. MenuSupport から reflection で呼ばれる.
     public void showPatientSearch() {
         // Search field に focus させるためのトリック
         windowSupport.getFrame().toFront();
@@ -677,26 +638,20 @@ public class Dolphin implements MainWindow {
         tabbedPane.setSelectedIndex(1);
     }
 
-    /**
-     * Orca Controller を表示する. MenuSupport から reflection で呼ばれる.
-     * 既に表示されていた場合は, WaitingList に戻る.
-     */
+    /// Orca Controller を表示する. MenuSupport から reflection で呼ばれる.
+    /// 既に表示されていた場合は, WaitingList に戻る.
     public void showOrcaController() {
         windowSupport.getFrame().toFront();
         int selectedIndex = tabbedPane.getSelectedIndex();
         tabbedPane.setSelectedIndex(selectedIndex == 3 ? 0 : 3);
     }
 
-    /**
-     * Stealth mode Orca Controller. MenuSupport から reflection で呼ばれる.
-     */
+    /// Stealth mode Orca Controller. MenuSupport から reflection で呼ばれる.
     public void stealthOrcaController() {
         getPlugin(OrcaController.class).toggleStealth();
     }
 
-    /**
-     * DocumentFolder をチェック.
-     */
+    /// DocumentFolder をチェック.
     private void checkDocumentFolder() {
         Path path = Paths.get(ClientContext.getDocumentDirectory());
         try (Stream<Path> s = Files.list(path)) {
@@ -705,23 +660,19 @@ public class Dolphin implements MainWindow {
                 return;
             }
         } catch (IOException e) {
-            logger.error("document folder = " + e);
+            logger.error("document folder = {}", e.getMessage());
         }
         // document folder がないと Exception が発生してここに来る
         PNSOptionPane.showMessageDialog(null, "文書フォルダが見つかりません", "", JOptionPane.WARNING_MESSAGE);
     }
 
-    /**
-     * MainWindowState.
-     */
+    /// MainWindowState.
     private interface MainWindowState {
         void enter();
         boolean isLogin();
     }
 
-    /**
-     * Mediator.
-     */
+    /// Mediator.
     private final static class Mediator extends MenuSupport {
         public Mediator(Object owner) {
             super(owner);
@@ -740,9 +691,7 @@ public class Dolphin implements MainWindow {
         }
     }
 
-    /**
-     * LoginState.
-     */
+    /// LoginState.
     private class LoginState implements MainWindowState {
         @Override
         public boolean isLogin() {
@@ -776,9 +725,7 @@ public class Dolphin implements MainWindow {
         }
     }
 
-    /**
-     * LogoffState.
-     */
+    /// LogoffState.
     private class LogoffState implements MainWindowState {
         @Override
         public boolean isLogin() {
@@ -791,9 +738,7 @@ public class Dolphin implements MainWindow {
         }
     }
 
-    /**
-     * StateManager.
-     */
+    /// StateManager.
     private class StateManager {
         private final MainWindowState loginState = new LoginState();
         private final MainWindowState logoffState = new LogoffState();
@@ -848,8 +793,8 @@ public class Dolphin implements MainWindow {
 
         @Override
         public void paintDirtyRegions() {
-            // Unfortunately, most of the RepaintManager state is package
-            // private and not accessible from the subclass at the moment,
+            // Unfortunately, most of the RepaintManager state is package-private
+            // and not accessible from the subclass at the moment,
             // so we can't print more info about what's being painted.
             super.paintDirtyRegions();
         }

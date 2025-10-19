@@ -10,9 +10,9 @@ import open.dolphin.event.BadgeListener;
 import open.dolphin.helper.WindowHolder;
 import open.dolphin.stampbox.StampBoxPlugin;
 import open.dolphin.ui.PNSBadgeTabbedPane;
+import org.apache.commons.io.output.TeeOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.io.output.TeeOutputStream;
 
 import javax.swing.*;
 import java.awt.*;
@@ -87,7 +87,7 @@ public class OrcaController extends AbstractMainComponent {
         // login したら　enables する
         orconPanel.getLoginButton().addActionListener(e -> {
             orconMacro.login();
-            mode = Mode.FULL;
+            mode = orconPanel.getPanel().isShowing() ? Mode.FULL : Mode.DISABLE;
         });
         orconPanel.getCloseButton().addActionListener(e -> {
             orconMacro.close();
@@ -201,6 +201,15 @@ public class OrcaController extends AbstractMainComponent {
     public void stop() {}
 
     @Override
+    public Callable<Boolean> getStartingTask() {
+        return () -> {
+            orconPanel.getLoginButton().doClick();
+            toggleStealth();
+            return true;
+        };
+    }
+
+    @Override
     public Callable<Boolean> getStoppingTask() {
         logger.info("OrcaController stopping task starts");
         return () -> {
@@ -232,7 +241,7 @@ public class OrcaController extends AbstractMainComponent {
         }
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         redirectConsole();
         OrcaController orcon = new OrcaController();
         orcon.start();

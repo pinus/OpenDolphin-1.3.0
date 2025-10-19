@@ -11,28 +11,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.prefs.Preferences;
 
-/**
- * Miscellaneous Setting Panel.
- *
- * @author pns
- */
+/// Miscellaneous Setting Panel.
+///
+/// @author pns
 public class MiscSettingPanel extends AbstractSettingPanel {
     private static final String ID = "miscSetting";
     private static final String TITLE = "詳細";
     private static final ImageIcon ICON = GUIConst.ICON_EMBLEM_SYSTEM_32;
-
     private final Preferences prefs = Project.getPreferences();
 
-    // スクロール速度
+    /// スクロール速度
     private JSpinner scrollUnitKarteSpinner;
     private JSpinner scrollUnitTableSpinner;
     private JSpinner scrollUnitStampSpinner;
-
-    // ウインドウ整列 in WindowSupport のパラメータ
+    /// ウインドウ整列 in WindowSupport のパラメータ
     private JTextField initX, initY, diffX, diffY;
-
-    // コンソールのログ出力
+    /// コンソールのログ出力
     private JCheckBox redirectBox;
+    /// ORCON 自動起動
+    private JCheckBox orconAutoStartBox;
 
     public MiscSettingPanel() {
         init();
@@ -46,15 +43,11 @@ public class MiscSettingPanel extends AbstractSettingPanel {
 
     @Override
     public void start() {
-
         initComponents();
         bindModelToView();
-
     }
 
-    /**
-     * init components
-     */
+    /// init components
     private void initComponents() {
         // スクロール速度設定
         JPanel scrollUnitPanel = new JPanel();
@@ -118,11 +111,20 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         gbb = new GridBagBuilder("コンソールのログ出力 [設定反映に再起動が必要]");
         gbb.add(redirectBox, 0, 0, 1, 1, GridBagConstraints.EAST);
         JPanel redirectPanel = gbb.getProduct();
+        redirectPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
+
+        //  ORCON 自動起動
+        orconAutoStartBox = new JCheckBox("起動時に ORCA を自動起動する");
+        gbb = new GridBagBuilder("ORCON 自動起動");
+        gbb.add(orconAutoStartBox, 0, 0, 1, 1, GridBagConstraints.EAST);
+        JPanel orconAutoStartPanel = gbb.getProduct();
+        orconAutoStartPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
 
         // 全体のレイアウト
         getUI().setLayout(new BoxLayout(getUI(), BoxLayout.Y_AXIS));
         getUI().add(scrollUnitPanel);
         getUI().add(redirectPanel);
+        getUI().add(orconAutoStartPanel);
         getUI().add(Box.createVerticalStrut(100));
         getUI().add(Box.createVerticalGlue());
     }
@@ -138,6 +140,7 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         diffY.setText(String.valueOf(prefs.getInt(Project.ARRANGE_INSPECTOR_DY, WindowSupport.INITIAL_DY)));
 
         redirectBox.setSelected(Preferences.userNodeForPackage(Dolphin.class).getBoolean(Project.REDIRECT_CONSOLE, false));
+        orconAutoStartBox.setSelected(prefs.getBoolean(Project.ORCON_AUTO_START, false));
     }
 
     @Override
@@ -156,5 +159,6 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         prefs.putInt(Project.ARRANGE_INSPECTOR_DY, Integer.parseInt(diffY.getText()));
 
         Preferences.userNodeForPackage(Dolphin.class).putBoolean(Project.REDIRECT_CONSOLE, redirectBox.isSelected());
+        prefs.putBoolean(Project.ORCON_AUTO_START, orconAutoStartBox.isSelected());
     }
 }
