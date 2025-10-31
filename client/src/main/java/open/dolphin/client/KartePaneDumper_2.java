@@ -101,8 +101,8 @@ public class KartePaneDumper_2 {
         // 要素の開始及び終了のオフセット値を保存する
         int start = element.getStartOffset();
         int end = element.getEndOffset();
-        logger.debug("start = " + start);
-        logger.debug("end = " + end);
+        logger.debug("start = {}", start);
+        logger.debug("end = {}", end);
 
         // このエレメントの属性セットを得る
         AttributeSet atts = element.getAttributes().copyAttributes();
@@ -124,10 +124,14 @@ public class KartePaneDumper_2 {
                 Object nextName = names.nextElement();
 
                 if (nextName != StyleConstants.ResolveAttribute) {
-                    logger.debug("attribute name = " + nextName.toString());
+                    logger.debug("attribute name = {}", nextName.toString());
 
                     // $enameは除外する
                     if (nextName.toString().startsWith("$")) {
+                        continue;
+                    }
+                    // ATOK の composed text は無視する
+                    if (nextName.toString().equals("composed text")) {
                         continue;
                     }
 
@@ -139,25 +143,23 @@ public class KartePaneDumper_2 {
                     // foreground 属性の場合は再構築の際に利用しやすい形に分解する
                     if (nextName.toString().equals("foreground")) {
                         Color c = (Color) atts.getAttribute(StyleConstants.Foreground);
-                        logger.debug("color = " + c.toString());
+                        logger.debug("color = {}", c.toString());
                         String buf = c.getRed() + "," + c.getGreen() + "," + c.getBlue();
                         retBuffer.append(addQuote(buf));
 
                     } else {
                         // 属性セットから名前をキーにして属性オブジェクトを取得する
                         Object attObject = atts.getAttribute(nextName);
-                        logger.debug("attribute object = " + attObject.toString());
+                        logger.debug("attribute object = {}", attObject.toString());
 
-                        if (attObject instanceof StampHolder) {
+                        if (attObject instanceof StampHolder sh) {
                             // スタンプの場合
-                            StampHolder sh = (StampHolder) attObject;
                             moduleList.add(sh.getModel());
                             String value = String.valueOf(moduleList.size() - 1); // ペインに出現する順番をこの属性の値とする
                             retBuffer.append(addQuote(value));
 
-                        } else if (attObject instanceof SchemaHolder) {
+                        } else if (attObject instanceof SchemaHolder ch) {
                             // シュェーマの場合
-                            SchemaHolder ch = (SchemaHolder) attObject;
                             schemaList.add(ch.getModel());
                             String value = String.valueOf(schemaList.size() - 1); // ペインに出現する順番をこの属性の値とする
                             retBuffer.append(addQuote(value));
@@ -187,7 +189,7 @@ public class KartePaneDumper_2 {
             writer.write("<text>");
             int len = end - start;
             String text = element.getDocument().getText(start, len);
-            logger.debug("text = " + text);
+            logger.debug("text = {}", text);
 
             // 特定の文字列を置換する
             for (int i = 0; i < REPLACES.length; i++) {
