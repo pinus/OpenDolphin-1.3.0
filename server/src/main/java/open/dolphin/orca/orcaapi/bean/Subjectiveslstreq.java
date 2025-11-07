@@ -10,6 +10,7 @@ public class Subjectiveslstreq {
      * リクエスト番号01、02 (例: )
      * Request_Number = 01 により、全ての症状詳記区分リストを返却します。
      * Request_Number = 02 において、診療科、保険組合せ等を設定することにより該当の症状詳記区分に登録されているコメント内容を返却します
+     * Request_Number = 03 により 症状詳記区分リスト（Subjectives_Detail_Information）を返却します
      */
     private String Request_Number;
 
