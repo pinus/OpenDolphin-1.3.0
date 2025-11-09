@@ -4,14 +4,20 @@ import java.util.*
 
 val conveyorCommand = "/Applications/Conveyor.app/Contents/MacOS/conveyor"
 val conveyorInputDir = "${projectDir}/output"
+val buildDate: String = SimpleDateFormat("yyyyMMddHHmm").format(Date())
+val javafxVersion = project.findProperty("javafx.version") as String
+
 // win, mac, mac-aarch64
-val targetPlatform = if ("${System.getenv()["PLATFORM"]}" != "null") "${System.getenv()["PLATFORM"]}" else "mac-aarch64"
-val buildDate:String = SimpleDateFormat("yyyyMMddHHmm").format(Date())
+val targetPlatform =
+    if ("${System.getenv()["PLATFORM"]}" != "null")
+        "${System.getenv()["PLATFORM"]}".removeSurrounding("\"")
+    else
+        "mac-aarch64".removeSurrounding("\"")
+println("targetPlatform: $targetPlatform")
 
 plugins {
     application
     kotlin("jvm") version "2.2.20"
-    id("org.openjfx.javafxplugin") version "0.1.0"
     id("com.gradleup.shadow") version "9.2.2"
 }
 
@@ -19,14 +25,8 @@ application {
     mainClass = "open.dolphin.client.Dolphin"
     applicationDefaultJvmArgs = listOf(
         "--add-opens=java.desktop/javax.swing.undo=ALL-UNNAMED",
-        "--enable-native-access=javafx.graphics",
+        "--enable-native-access=ALL-UNNAMED",
     )
-}
-
-javafx {
-    version = "25"
-    modules("javafx.controls", "javafx.graphics", "javafx.swing")
-    setPlatform(targetPlatform.removeSurrounding("\""))
 }
 
 tasks {
@@ -51,7 +51,7 @@ tasks {
         val projectVersion = project.property("version")
         val javaVersion = project.property("java.version")
         // win.amd64:windows-msix, mac.amd64:mac-app, mac.aarch64:mac-app
-        val target = when(targetPlatform.removeSurrounding("\"")) {
+        val target = when (targetPlatform) {
             "win" -> arrayOf("win.amd64", "windows-msix")
             "mac" -> arrayOf("mac.amd64", "mac-app")
             else -> arrayOf("mac.aarch64", "mac-app")
@@ -106,4 +106,10 @@ dependencies {
     implementation(libs.commons.lang3)
     implementation(libs.selenium)
     implementation(libs.webdriver.manager)
+
+    // JavaFX
+    implementation("org.openjfx:javafx-base:$javafxVersion:$targetPlatform")
+    implementation("org.openjfx:javafx-controls:$javafxVersion:$targetPlatform")
+    implementation("org.openjfx:javafx-graphics:$javafxVersion:$targetPlatform")
+    implementation("org.openjfx:javafx-swing:$javafxVersion:$targetPlatform")
 }
