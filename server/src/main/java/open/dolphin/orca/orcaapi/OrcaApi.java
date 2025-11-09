@@ -584,6 +584,36 @@ public class OrcaApi {
     }
 
     /**
+     * 入力・診療コード内容取得.
+     *
+     * @param medicationgetreq Medicationgetreq
+     * @return Medicationgetres
+     */
+    public Medicationgetres post(Medicationgetreq medicationgetreq) {
+        Request req = new Request();
+        req.setMedicationgetreq(medicationgetreq);
+
+        String url = OrcaApiUrl.MEDICATIONGETV2;
+        Response response = request(url, req);
+        return response.getMedicationgetres();
+    }
+
+    /**
+     * 患者メモ登録.
+     *
+     * @param patientmemomodv2req Patientmemomodv2req
+     * @return Patientmemomodv2res
+     */
+    public Patientmemomodv2res post(Patientmemomodv2req patientmemomodv2req) {
+        Request req = new Request();
+        req.setPatientmemomodv2req(patientmemomodv2req);
+
+        String url = OrcaApiUrl.PATIENTMEMOMODV2;
+        Response response = request(url, req);
+        return response.getPatientmemomodv2res();
+    }
+
+    /**
      * Orca に Request を POST して Response を得る.
      *
      * @param url URL

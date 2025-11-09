@@ -93,119 +93,109 @@ public class OrcaApiUrl {
     public static final String SUBJECTIVESV2 = "/orca25/subjectivesv2";
 
     /**
-     * 来院患者一覧 (POST): 引数なし, 来院日の受診履歴返却 (Ver.4.7.02013/09).
+     * 来院患者一覧 (POST): 引数なし, 来院日の受診履歴返却 (Ver.4.7.0 2013/09).
      */
     public static final String VISITPTLSTV2 = "/api01rv2/visitptlstv2";
 
     /**
-     * 入院基本情報 (POST): 引数なし, 入院基本情報設定内容返却 (Ver.4.7.02013/09).
+     * 入院基本情報 (POST): 引数なし, 入院基本情報設定内容返却 (Ver.4.7.0 2013/09).
      */
     public static final String HSCONFBASEV2 = "/api01rv2/hsconfbasev2";
 
     /**
-     * 病棟・病室情報 (POST): 引数なし, 病棟情報返却 (Ver.4.7.02013/09).
+     * 病棟・病室情報 (POST): 引数なし, 病棟情報返却 (Ver.4.7.0 2013/09).
      */
     public static final String HSCONFWARDV2 = "/api01rv2/hsconfwardv2";
 
     /**
-     * 中途終了患者情報一覧 (POST): 引数なし, 中途終了患者情報一覧返却 (Ver.4.7.02013/10).
+     * 中途終了患者情報一覧 (POST): 引数なし, 中途終了患者情報一覧返却 (Ver.4.7.0 2013/10).
      */
     public static final String TMEDICALGETV2 = "/api01rv2/tmedicalgetv2";
 
     /**
-     * 保険者一覧情報 (POST): 引数なし, 保険者一覧返却 (Ver.4.7.02013/10).
+     * 保険者一覧情報 (POST): 引数なし, 保険者一覧返却 (Ver.4.7.0 2013/10).
      */
     public static final String INSPROGETV2 = "/api01rv2/insprogetv2";
 
     /**
-     * 入院患者食事等情報 (POST): 引数なし, 入院患者食事等情報返却 (Ver.4.7.02013/10).
+     * 入院患者食事等情報 (POST): 引数なし, 入院患者食事等情報返却 (Ver.4.7.0 2013/10).
      */
     public static final String HSMEALV2 = "/api01rv2/hsmealv2";
 
     /**
-     * 入院患者医療区分・ADL点数情報 (POST): 引数なし, 入院患者医療区分・ADL点数情報返却 (Ver.4.7.02013/10).
+     * 入院患者医療区分・ADL点数情報 (POST): 引数なし, 入院患者医療区分・ADL点数情報返却 (Ver.4.7.0 2013/10).
      */
     public static final String HSPTEVALV2 = "/api01rv2/hsptevalv2";
 
     /**
-     * 入院患者基本情報 (POST): 引数なし, 入院患者基本情報返却 (Ver.4.7.02013/10).
+     * 入院患者基本情報 (POST): 引数なし, 入院患者基本情報返却 (Ver.4.7.0 2013/10).
      */
     public static final String HSPTINFV2 = "/api01rv2/hsptinfv2";
 
     /**
-     * 仮計算情報 (POST): 引数なし, 仮計算情報返却 (Ver.4.7.02013/11 ).
+     * 仮計算情報 (POST): 引数なし, 仮計算情報返却 (Ver.4.7.0 2013/11).
      */
     public static final String HSACSIMULATEV2 = "/api01rv2/hsacsimulatev2";
 
     /**
-     * 収納情報返却 (POST): 引数なし, 収納情報返却 (Ver.4.7.02013/12 ).
+     * 収納情報返却 (POST): 引数なし, 収納情報返却 (Ver.4.7.0 2013/12).
      */
     public static final String INCOMEINFV2 = "/api01rv2/incomeinfv2";
 
     /**
-     * システム情報の取得 (POST): 引数なし, システム情報の返却 (Ver.4.7.02014/10).
+     * システム情報の取得 (POST): 引数なし, システム情報の返却 (Ver.4.7.0 2014/10).
      */
     public static final String SYSTEMINFV2 = "/api01rv2/systeminfv2";
 
     /**
-     * 入院登録 (POST): 引数なし, 入院登録 (Ver.4.7.02015/03).
+     * 入院登録 (POST): 引数なし, 入院登録 (Ver.4.7.0 2015/03).
      */
     public static final String HSPTINFMODV2 = "/orca31/hsptinfmodv2";
 
     /**
-     * 外泊等登録 (POST): 引数なし, 外泊等登録 (Ver.4.7.02015/03 ).
+     * 外泊等登録 (POST): 引数なし, 外泊等登録 (Ver.4.7.0 2015/03).
      */
     public static final String HSACCTMODV2 = "/orca31/hsacctmodv2";
 
     /**
-     * 入院患者医療区分・ADL点数登録 (POST): 引数なし, 入院患者医療区分・ADL点数登録 (Ver.4.7.02015/03 ).
+     * 入院患者医療区分・ADL点数登録 (POST): 引数なし, 入院患者医療区分・ADL点数登録 (Ver.4.7.0 2015/03).
      */
     public static final String HSPTEVALMODV2 = "/orca32/hsptevalmodv2";
 
     /**
-     * ユーザー管理情報 (POST): 引数なし, ユーザー一覧 (Ver.4.8.02015/09).
+     * ユーザー管理情報 (POST): 引数なし, ユーザー一覧 (Ver.4.8.0 2015/09).
      */
     public static final String MANAGEUSERSV2 = "/orca101/manageusersv2";
 
     /**
-     * セット登録 (POST): 引数なし, 新規登録 (Ver.4.8.02015/12 ).
+     * セット登録 (POST): 引数なし, 新規登録 (Ver.4.8.0 2015/12).
      */
     public static final String MEDICALSETV2 = "/orca21/medicalsetv2";
 
     /**
-     * 出産育児一時金 (POST): 引数なし, 照会 (Ver.4.8.02016/01 ).
+     * 出産育児一時金 (POST): 引数なし, 照会 (Ver.4.8.0 2016/01).
      */
     public static final String BIRTHDELIVERYV2 = "/orca31/birthdeliveryv2";
 
     /**
-     * 全保険組合せ一覧取得 (POST): 引数なし, 全保険組合せ一覧取得 (Ver.4.8.02017/05).
+     * 全保険組合せ一覧取得 (POST): 引数なし, 全保険組合せ一覧取得 (Ver.4.8.0 2017/05).
      */
     public static final String PATIENTLST6V2 = "/api01rv2/patientlst6v2";
 
     /**
-     * 患者病名登録 (POST): 引数なし, 患者病名登録 (Ver.5.0.02017/06).
+     * 患者病名登録 (POST): 引数なし, 患者病名登録 (Ver.5.0.0 2017/06).
      */
     public static final String DISEASEV2 = "/orca22/diseasev2";
 
     /**
-     * 患者病名登録２ (POST): 引数なし, 患者病名登録２ (Ver.5.0.02017/09).
+     * 患者病名登録２ (POST): 引数なし, 患者病名登録２ (Ver.5.0.0 2017/09).
      */
     public static final String DISEASEV3 = "/orca22/diseasev3";
 
     /**
-     * 入院会計作成 (POST): 引数なし, 入院会計作成 (Ver.4.8.02017/11).
-     */
-    // public static final String HSACCTMODV2 = "/orca31/hsacctmodv2";
-
-    /**
-     * 入院会計未作成チェック (POST): 引数なし, 入院会計未作成チェック (Ver.4.8.02017/11).
+     * 入院会計未作成チェック (POST): 引数なし, 入院会計未作成チェック (Ver.4.8.0 2017/11).
      */
     public static final String HSPMMV2 = "/orca31/hspmmv2";
-
-    /**
-     * 室料差額登録 (POST): 引数なし, 室料差額登録 (Ver.5.0.02017/12).
-     */
-    // public static final String HSACCTMODV2 = "/orca31/hsacctmodv2";
 
     /**
      * Ver.5.0.02018/03 (PUSH通知一括取得): json ※１ (POST).
@@ -213,17 +203,17 @@ public class OrcaApiUrl {
     public static final String PUSHEVENTGETV2 = "/api01rv2/pusheventgetv2";
 
     /**
-     * マスタデータ最終更新日取得 (POST): 引数なし, マスタデータ最終更新日取得 (Ver.5.0.0).
+     * マスタデータ最終更新日取得 (POST): 引数なし, マスタデータ最終更新日取得 (Ver.5.0.0 2018-09).
      */
     public static final String MASTERLASTUPDATEV3 = "/orca51/masterlastupdatev3";
 
     /**
-     * 基本情報取得 (POST): 引数なし, 基本情報取得 (Ver.5.0.0).
+     * 基本情報取得 (POST): 引数なし, 基本情報取得 (Ver.5.0.0 2018-09).
      */
     public static final String SYSTEM01DAILYV2 = "/api01rv2/system01dailyv2";
 
     /**
-     * 患者メモ取得 (POST): 引数なし, 患者メモ取得 (Ver.5.0.0).
+     * 患者メモ取得 (POST): 引数なし, 患者メモ取得 (Ver.5.0.0 2021-01-27).
      */
     public static final String PATIENTLST7V2 = "/api01rv2/patientlst7v2";
 
@@ -248,12 +238,22 @@ public class OrcaApiUrl {
     public static final String INSURANCEINF1V2 = "/api01rv2/insuranceinf1v2";
 
     /**
-     * 症状詳記情報取得 (POST): 引数なし, 症状詳記情報取得 (Ver.5.0.0).
+     * 症状詳記情報取得 (POST): 引数なし, 症状詳記情報取得 (Ver.5.0.0 2024-10).
      */
     public static final String SUBJECTIVESLSTV2 = "/api01rv2/subjectiveslstv2";
 
     /**
-     * 旧姓履歴情報取得 (POST): 引数なし, 旧姓履歴情報取得 (Ver.5.0.0).
+     * 旧姓履歴情報取得 (POST): 引数なし, 旧姓履歴情報取得 (Ver.5.0.0 2021-11).
      */
     public static final String PATIENTLST8V2 = "/api01rv2/patientlst8v2";
+
+    /**
+     * 入力・診療コード内容取得 (POST): 引数なし, 入力・診療コード内容取得 (Ver.5.0.0 2024-11).
+     */
+    public static final String MEDICATIONGETV2 = "/api01rv2/medicationgetv2";
+
+    /**
+     * 患者メモ登録 (POST): 引数なし, 患者メモ登録/更新/削除 (Ver.5.0.0 2025-08).
+     */
+    public static final String PATIENTMEMOMODV2 = "/orca06/patientmemomodv2";
 }

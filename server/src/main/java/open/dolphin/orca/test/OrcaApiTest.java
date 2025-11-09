@@ -23,7 +23,7 @@ public class OrcaApiTest {
         OrcaApiTest test = new OrcaApiTest();
         //test.patientgetv2();
         //test.appointmodv2();
-        test.medicalmodv2();
+        //test.medicalmodv2();
         //test.acceptmodv2();
         //test.acceptlstacceptlstv2();
         //test.appointlstv2();
@@ -56,6 +56,8 @@ public class OrcaApiTest {
         //test.subjectiveslstv2();
         //test.pusheventgetv2();
         //test.patientlst8v2();
+        //test.medicationgetv2();
+        test.patientmemomodv2();
     }
 
     private void patientgetv2() {
@@ -560,7 +562,14 @@ public class OrcaApiTest {
         req.setInsurance_Combination_Number("0002");
 
         Subjectiveslstres res = api.post(req);
+        System.out.println(JsonUtils.toJson(res));
 
+        System.out.println("Request_Number = 03 を追加");
+
+        req = new Subjectiveslstreq();
+        req.setRequest_Number("03");
+
+        res = api.post(req);
         System.out.println(JsonUtils.toJson(res));
     }
 
@@ -585,6 +594,31 @@ public class OrcaApiTest {
         req.setPatient_ID("001967");
 
         Patientlst8res res = api.post(req);
+        System.out.println(JsonUtils.toJson(res));
+    }
+
+    private void medicationgetv2() {
+        System.out.println("入力・診療コード内容取得");
+
+        Medicationgetreq req = new Medicationgetreq();
+        req.setRequest_Number("01");
+        req.setRequest_Code("3xn");
+        req.setBase_Date("2024-11-01");
+
+        Medicationgetres res = api.post(req);
+        System.out.println(JsonUtils.toJson(res));
+    }
+
+    private void patientmemomodv2() {
+        System.out.println("患者メモ登録");
+
+        Patientmemomodv2req req = new Patientmemomodv2req();
+        req.setRequest_Number("01");
+        req.setPatient_ID("000001");
+        req.setDepartment_Code("00");
+        req.setPatient_Memo("テストメモ1");
+
+        Patientmemomodv2res res = api.post(req);
         System.out.println(JsonUtils.toJson(res));
     }
 }

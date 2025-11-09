@@ -37,6 +37,17 @@ public class PatientMemoInformation {
     private AcceptInformation Accept_Information;
 
     /**
+     * 登録日 (例: 2025-08-25)
+     */
+    private String Perform_Date;
+
+    /**
+     * メモ区分 (例: 1)
+     */
+    private String Memo_Class;
+
+
+    /**
      * Patient_Memo_Department_00
      *
      * @return Patient_Memo_Department_00
@@ -142,5 +153,41 @@ public class PatientMemoInformation {
      */
     public void setAccept_Information(AcceptInformation Accept_Information) {
         this.Accept_Information = Accept_Information;
+    }
+
+    /**
+     * Perform_Date
+     *
+     * @return Perform_Date
+     */
+    public String getPerform_Date() {
+        return Perform_Date;
+    }
+
+    /**
+     * Perform_Date
+     *
+     * @param Perform_Date to set
+     */
+    public void setPerform_Date(String Perform_Date) {
+        this.Perform_Date = Perform_Date;
+    }
+
+    /**
+     * Memo_Class
+     *
+     * @return Memo_Class
+     */
+    public String getMemo_Class() {
+        return Memo_Class;
+    }
+
+    /**
+     * Memo_Class
+     *
+     * @param Memo_Class to set
+     */
+    public void setMemo_Class(String Memo_Class) {
+        this.Memo_Class = Memo_Class;
     }
 }

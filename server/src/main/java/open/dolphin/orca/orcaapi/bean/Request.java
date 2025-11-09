@@ -173,6 +173,16 @@ public class Request {
      */
     private Patientlst8req patientlst8req;
 
+    /**
+     * 入力・診療コード内容取得. https://www.orca.med.or.jp/receipt/tec/api/medicationgetv2.html
+     */
+    private Medicationgetreq medicationgetreq;
+
+    /**
+     * 患者メモ登録. https://www.orca.med.or.jp/receipt/tec/api/patientmemomodv2.html
+     */
+    private Patientmemomodv2req patient_memomodreq;
+
 
     /**
      * API 予約. https://www.orca.med.or.jp/receipt/tec/api/appointmod.html
@@ -779,5 +789,41 @@ public class Request {
      */
     public void setPatientlst8req(Patientlst8req patientlst8req) {
         this.patientlst8req = patientlst8req;
+    }
+
+    /**
+     * medicationgetreq
+     *
+     * @return medicationgetreq
+     */
+    public Medicationgetreq getMedicationgetreq() {
+        return medicationgetreq;
+    }
+
+    /**
+     * medicationgetreq
+     *
+     * @param medicationgetreq to set
+     */
+    public void setMedicationgetreq(Medicationgetreq medicationgetreq) {
+        this.medicationgetreq = medicationgetreq;
+    }
+
+    /**
+     * patientmemomodv2req
+     *
+     * @return patientmemomodv2req
+     */
+    public Patientmemomodv2req getPatientmemomodv2req() {
+        return patient_memomodreq;
+    }
+
+    /**
+     * patientmemomodv2req
+     *
+     * @param patientmemomodv2req to set
+     */
+    public void setPatientmemomodv2req(Patientmemomodv2req patientmemomodv2req) {
+        this.patient_memomodreq = patientmemomodv2req;
     }
 }

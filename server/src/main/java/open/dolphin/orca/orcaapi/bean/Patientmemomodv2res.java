@@ -1,33 +1,33 @@
 package open.dolphin.orca.orcaapi.bean;
 
 /**
- * subjectiveslstres.
+ * Patientmemomodv2res.
  *
  * @author pns
  */
-public class Subjectiveslstres {
+public class Patientmemomodv2res {
     /**
-     * 処理日付システム日付 (例: )
+     * 実施日 (例: 2021-11-12)
      */
     private String Information_Date;
 
     /**
-     * 処理時間システム時間 (例: )
+     * 実施時間 (例: 13:36:47)
      */
     private String Information_Time;
 
     /**
-     * 処理区分※1 (例: )
+     * 結果コード (例: 000)
      */
     private String Api_Result;
 
     /**
-     * 処理メッセージ (例: )
+     * 処理メッセージ (例:  )
      */
     private String Api_Result_Message;
 
     /**
-     * (例: )
+     *   (例: PatientInfo)
      */
     private String Reskey;
 
@@ -37,24 +37,9 @@ public class Subjectiveslstres {
     private PatientInformation Patient_Information;
 
     /**
-     * 診療年月送信内容 (例: )
+     * メモ情報 (例: )
      */
-    private String Perform_Date;
-
-    /**
-     * 症状詳記リスト（繰り返し50） (例: )
-     */
-    private SubjectivesInformation[] Subjectives_Information;
-
-    /**
-     * 症状詳記コメント※2 (例: )
-     */
-    private SubjectivesCodeInformation Subjectives_Code_Information;
-
-    /**
-     *  症状詳記区分リスト
-     */
-    private SubjectivesInformation[] Subjectives_Detail_Information;
+    private PatientMemoInformation Patient_Memo_Information;
 
     /**
      * Information_Date
@@ -165,74 +150,20 @@ public class Subjectiveslstres {
     }
 
     /**
-     * Perform_Date
+     * Patient_Memo_Information
      *
-     * @return Perform_Date
+     * @return Patient_Memo_Information
      */
-    public String getPerform_Date() {
-        return Perform_Date;
+    public PatientMemoInformation getPatient_Memo_Information() {
+        return Patient_Memo_Information;
     }
 
     /**
-     * Perform_Date
+     * Patient_Memo_Information
      *
-     * @param Perform_Date to set
+     * @param Patient_Memo_Information to set
      */
-    public void setPerform_Date(String Perform_Date) {
-        this.Perform_Date = Perform_Date;
-    }
-
-    /**
-     * Subjectives_Information
-     *
-     * @return Subjectives_Information
-     */
-    public SubjectivesInformation[] getSubjectives_Information() {
-        return Subjectives_Information;
-    }
-
-    /**
-     * Subjectives_Information
-     *
-     * @param Subjectives_Information to set
-     */
-    public void setSubjectives_Information(SubjectivesInformation[] Subjectives_Information) {
-        this.Subjectives_Information = Subjectives_Information;
-    }
-
-    /**
-     * Subjectives_Code_Information
-     *
-     * @return Subjectives_Code_Information
-     */
-    public SubjectivesCodeInformation getSubjectives_Code_Information() {
-        return Subjectives_Code_Information;
-    }
-
-    /**
-     * Subjectives_Code_Information
-     *
-     * @param Subjectives_Code_Information to set
-     */
-    public void setSubjectives_Code_Information(SubjectivesCodeInformation Subjectives_Code_Information) {
-        this.Subjectives_Code_Information = Subjectives_Code_Information;
-    }
-
-    /**
-     * Subjectives_Detail_Information
-     *
-     * @return Subjectives_Detail_Information
-     */
-    public SubjectivesInformation[] getSubjectives_Detail_Information() {
-        return Subjectives_Detail_Information;
-    }
-
-    /**
-     * Subjectives_Detail_Information
-     *
-     * @param Subjectives_Detail_Information to set
-     */
-    public void setSubjectives_Detail_Information(SubjectivesInformation[] Subjectives_Detail_Information) {
-        this.Subjectives_Detail_Information = Subjectives_Detail_Information;
+    public void setPatient_Memo_Information(PatientMemoInformation Patient_Memo_Information) {
+        this.Patient_Memo_Information = Patient_Memo_Information;
     }
 }

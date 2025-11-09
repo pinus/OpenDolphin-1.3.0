@@ -209,6 +209,16 @@ public class Response {
      */
     private Patientlst8res patientlst8res;
 
+    /**
+     * 入力・診療コード内容取得. https://www.orca.med.or.jp/receipt/tec/api/medicationgetv2.html
+     */
+    private Medicationgetres medicationgetres;
+
+    /**
+     * 患者メモ登録. https://www.orca.med.or.jp/receipt/tec/api/patientmemomodv2.html
+     */
+    private Patientmemomodv2res patient_memomodres;
+
 
     /**
      * 患者基本情報の取得. https://www.orca.med.or.jp/receipt/tec/api/patientget.html
@@ -919,5 +929,41 @@ public class Response {
      */
     public void setPatientlst8res(Patientlst8res patientlst8res) {
         this.patientlst8res = patientlst8res;
+    }
+
+    /**
+     * medicationgetres
+     *
+     * @return medicationgetres
+     */
+    public Medicationgetres getMedicationgetres() {
+        return medicationgetres;
+    }
+
+    /**
+     * medicationgetres
+     *
+     * @param medicationgetres to set
+     */
+    public void setMedicationgetres(Medicationgetres medicationgetres) {
+        this.medicationgetres = medicationgetres;
+    }
+
+    /**
+     * patientmemomodv2res
+     *
+     * @return patientmemomodv2res
+     */
+    public Patientmemomodv2res getPatientmemomodv2res() {
+        return patient_memomodres;
+    }
+
+    /**
+     * patientmemomodv2res
+     *
+     * @param patientmemomodv2res to set
+     */
+    public void setPatientmemomodv2res(Patientmemomodv2res patientmemomodv2res) {
+        this.patient_memomodres = patientmemomodv2res;
     }
 }
