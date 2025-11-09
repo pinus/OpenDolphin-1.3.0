@@ -91,6 +91,8 @@ public class ModuleModel extends KarteEntryBean<ModuleModel> {
      */
     private String beanBytesToString(byte[] beanBytes) {
         InfoModel im = (InfoModel) ModelUtils.xmlDecode(beanBytes);
+        if (Objects.isNull(im)) { return ""; }
+
         if (im instanceof ProgressCourse progressCourse) {
             String xml = progressCourse.getFreeText();
             return ModelUtils.extractText(xml);
