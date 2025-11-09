@@ -15,17 +15,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * The IMEServer class is responsible for managing an Input Method Editor (IME) server
- * that supports selection between Japanese and Roman input methods. It initializes
- * and controls the lifecycle of the TIS server process used for handling input method
- * commands and responses.
- * <p>
- * The class includes functionality to:
- * - Start and stop the TIS server process.
- * - Select between different language input modes.
- * - Handle server responses and timeout events reliably.
- */
+/// The IMEServer class is responsible for managing an Input Method Editor (IME) server
+/// that supports selection between Japanese and Roman input methods. It initializes
+/// and controls the lifecycle of the TIS server process used for handling input method
+/// commands and responses.
+///
+/// The class includes functionality to:
+/// - Start and stop the TIS server process.
+/// - Select between different language input modes.
+/// - Handle server responses and timeout events reliably.
 public class IMEServer {
     private final byte[] JAPANESE = "J\n".getBytes();
     private final byte[] ROMAN = "R\n".getBytes();
@@ -38,18 +36,16 @@ public class IMEServer {
     private final BlockingQueue<String> res = new ArrayBlockingQueue<>(1);
     private final Logger logger = LoggerFactory.getLogger(IMEServer.class);
 
-    /**
-     * Constructs an instance of the IMEServer class.
-     * <p>
-     * This constructor initializes the TIS server directory path based on the current
-     * working directory or the client context stub if available. If the application
-     * is being tested standalone and the directory does not include "client", it appends
-     * "/client" to the path to ensure proper server access.
-     * <p>
-     * Additionally, the constructor sets up a shutdown hook that guarantees the server
-     * process is destroyed when the application exits. This ensures the cleanup of
-     * resources associated with the server.
-     */
+    /// Constructs an instance of the IMEServer class.
+    ///
+    /// This constructor initializes the TIS server directory path based on the current
+    /// working directory or the client context stub if available. If the application
+    /// is being tested standalone and the directory does not include "client", it appends
+    /// "/client" to the path to ensure proper server access.
+    ///
+    /// Additionally, the constructor sets up a shutdown hook that guarantees the server
+    /// process is destroyed when the application exits. This ensures the cleanup of
+    /// resources associated with the server.
     public IMEServer() {
         // TISServer のある directory を調べる
         String tisDir = System.getProperty("user.dir");
@@ -68,16 +64,16 @@ public class IMEServer {
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
-    /**
-     * Starts the TIS server process if it exists.
-     * <p>
-     * The method checks for the existence of the TIS server file. If the file is present,
-     * it attempts to start the server process using a {@link ProcessBuilder}. It also starts a
-     * separate virtual thread to continuously read the server's output for an "OK" response,
-     * which is then offered to a response queue.
-     *
-     * @return {@code true} if the server starts successfully, otherwise {@code false}.
-     */
+    /// Starts the TISServer process if the server executable exists, setting up
+    /// a background thread to receive server responses.
+    /// This method checks for the existence of the TISServer executable's path.
+    /// If found, it starts the server process and establishes an output stream
+    /// to communicate with the server. A background thread is created to read
+    /// and handle the server's responses continuously.
+    /// If the executable is not found or the process fails to start, the method
+    /// will return false.
+    ///
+    /// @return true if the server process started successfully, false otherwise
     public boolean start() {
         // TISServer 実体がなければ false
         if (!Files.exists(Paths.get(tisServer))) {
@@ -94,10 +90,9 @@ public class IMEServer {
                     while (true) {
                         String line = reader.readLine();
                         if (line != null) {
-                            // offer server's OK response to res queue
-                            if (line.equals("OK")) {
-                                res.offer(line);
-                            } else {
+                            // offer server's response to res queue
+                            res.offer(line);
+                            if (!line.equals("OK")) {
                                 logger.info("server response: {}", line);
                             }
                         }
@@ -110,65 +105,52 @@ public class IMEServer {
             e.printStackTrace(System.err);
             return false;
         }
+        select("?\n".getBytes()); // show version as server response
         return true;
     }
 
-    /**
-     * Stops the server process associated with the IMEServer instance.
-     * <p>
-     * If the server process is currently running, this method will destroy
-     * the process, effectively terminating it. It ensures that resources
-     * associated with the process are released. This method should be called
-     * when the server is no longer needed or before shutting down the
-     * application to ensure a proper cleanup of system resources.
-     */
+    /// Stops the server process associated with the IMEServer instance.
+    ///
+    /// If the server process is currently running, this method will destroy
+    /// the process, effectively terminating it. It ensures that resources
+    /// associated with the process are released. This method should be called
+    /// when the server is no longer needed or before shutting down the
+    /// application to ensure a proper cleanup of system resources.
     public void stop() {
         if (process != null) {
             process.destroy();
         }
     }
 
-    /**
-     * Selects the Japanese input method on the IMEServer instance.
-     */
+    /// Selects the Japanese input method on the IMEServer instance.
     public void selectJapanese() {
         select(JAPANESE);
     }
 
-    /**
-     * Selects the Roman input method on the IMEServer instance.
-     */
+    /// Selects the Roman input method on the IMEServer instance.
     public void selectRoman() {
         select(ROMAN);
     }
 
-    /**
-     * Selects the com.apple.keylayout.ABC on the IMEServer instance.
-     */
+    /// Selects the com.apple.keylayout.ABC on the IMEServer instance.
     public void selectABC() {
         select(ABC);
     }
 
-    /**
-     * Selects the com.apple.keylayout.US on the IMEServer instance.
-     */
+    /// Selects the com.apple.keylayout.US on the IMEServer instance.
     public void selectUS() {
         select(US);
     }
 
-    /**
-     * Selects the com.apple.keylayout.USExtended on the IMEServer instance.
-     */
+    /// Selects the com.apple.keylayout.USExtended on the IMEServer instance.
     public void selectUSExt() {
         select(US_EXT);
     }
 
-    /**
-     * Sends the specified language byte array to the output stream, flushes the stream,
-     * and waits for a result from the server.
-     *
-     * @param lang a byte array representing the language selection to be sent to the server.
-     */
+    /// Sends the specified language byte array to the output stream, flushes the stream,
+    /// and waits for a result from the server.
+    ///
+    /// @param lang a byte array representing the language selection to be sent to the server.
     private void select(byte[] lang) {
         try {
             output.write(lang);
@@ -179,19 +161,17 @@ public class IMEServer {
         }
     }
 
-    /**
-     * Waits for a response from the server through a specified response queue.
-     * <p>
-     * This method attempts to retrieve a response from the server, which is
-     * expected to be queued in the response queue (res). It waits for a maximum
-     * of 1 second to receive a response. If no response is received within this
-     * period, it logs a timeout event, stops the server, and attempts to restart
-     * it in order to ensure ongoing communication.
-     * <p>
-     * The server response and timeout events are logged using an injected logger.
-     * Throws an InterruptedException in case of a timeout, which is caught and
-     * handled by logging and restarting server processes.
-     */
+    /// Waits for a response from the server through a specified response queue.
+    ///
+    /// This method attempts to retrieve a response from the server, which is
+    /// expected to be queued in the response queue (res). It waits for a maximum
+    /// of 1 second to receive a response. If no response is received within this
+    /// period, it logs a timeout event, stops the server, and attempts to restart
+    /// it in order to ensure ongoing communication.
+    ///
+    /// The server response and timeout events are logged using an injected logger.
+    /// Throws an InterruptedException in case of a timeout, which is caught and
+    /// handled by logging and restarting server processes.
     private void waitForResult() {
         try {
             // receive server response through res queue
@@ -208,7 +188,7 @@ public class IMEServer {
         }
     }
 
-    public static void main(String[] argv) {
+    static void main(String[] argv) {
         IMEServer server = new IMEServer();
         if (server.start()) {
             server.selectJapanese();
