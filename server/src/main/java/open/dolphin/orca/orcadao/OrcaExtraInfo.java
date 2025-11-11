@@ -53,6 +53,8 @@ public class OrcaExtraInfo {
         // 1012    | 06       | 健康診断                                健康診断
         // 1012    | 07       | 予防注射                                予防注射
         //
+        // TODO: /api01rv2/system01lstv2?class=06 で取れるようになってる (2024-12-23)
+        //
         sql = "select kbncd, kanritbl from tbl_syskanri where hospnum = ? and kanricd = ?";
         con = new OrcaDbConnection(rs -> {
             while (rs.next()) {

@@ -72,6 +72,25 @@ public class Response {
     private System1001res system1001res;
 
     /**
+     * システム管理情報の取得. 入金方法情報.
+     * https://www.orca.med.or.jp/receipt/tec/api/systemkanri.html
+     */
+    private Incomeres incomeres;
+
+    /**
+     * システム管理情報の取得. 診療内容情報.
+     * https://www.orca.med.or.jp/receipt/tec/api/systemkanri.html
+     */
+    private Medicalinfres medicalinfres;
+
+    /**
+     * システム管理情報の取得. 患者状態コメント情報.
+     * https://www.orca.med.or.jp/receipt/tec/api/systemkanri.html
+     */
+    private Ptconditionres ptconditionres;
+
+
+    /**
      * 診療情報の返却. 受診履歴一覧取得
      * https://www.orca.med.or.jp/receipt/tec/api/medicalinfo.html
      */
@@ -965,5 +984,59 @@ public class Response {
      */
     public void setPatientmemomodv2res(Patientmemomodv2res patientmemomodv2res) {
         this.patient_memomodres = patientmemomodv2res;
+    }
+
+    /**
+     * incomeres
+     *
+     * @return incomeres
+     */
+    public Incomeres getIncomeres() {
+        return incomeres;
+    }
+
+    /**
+     * incomeres
+     *
+     * @param incomeres to set
+     */
+    public void setIncomeres(Incomeres incomeres) {
+        this.incomeres = incomeres;
+    }
+
+    /**
+     * medicalinfres
+     *
+     * @return medicalinfres
+     */
+    public Medicalinfres getMedicalinfres() {
+        return medicalinfres;
+    }
+
+    /**
+     * medicalinfres
+     *
+     * @param medicalinfres to set
+     */
+    public void setMedicalinfres(Medicalinfres medicalinfres) {
+        this.medicalinfres = medicalinfres;
+    }
+
+    /**
+     * ptconditionres
+     *
+     * @return ptconditionres
+     */
+    public Ptconditionres getPtconditionres() {
+        return ptconditionres;
+    }
+
+    /**
+     * ptconditionres
+     *
+     * @param ptconditionres to set
+     */
+    public void setPtconditionres(Ptconditionres ptconditionres) {
+        this.ptconditionres = ptconditionres;
     }
 }

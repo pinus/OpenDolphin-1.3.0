@@ -27,6 +27,16 @@ public class Medicalgetreq {
     private String For_Months;
 
     /**
+     * 対象更新日 (例: ) 追加 (2024-09-25)
+     */
+    private String Base_StartDate;
+
+    /**
+     * 対象更新時間 (例: ) 追加 (2024-09-25) (00:00:00 から 23:59:59の範囲内)
+     */
+    private String Base_StartTime;
+
+    /**
      * 診療情報 (例:  )
      */
     private MedicalInformation3 Medical_Information;
@@ -101,6 +111,42 @@ public class Medicalgetreq {
      */
     public void setFor_Months(String For_Months) {
         this.For_Months = For_Months;
+    }
+
+    /**
+     * Base_StartDate
+     *
+     * @return Base_StartDate
+     */
+    public String getBase_StartDate() {
+        return Base_StartDate;
+    }
+
+    /**
+     * Base_StartDate
+     *
+     * @param Base_StartDate to set
+     */
+    public void setBase_StartDate(String Base_StartDate) {
+        this.Base_StartDate = Base_StartDate;
+    }
+
+    /**
+     * Base_StartTime
+     *
+     * @return Base_StartTime
+     */
+    public String getBase_StartTime() {
+        return Base_StartTime;
+    }
+
+    /**
+     * Base_StartTime
+     *
+     * @param Base_StartTime to set
+     */
+    public void setBase_StartTime(String Base_StartTime) {
+        this.Base_StartTime = Base_StartTime;
     }
 
     /**

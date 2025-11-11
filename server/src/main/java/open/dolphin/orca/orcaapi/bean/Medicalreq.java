@@ -32,6 +32,11 @@ public class Medicalreq {
     private String Medical_Uid;
 
     /**
+     * 入院年月日	(例: 2014-10-01) 追加 (2025-05-02)
+     */
+    private String Admission_Date;
+
+    /**
      * 診療情報 (例:  )
      */
     private DiagnosisInformation Diagnosis_Information;
@@ -129,6 +134,24 @@ public class Medicalreq {
      */
     public void setMedical_Uid(String Medical_Uid) {
         this.Medical_Uid = Medical_Uid;
+    }
+
+    /**
+     * Admission_Date
+     *
+     * @return Admission_Date
+     */
+    public String getAdmission_Date() {
+        return Admission_Date;
+    }
+
+    /**
+     * Admission_Date
+     *
+     * @param Admission_Date to set
+     */
+    public void setAdmission_Date(String Admission_Date) {
+        this.Admission_Date = Admission_Date;
     }
 
     /**

@@ -204,6 +204,9 @@ public class OrcaApi {
         system01manageres.setDepartmentres(response.getDepartmentres());
         system01manageres.setPhysicianres(response.getPhysicianres());
         system01manageres.setSystem1001res(response.getSystem1001res());
+        system01manageres.setIncomeres(response.getIncomeres());
+        system01manageres.setMedicalinfres(response.getMedicalinfres());
+        system01manageres.setPtconditionres(response.getPtconditionres());
         return system01manageres;
     }
 

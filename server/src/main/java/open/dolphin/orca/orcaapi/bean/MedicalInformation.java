@@ -52,6 +52,16 @@ public class MedicalInformation {
     private String Medical_Examination_Count;
 
     /**
+     * 長期収載品選定療養点数 (例: )  追加 (2024-09-25) 長期収載品選定療養の剤点数
+     */
+    private String Patient_Choice_Point;
+
+    /**
+     * 長期収載品選定療養特別料金(税込) (例: )  追加 (2024-09-25)
+     */
+    private String Patient_Choice_Money;
+
+    /**
      * 診療行為詳細（繰り返し　５０） (例:  )
      */
     private MedicationInfo[] Medication_info;
@@ -198,6 +208,42 @@ public class MedicalInformation {
      */
     public void setMedical_Examination_Count(String Medical_Examination_Count) {
         this.Medical_Examination_Count = Medical_Examination_Count;
+    }
+
+    /**
+     * Patient_Choice_Point
+     *
+     * @return Patient_Choice_Point
+     */
+    public String getPatient_Choice_Point() {
+        return Patient_Choice_Point;
+    }
+
+    /**
+     * Patient_Choice_Point
+     *
+     * @param Patient_Choice_Point to set
+     */
+    public void setPatient_Choice_Point(String Patient_Choice_Point) {
+        this.Patient_Choice_Point = Patient_Choice_Point;
+    }
+
+    /**
+     * Patient_Choice_Money
+     *
+     * @return Patient_Choice_Money
+     */
+    public String getPatient_Choice_Money() {
+        return Patient_Choice_Money;
+    }
+
+    /**
+     * Patient_Choice_Money
+     *
+     * @param Patient_Choice_Money to set
+     */
+    public void setPatient_Choice_Money(String Patient_Choice_Money) {
+        this.Patient_Choice_Money = Patient_Choice_Money;
     }
 
     /**

@@ -42,6 +42,21 @@ public class Medicalget01res {
     private MedicalListInformation[] Medical_List_Information;
 
     /**
+     * 登録日 (例: ) 追加 (2024-09-25)
+     */
+    private String CreateDate;
+
+    /**
+     * 更新日 (例: ) 追加 (2024-09-25)
+     */
+    private String UpdateDate;
+
+    /**
+     * 更新時間 (例: ) 追加 (2024-09-25)
+     */
+    private String UpdateTime;
+
+    /**
      * 実施日 (例: 2014-01-15)
      *
      * @return the Information_Date
@@ -165,5 +180,59 @@ public class Medicalget01res {
      */
     public void setMedical_List_Information(MedicalListInformation[] Medical_List_Information) {
         this.Medical_List_Information = Medical_List_Information;
+    }
+
+    /**
+     * CreateDate
+     *
+     * @return CreateDate
+     */
+    public String getCreateDate() {
+        return CreateDate;
+    }
+
+    /**
+     * CreateDate
+     *
+     * @param CreateDate to set
+     */
+    public void setCreateDate(String CreateDate) {
+        this.CreateDate = CreateDate;
+    }
+
+    /**
+     * UpdateDate
+     *
+     * @return UpdateDate
+     */
+    public String getUpdateDate() {
+        return UpdateDate;
+    }
+
+    /**
+     * UpdateDate
+     *
+     * @param UpdateDate to set
+     */
+    public void setUpdateDate(String UpdateDate) {
+        this.UpdateDate = UpdateDate;
+    }
+
+    /**
+     * UpdateTime
+     *
+     * @return UpdateTime
+     */
+    public String getUpdateTime() {
+        return UpdateTime;
+    }
+
+    /**
+     * UpdateTime
+     *
+     * @param UpdateTime to set
+     */
+    public void setUpdateTime(String UpdateTime) {
+        this.UpdateTime = UpdateTime;
     }
 }

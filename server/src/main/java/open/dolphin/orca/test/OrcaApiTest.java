@@ -41,7 +41,7 @@ public class OrcaApiTest {
         //test.visitptlstv2();
         //test.tmedicalgetv2();
         //test.insprogetv2();
-        //test.incomeinfv2();
+        test.incomeinfv2();
         //test.systeminfv2();
         //test.manageusersv2();
         //test.medicalsetv2();
@@ -57,7 +57,7 @@ public class OrcaApiTest {
         //test.pusheventgetv2();
         //test.patientlst8v2();
         //test.medicationgetv2();
-        test.patientmemomodv2();
+        //test.patientmemomodv2();
     }
 
     private void patientgetv2() {
@@ -215,22 +215,41 @@ public class OrcaApiTest {
         System01Managereq req = new System01Managereq();
         req.setBase_Date("2017-12");
 
-        req.setRequest_Number("01");
+        req.setRequest_Number("01"); //システム管理に登録されている診療科コード
         Departmentres dRes = api.post(req).getDepartmentres();
+        System.out.println("01");
         System.out.println(dRes.getDepartment_Information()[0].getWholeName());
 
-        req.setRequest_Number("02");
+        req.setRequest_Number("02"); //システム管理に登録されているドクターコード
         Physicianres pRes = api.post(req).getPhysicianres();
+        System.out.println("02");
         System.out.println(pRes.getPhysician_Information()[0].getWholeName());
 
-        req.setRequest_Number("03");
+        req.setRequest_Number("03"); //システム管理に登録されているドクターコード以外の職員コード
         pRes = api.post(req).getPhysicianres();
+        System.out.println("03");
         System.out.println(pRes.getPhysician_Information()[0].getWholeName());
 
-        req.setRequest_Number("04");
+        req.setRequest_Number("04"); //医療機関基本情報
         System1001res sRes = api.post(req).getSystem1001res();
+        System.out.println("04");
         System.out.println(sRes.getMedical_Information().getInstitution_WholeName());
         System.out.println(sRes.getMedical_Information().getInstitution_Code_Kanji());
+
+        req.setRequest_Number("05"); //入金方法情報
+        Incomeres iRes = api.post(req).getIncomeres();
+        System.out.println("05");
+        System.out.println(JsonUtils.toJson(iRes));
+
+        req.setRequest_Number("06"); //診療内容情報
+        Medicalinfres mRes = api.post(req).getMedicalinfres();
+        System.out.println("06");
+        System.out.println(JsonUtils.toJson(mRes));
+
+        req.setRequest_Number("07"); //患者状態コメント情報
+        Ptconditionres ptRes = api.post(req).getPtconditionres();
+        System.out.println("07");
+        System.out.println(JsonUtils.toJson(ptRes));
     }
 
     private void medicalgetv2() {
@@ -245,16 +264,22 @@ public class OrcaApiTest {
         req.setFor_Months("99");
         req.setPerform_Date("2014-10-06");
         req.setMedical_Information(mInfo);
+        req.setBase_StartDate("2012-01-01");
+        req.setBase_StartTime("00:00:00");
 
+        System.out.println("・受診履歴一覧");
         Medicalget01res res01 = api.post(req, "01").getMedicalget01res();
         Arrays.stream(res01.getMedical_List_Information()).map(MedicalListInformation::getPerform_Date).filter(Objects::nonNull).forEach(System.out::println);
 
+        System.out.println("・診療行為剤内容詳細");
         Medicalget02res res02 = api.post(req, "02").getMedicalget02res();
         Arrays.stream(res02.getMedical_List_Information()[0].getMedical_Information()).map(MedicalInformation::getMedical_Class_Name).filter(Objects::nonNull).forEach(System.out::println);
 
+        System.out.println("・診療月診療コード情報");
         Medicalget03res res03 = api.post(req, "03").getMedicalget03res();
         Arrays.stream(res03.getMedical_List_Information()).map(MedicationInfo::getMedical_Class_Name).filter(Objects::nonNull).forEach(System.out::println);
 
+        System.out.println("・診療区分別剤点数");
         Medicalget04res res04 = api.post(req, "04").getMedicalget04res();
         Arrays.stream(res04.getMedical_Information()[0].getMedical_Information2()).map(MedicalInformation::getMedical_Class_Name).filter(Objects::nonNull).forEach(System.out::println);
     }

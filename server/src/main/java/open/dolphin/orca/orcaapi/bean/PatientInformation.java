@@ -262,6 +262,12 @@ public class PatientInformation {
     private PatientContraInformation Patient_Contra_Information;
 
     /**
+     * 資格確認結果 (例:  )
+     */
+    private Resultofqualificationconfirmation ResultOfQualificationConfirmation;
+
+
+    /**
      * 登録日付 (例: )
      */
     private String CreateDate;
@@ -1202,6 +1208,24 @@ public class PatientInformation {
      */
     public void setPatient_Contra_Information(PatientContraInformation Patient_Contra_Information) {
         this.Patient_Contra_Information = Patient_Contra_Information;
+    }
+
+    /**
+     * ResultOfQualificationConfirmation
+     *
+     * @return ResultOfQualificationConfirmation
+     */
+    public Resultofqualificationconfirmation getResultOfQualificationConfirmation() {
+        return ResultOfQualificationConfirmation;
+    }
+
+    /**
+     * ResultOfQualificationConfirmation
+     *
+     * @param ResultOfQualificationConfirmation to set
+     */
+    public void setResultOfQualificationConfirmation(Resultofqualificationconfirmation ResultOfQualificationConfirmation) {
+        this.ResultOfQualificationConfirmation = ResultOfQualificationConfirmation;
     }
 
     /**

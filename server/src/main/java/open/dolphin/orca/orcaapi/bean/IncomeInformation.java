@@ -32,6 +32,11 @@ public class IncomeInformation {
     private String Invoice_Number;
 
     /**
+     * まとめ伝票番号 複数保険(診療科)入力時、それぞれの伝票番号を紐付ける伝票番号 (例: 0000053)  追加 (2024-11-26)
+     */
+    private String Group_Invoice_Number;
+
+    /**
      * 保険組合せ番号 (例: 0002)
      */
     private String Insurance_Combination_Number;
@@ -115,6 +120,42 @@ public class IncomeInformation {
      * 室料差額消費税再掲（外来またはゼロは非表示） (例: 800)
      */
     private String Tax_In_Room_Charge;
+
+    /**
+     * 入金方法コード (例: 01)
+     */
+    private String Ic_Code;
+
+    /**
+     * 入金方法名称 (例: 現金)
+     */
+    private String Ic_Code_Name;
+
+    /**
+     * 入金方法略称 (例: 現金)
+     */
+    private String Ic_Code_Abbreviation_Name;
+
+    /**
+     * 入金方法分類区分 (例: 01)
+     */
+    private String Ic_Code_Class;
+
+    /**
+     * 入金状態 (例: 1)
+     */
+    private String Ic_Condition;
+
+    /**
+     * 入金状態（退院時） (例: 2)
+     */
+    private String Ic_Discharge_Condition;
+
+    /**
+     * 入金状態（定期請求） (例: 3)
+     */
+    private String Ic_Recurring_Billing_Condition;
+
 
     /**
      * 外来：診療日/入院：請求開始日 (例: 2013-10-01)
@@ -204,6 +245,24 @@ public class IncomeInformation {
      */
     public void setInvoice_Number(String Invoice_Number) {
         this.Invoice_Number = Invoice_Number;
+    }
+
+    /**
+     * Group_Invoice_Number
+     *
+     * @return Group_Invoice_Number
+     */
+    public String getGroup_Invoice_Number() {
+        return Group_Invoice_Number;
+    }
+
+    /**
+     * Group_Invoice_Number
+     *
+     * @param Group_Invoice_Number to set
+     */
+    public void setGroup_Invoice_Number(String Group_Invoice_Number) {
+        this.Group_Invoice_Number = Group_Invoice_Number;
     }
 
     /**
@@ -510,5 +569,131 @@ public class IncomeInformation {
      */
     public void setTax_In_Room_Charge(String Tax_In_Room_Charge) {
         this.Tax_In_Room_Charge = Tax_In_Room_Charge;
+    }
+
+    /**
+     * Ic_Code
+     *
+     * @return Ic_Code
+     */
+    public String getIc_Code() {
+        return Ic_Code;
+    }
+
+    /**
+     * Ic_Code
+     *
+     * @param Ic_Code to set
+     */
+    public void setIc_Code(String Ic_Code) {
+        this.Ic_Code = Ic_Code;
+    }
+
+    /**
+     * Ic_Code_Name
+     *
+     * @return Ic_Code_Name
+     */
+    public String getIc_Code_Name() {
+        return Ic_Code_Name;
+    }
+
+    /**
+     * Ic_Code_Name
+     *
+     * @param Ic_Code_Name to set
+     */
+    public void setIc_Code_Name(String Ic_Code_Name) {
+        this.Ic_Code_Name = Ic_Code_Name;
+    }
+
+    /**
+     * Ic_Code_Abbreviation_Name
+     *
+     * @return Ic_Code_Abbreviation_Name
+     */
+    public String getIc_Code_Abbreviation_Name() {
+        return Ic_Code_Abbreviation_Name;
+    }
+
+    /**
+     * Ic_Code_Abbreviation_Name
+     *
+     * @param Ic_Code_Abbreviation_Name to set
+     */
+    public void setIc_Code_Abbreviation_Name(String Ic_Code_Abbreviation_Name) {
+        this.Ic_Code_Abbreviation_Name = Ic_Code_Abbreviation_Name;
+    }
+
+    /**
+     * Ic_Code_Class
+     *
+     * @return Ic_Code_Class
+     */
+    public String getIc_Code_Class() {
+        return Ic_Code_Class;
+    }
+
+    /**
+     * Ic_Code_Class
+     *
+     * @param Ic_Code_Class to set
+     */
+    public void setIc_Code_Class(String Ic_Code_Class) {
+        this.Ic_Code_Class = Ic_Code_Class;
+    }
+
+    /**
+     * Ic_Condition
+     *
+     * @return Ic_Condition
+     */
+    public String getIc_Condition() {
+        return Ic_Condition;
+    }
+
+    /**
+     * Ic_Condition
+     *
+     * @param Ic_Condition to set
+     */
+    public void setIc_Condition(String Ic_Condition) {
+        this.Ic_Condition = Ic_Condition;
+    }
+
+    /**
+     * Ic_Discharge_Condition
+     *
+     * @return Ic_Discharge_Condition
+     */
+    public String getIc_Discharge_Condition() {
+        return Ic_Discharge_Condition;
+    }
+
+    /**
+     * Ic_Discharge_Condition
+     *
+     * @param Ic_Discharge_Condition to set
+     */
+    public void setIc_Discharge_Condition(String Ic_Discharge_Condition) {
+        this.Ic_Discharge_Condition = Ic_Discharge_Condition;
+    }
+
+    /**
+     * Ic_Recurring_Billing_Condition
+     *
+     * @return Ic_Recurring_Billing_Condition
+     */
+    public String getIc_Recurring_Billing_Condition() {
+        return Ic_Recurring_Billing_Condition;
+    }
+
+    /**
+     * Ic_Recurring_Billing_Condition
+     *
+     * @param Ic_Recurring_Billing_Condition to set
+     */
+    public void setIc_Recurring_Billing_Condition(String Ic_Recurring_Billing_Condition) {
+        this.Ic_Recurring_Billing_Condition = Ic_Recurring_Billing_Condition;
     }
 }
