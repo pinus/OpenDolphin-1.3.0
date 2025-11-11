@@ -3,7 +3,6 @@ package open.dolphin.orca;
 import open.dolphin.infomodel.*;
 import open.dolphin.orca.orcaapi.OrcaApi;
 import open.dolphin.orca.orcaapi.bean.*;
-import open.dolphin.orca.orcadao.OrcaDao;
 import open.dolphin.orca.pushapi.bean.Body;
 import open.dolphin.util.ModelUtils;
 import org.jboss.logging.Logger;
@@ -72,15 +71,26 @@ public class PvtBuilder {
                 .findFirst().get(); // 受付が来ているので null にはならない
 
         //
-        // Department "科名,科コード,Dr名,Drコード,JMARIコード", memo "診察"
+        // Department "科名,科コード,Dr名,Drコード,JMARIコード",memo "診察"
         //
         String deptName = accInfo.getDepartment_WholeName();
         String drName = accInfo.getPhysician_WholeName();
         String jmari = OrcaHostInfo.getInstance().getJmariCode(); // jmari コード
         pvtModel.setDepartment(String.join(",", deptName, deptCode, drName, drCode, jmari));
+
         // Medical_Information (診療内容) は 01 などの数値で返る. api ではこれを「診察」などの文字にすることはできない (by サポートセンター)
+        // String medicalInfoCode = accInfo.getMedical_Information();
+        // pvtModel.setMemo(OrcaDao.getInstance().getExtraInfo().getKanricd1012().get(medicalInfoCode)); // ので DAO で取っておいたのを使う
         String medicalInfoCode = accInfo.getMedical_Information();
-        pvtModel.setMemo(OrcaDao.getInstance().getExtraInfo().getKanricd1012().get(medicalInfoCode)); // ので DAO で取っておいたのを使う
+        System01Managereq sysReq = new System01Managereq();
+        sysReq.setRequest_Number("06"); //診療内容情報
+        Medicalinfres mRes = orcaApi.post(sysReq).getMedicalinfres();
+        String pvtMemo = Arrays.stream(mRes.getMedicalinf_Information())
+            .filter(inf -> medicalInfoCode.equals(inf.getMedical_Information()))
+            .map(MedicalinfInformation::getMedical_Information_Name2)
+            .findFirst()
+            .orElse("");
+        pvtModel.setMemo(pvtMemo);
 
         //
         // PatientInformation (Acceptlstres の Patient_Information には住所情報が入っていないので取り直す)
@@ -184,7 +194,7 @@ public class PvtBuilder {
 
         // PatientVisitModel Composition
         patientModel.setAddress(simpleAddressModel);
-        patientModel.setAddresses(Arrays.asList(addressModel));
+        patientModel.setAddresses(List.of(addressModel));
         patientModel.setTelephones(Arrays.asList(telephoneModel));
         patientModel.setPvtHealthInsurances(pvtInsurances);
         pvtModel.setPatient(patientModel);
