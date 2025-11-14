@@ -671,7 +671,9 @@ public class OrcaServiceApi {
         ptReq.setPatient_ID(spec.getPatientId());
         Patientlst6res ptRes = api.post(ptReq);
 
-        for (HealthInsuranceInformation hi : ptRes.getHealthInsurance_Information()) {
+        // 新しいものから検索
+        for (int i = ptRes.getHealthInsurance_Information().length - 1; i >= 0; i--) {
+            HealthInsuranceInformation hi = ptRes.getHealthInsurance_Information()[i];
             String stMonth = hi.getCertificate_StartDate(); // yyyy-MM-dd 形式
             String expMonth = hi.getCertificate_ExpiredDate(); // yyyy-MM-dd 形式
             if (stMonth == null || expMonth == null) { continue; }
