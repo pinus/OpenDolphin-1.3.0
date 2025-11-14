@@ -37,11 +37,11 @@ public class OrcaApiTest {
         //test.patientmodv2();
         //test.appointlst2v2();
         //test.acsimulatev2();;
-        //test.subjectivesv2();
+        test.subjectivesv2();
         //test.visitptlstv2();
         //test.tmedicalgetv2();
         //test.insprogetv2();
-        test.incomeinfv2();
+        //test.incomeinfv2();
         //test.systeminfv2();
         //test.manageusersv2();
         //test.medicalsetv2();
@@ -360,13 +360,52 @@ public class OrcaApiTest {
     private void subjectivesv2() {
         System.out.println("症状詳記");
 
+        String ptNum = "00001";
+        String targetMonth = "2014-10";
+
+        String dtRecord = "03"; // 03 必要性,
+        //String dtRecord = "AA"; // AA 労災レセプト
+
+        Patientlst6req ptReq = new Patientlst6req();
+        ptReq.setReqest_Number("01");
+        ptReq.setPatient_ID(ptNum);
+        Patientlst6res ptRes = api.post(ptReq);
+        //System.out.println(JsonUtils.toJson(ptRes));
+
+        // 保険組合せ
+        String insNum = "00000";
+        for (HealthInsuranceInformation hi : ptRes.getHealthInsurance_Information()) {
+            String stMonth = hi.getCertificate_StartDate();
+            String expMonth = hi.getCertificate_ExpiredDate();
+            System.out.println(String.format("%s: stMonth: %s, expMonth: %s, targetMonth: %s", hi.getInsurance_Combination_Number(), stMonth, expMonth, targetMonth));
+            if (stMonth == null || expMonth == null) { continue; }
+
+            if (targetMonth.compareTo(stMonth.substring(0, 7)) >= 0
+                && targetMonth.substring(0, 7).compareTo(expMonth.substring(0, 7)) < 0) {
+                // 有効な保険あり
+                if (dtRecord.equals("AA")) {
+                    // 労災保険
+                    if (hi.getInsuranceProvider_Class().equals("971")) {
+                        insNum = hi.getInsurance_Combination_Number();
+                        break;
+                    } // else { continue; }
+                } else {
+                    // 健康保険
+                    insNum = hi.getInsurance_Combination_Number();
+                    break;
+                }
+            }
+        }
+
+        System.out.println("insNum = " + insNum);
+
         Subjectivesmodreq req = new Subjectivesmodreq();
-        req.setPatient_ID("000001");
-        req.setPerform_Date("2014-10");
+        req.setPatient_ID(ptNum);
+        req.setPerform_Date(targetMonth);
         req.setDepartment_Code("19");
-        req.setSubjectives_Detail_Record("03");
-        req.setInsurance_Combination_Number("0003");
-        req.setSubjectives_Code("必要なんだよ");
+        req.setSubjectives_Detail_Record(dtRecord);
+        req.setInsurance_Combination_Number(insNum);
+        req.setSubjectives_Code("テストコメント");
 
         Subjectivesmodres res = api.post(req, "01");
 

@@ -665,6 +665,33 @@ public class OrcaServiceApi {
      * @return ApiResult
      */
     public ApiResult sendSubjectives(SubjectivesSpec spec) {
+        // 最新の保険情報を取得して、spec.setInsuranceCombinationNumber する
+        Patientlst6req ptReq = new Patientlst6req();
+        ptReq.setReqest_Number("01");
+        ptReq.setPatient_ID(spec.getPatientId());
+        Patientlst6res ptRes = api.post(ptReq);
+
+        for (HealthInsuranceInformation hi : ptRes.getHealthInsurance_Information()) {
+            String stMonth = hi.getCertificate_StartDate(); // yyyy-MM-dd 形式
+            String expMonth = hi.getCertificate_ExpiredDate(); // yyyy-MM-dd 形式
+            if (stMonth == null || expMonth == null) { continue; }
+
+            String targetMonth = spec.getPerformDate(); // yyyy-MM 形式
+            if (targetMonth.compareTo(stMonth.substring(0, 7)) >= 0
+                && targetMonth.substring(0, 7).compareTo(expMonth.substring(0, 7)) < 0) {
+                // 有効な保険あり
+                if (spec.getCode().equals("AA")) { // 労災保険
+                    if (hi.getInsuranceProvider_Class().equals("971")) {
+                        spec.setInsuranceCombinationNumber(hi.getInsurance_Combination_Number());
+                        break;
+                    } // else { continue; }
+                } else {
+                    spec.setInsuranceCombinationNumber(hi.getInsurance_Combination_Number()); // 健康保険
+                    break;
+                }
+            }
+        }
+
         Subjectivesmodreq req = new Subjectivesmodreq();
         req.setPatient_ID(spec.getPatientId());
         req.setPerform_Date(spec.getPerformDate());

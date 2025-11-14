@@ -164,7 +164,7 @@ public class KartePanePopupMenu extends JPopupMenu {
         DocumentModel document = kartePane.getParent().getDocument();
 
         String ptId = kartePane.getParent().getContext().getPatient().getPatientId();
-        String insurance = document.getDocInfo().getHealthInsuranceGUID();
+        String insurance = document.getDocInfo().getHealthInsuranceGUID(); // サーバで最新のデータに置き換わる
         String dept = document.getDocInfo().getDepartment();
 
         // firstConfirm が null の場合がある (未保存新規カルテ)
