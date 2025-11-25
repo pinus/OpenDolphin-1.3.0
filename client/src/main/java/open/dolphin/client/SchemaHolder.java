@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.util.Objects;
@@ -208,7 +209,7 @@ public final class SchemaHolder extends AbstractComponentHolder<SchemaModel> {
     }
 
     @Override
-    public void edit() {
+    public void edit(InputEvent e) {
         logger.debug("SchemaHolder edit");
 
         if (kartePane.getTextPane().isEditable() && this.isEditable()) {

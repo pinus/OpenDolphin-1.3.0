@@ -21,8 +21,8 @@ j2html = "1.6.0"
 angus-mail = "2.0.5"
 flatlaf = "3.6.2"
 commons-io = "2.20.0"
-selenium = "4.37.0"
-webdriver-manager = "6.3.2"
+selenium = "4.38.0"
+webdriver-manager = "6.3.3"
 
 [libraries]
 jakarta = { module = "jakarta.platform:jakarta.jakartaee-api", version.ref = "jakarta" }

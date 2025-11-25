@@ -99,7 +99,7 @@ public abstract class AbstractComponentHolder<T> extends JLabel
 
         } else if (SPACE.equals(key)) {
             // SPACE で編集
-            edit();
+            edit(e);
 
         } else if (CTRL_ENTER.equals(key)) {
             // ctrl-ENTER でポップアップ表示
@@ -131,7 +131,7 @@ public abstract class AbstractComponentHolder<T> extends JLabel
         }
         // ダブルクリックでエディタ表示
         else if (e.getClickCount() == 2 && !MouseHelper.mouseMoved() && !e.isAltDown()) {
-            edit();
+            edit(e);
         }
         // ComponentHolder 位置に Caret を設定
         kartePane.getTextPane().setCaretPosition(start.getOffset());
@@ -194,7 +194,7 @@ public abstract class AbstractComponentHolder<T> extends JLabel
     public int getEndPos() { return end.getOffset(); }
 
     @Override
-    public abstract void edit();
+    public abstract void edit(InputEvent e);
 
     /**
      * この ComponentHolder が扱うモデルを返す.

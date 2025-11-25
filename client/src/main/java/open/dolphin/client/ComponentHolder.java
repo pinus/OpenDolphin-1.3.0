@@ -1,6 +1,7 @@
 package open.dolphin.client;
 
 import javax.swing.text.Position;
+import java.awt.event.InputEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -16,7 +17,7 @@ public interface ComponentHolder<T> extends PropertyChangeListener, KarteComposi
     KartePane getKartePane();
     boolean isSelected();
     void setSelected(boolean b);
-    void edit();
+    void edit(InputEvent e);
     @Override
     void propertyChange(PropertyChangeEvent e);
     void setEntry(Position start, Position end);

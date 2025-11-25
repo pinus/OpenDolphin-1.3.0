@@ -373,9 +373,10 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
     /**
      * KartePane でこのスタンプがダブルクリックされた時コールされる.
      * StampEditor を開いてこのスタンプを編集する.
+     * 編集不可の場合は,  EditorFrame に入力
      */
     @Override
-    public void edit() {
+    public void edit(InputEvent e) {
         if (kartePane.getTextPane().isEditable() && this.isEditable()) {
             String entity = stamp.getModuleInfo().getEntity();
             StampEditorDialog stampEditor = new StampEditorDialog(entity, stamp);
@@ -390,14 +391,20 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
             List<EditorFrame> allFrames = WindowHolder.allEditorFrames();
             if (!allFrames.isEmpty()) {
                 EditorFrame frame = allFrames.getFirst();
-                if (this.isEditable()) {
-                    KartePane pane = frame.getEditor().getPPane();
-                    // caret を最後に送ってから import する
-                    JTextPane textPane = pane.getTextPane();
-                    KarteStyledDocument doc = pane.getDocument();
-                    textPane.setCaretPosition(doc.getLength());
+                KartePane pane = frame.getEditor().getPPane();
+                // caret を最後に送ってから import する
+                JTextPane textPane = pane.getTextPane();
+                KarteStyledDocument doc = pane.getDocument();
+                textPane.setCaretPosition(doc.getLength());
 
-                    pane.stampWithDuplicateCheck(stamp);
+                if (this.isEditable()) {
+                    if (e.isAltDown()) {
+                        // ALT
+
+
+                    } else {
+                        pane.stampWithDuplicateCheck(stamp);
+                    }
                 }
             }
         }
