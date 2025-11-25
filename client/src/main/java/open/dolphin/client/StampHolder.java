@@ -23,12 +23,10 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * KartePane に Component　として挿入されるスタンプを保持するクラス.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- * @author pns
- */
+/// KartePane に Component　として挿入されるスタンプを保持するクラス.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
+/// @author pns
 public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
     public static final String STAMP_MODIFIED = "stampModified";
     private static final Color FOREGROUND = new Color(20, 20, 140);
@@ -51,7 +49,7 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
     // スタンプの簡易表示
     private boolean simplify = false;
     // Logger
-    private Logger logger;
+    private final Logger logger;
 
     public StampHolder(final KartePane kartePane, final ModuleModel model) {
         super(kartePane);
@@ -79,34 +77,9 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
         if (kartePane.getTextPane().getWidth() > 1) { listener.repaintStamp(); }
     }
 
-    /**
-     * Component の変化に乗じて stamp を書き換える.
-     */
-    private class MyHierarchyBoundsListener extends HierarchyBoundsAdapter {
-        public void repaintStamp() {
-            JTextPane tp = kartePane.getTextPane();
-            if (Objects.nonNull(tp)) {
-                int width = tp.getParent() instanceof JViewport
-                    ? tp.getParent().getWidth()
-                    : tp.getWidth();
-
-                if (width > 1) {
-                    hints.setWidth(Math.max(320, width - MARGIN));
-                    setMyText();
-                }
-            }
-        }
-        @Override
-        public void ancestorResized(HierarchyEvent e) {
-            repaintStamp();
-        }
-    }
-
-    /**
-     * StampHolder 選択時のショートカットキー.
-     *
-     * @param e KeyEvent
-     */
+    /// StampHolder 選択時のショートカットキー.
+    ///
+    /// @param e KeyEvent
     @Override
     public void keyPressed(KeyEvent e) {
         // modifier キーが押されている場合は処理しない
@@ -241,12 +214,10 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
         }
     }
 
-    /**
-     * Focus されると {@link open.dolphin.client.ChartMediator ChartMediator} から呼ばれる.
-     * メニュー制御とボーダーを表示する.
-     *
-     * @param map ActionMap
-     */
+    /// Focus されると [ChartMediator] [open.dolphin.client.ChartMediator] から呼ばれる.
+    /// メニュー制御とボーダーを表示する.
+    ///
+    /// @param map ActionMap
     @Override
     public void enter(ActionMap map) {
         super.enter(map);
@@ -257,21 +228,17 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
         setSelected(true);
     }
 
-    /**
-     * Focusがはずれた場合のメニュー制御とボーダーの非表示を行う.
-     *
-     * @param map ActionMap
-     */
+    /// Focusがはずれた場合のメニュー制御とボーダーの非表示を行う.
+    ///
+    /// @param map ActionMap
     @Override
     public void exit(ActionMap map) {
         setSelected(false);
     }
 
-    /**
-     * Popupメニューを表示する.
-     *
-     * @param e MouseEvent
-     */
+    /// Popupメニューを表示する.
+    ///
+    /// @param e MouseEvent
     @Override
     public void maybeShowPopup(MouseEvent e) {
         popup = new StampHolderPopupMenu(this);
@@ -291,38 +258,40 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
         popup.show(e.getComponent(), e.getX(), e.getY());
     }
 
-    @Override
-    public JLabel getComponent() {
-        return this;
-    }
-
-    /**
-     * このスタンプホルダのKartePaneを返す.
-     *
-     * @return KartePane
-     */
+    /// このスタンプホルダのKartePaneを返す.
+    ///
+    /// @return KartePane
     @Override
     public KartePane getKartePane() {
         return kartePane;
     }
 
-    /**
-     * スタンプホルダのコンテントタイプを返す.
-     *
-     * @return ContentType
-     */
+    @Override
+    public JLabel getComponent() {
+        return this;
+    }
+
+    /// スタンプホルダのコンテントタイプを返す.
+    ///
+    /// @return ContentType
     @Override
     public ContentType getContentType() {
         return ContentType.TT_STAMP;
     }
 
-    /**
-     * このホルダのモデルを返す.
-     *
-     * @return ModuleModel
-     */
+    /// このホルダのモデルを返す.
+    ///
+    /// @return ModuleModel
     @Override
     public ModuleModel getModel() { return stamp; }
+
+    /// 選択されているかどうかを返す.
+    ///
+    /// @return 選択されている時 true
+    @Override
+    public boolean isSelected() {
+        return selected;
+    }
 
     public StampRenderingHints getHints() {
         return hints;
@@ -332,21 +301,9 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
         this.hints = hints;
     }
 
-    /**
-     * 選択されているかどうかを返す.
-     *
-     * @return 選択されている時 true
-     */
-    @Override
-    public boolean isSelected() {
-        return selected;
-    }
-
-    /**
-     * 選択属性を設定する.
-     *
-     * @param selected 選択の時 true
-     */
+    /// 選択属性を設定する.
+    ///
+    /// @param selected 選択の時 true
     @Override
     public void setSelected(boolean selected) {
         boolean old = this.selected;
@@ -360,21 +317,17 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
         }
     }
 
-    /**
-     * スタンプの簡易表示設定.
-     *
-     * @param s true to simplify
-     */
+    /// スタンプの簡易表示設定.
+    ///
+    /// @param s true to simplify
     public void setSimplify(boolean s) {
         simplify = s;
         setMyText();
     }
 
-    /**
-     * KartePane でこのスタンプがダブルクリックされた時コールされる.
-     * StampEditor を開いてこのスタンプを編集する.
-     * 編集不可の場合は,  EditorFrame に入力
-     */
+    /// KartePane でこのスタンプがダブルクリックされた時コールされる.
+    /// - StampEditor を開いてこのスタンプを編集する.
+    /// - 編集不可の場合は, 開いている最上位の EditorFrame に転送する.
     @Override
     public void edit(InputEvent e) {
         if (kartePane.getTextPane().isEditable() && this.isEditable()) {
@@ -391,30 +344,34 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
             List<EditorFrame> allFrames = WindowHolder.allEditorFrames();
             if (!allFrames.isEmpty()) {
                 EditorFrame frame = allFrames.getFirst();
-                KartePane pane = frame.getEditor().getPPane();
+                KartePane target = frame.getEditor().getPPane();
                 // caret を最後に送ってから import する
-                JTextPane textPane = pane.getTextPane();
-                KarteStyledDocument doc = pane.getDocument();
-                textPane.setCaretPosition(doc.getLength());
+                JTextPane targetPane = target.getTextPane();
+                KarteStyledDocument doc = target.getDocument();
+                targetPane.setCaretPosition(doc.getLength());
 
                 if (this.isEditable()) {
-                    if (e.isAltDown()) {
-                        // ALT
-
+                    if (e.isShiftDown() || e.isMetaDown()) {
+                        // modifier キーが押されていた場合, 処方スタンプを全部転送する
+                        KarteStyledDocument sourceDoc = kartePane.getDocument();
+                        for (StampHolder sourceStamp : sourceDoc.getStampHolders()) {
+                            if (InfoModel.ENTITY_MED_ORDER.equals(sourceStamp.getModel().getModuleInfo().getEntity())) {
+                                target.stampWithDuplicateCheck(sourceStamp.getModel());
+                            }
+                        }
 
                     } else {
-                        pane.stampWithDuplicateCheck(stamp);
+                        // スタンプ転送
+                        target.stampWithDuplicateCheck(stamp);
                     }
                 }
             }
         }
     }
 
-    /**
-     * エディタで編集した値を受け取り内容を表示する.
-     *
-     * @param e MouseEvent
-     */
+    /// エディタで編集した値を受け取り内容を表示する.
+    ///
+    /// @param e MouseEvent
     @Override
     public void propertyChange(PropertyChangeEvent e) {
         String prop = e.getPropertyName();
@@ -435,11 +392,9 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
         }
     }
 
-    /**
-     * スタンプの内容を置き換える.
-     *
-     * @param newStamp ModuleModel
-     */
+    /// スタンプの内容を置き換える.
+    ///
+    /// @param newStamp ModuleModel
     @Override
     public void updateModel(ModuleModel newStamp) {
 
@@ -454,6 +409,27 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
         kartePane.getTextPane().repaint();
         Focuser.requestFocus(this);
         updateMenuState();
+    }
+
+    /// Component の変化に乗じて stamp を書き換える.
+    private class MyHierarchyBoundsListener extends HierarchyBoundsAdapter {
+        public void repaintStamp() {
+            JTextPane tp = kartePane.getTextPane();
+            if (Objects.nonNull(tp)) {
+                int width = tp.getParent() instanceof JViewport
+                    ? tp.getParent().getWidth()
+                    : tp.getWidth();
+
+                if (width > 1) {
+                    hints.setWidth(Math.max(320, width - MARGIN));
+                    setMyText();
+                }
+            }
+        }
+        @Override
+        public void ancestorResized(HierarchyEvent e) {
+            repaintStamp();
+        }
     }
 
     /**
