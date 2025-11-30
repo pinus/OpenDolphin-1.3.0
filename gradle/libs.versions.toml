@@ -23,6 +23,7 @@ flatlaf = "3.6.2"
 commons-io = "2.20.0"
 selenium = "4.38.0"
 webdriver-manager = "6.3.3"
+thumbnailator = "0.4.21"
 
 [libraries]
 jakarta = { module = "jakarta.platform:jakarta.jakartaee-api", version.ref = "jakarta" }
@@ -55,6 +56,7 @@ flatlaf = { module = "com.formdev:flatlaf", version.ref = "flatlaf" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 selenium = { module = "org.seleniumhq.selenium:selenium-java", version.ref = "selenium" }
 webdriver-manager = { module = "io.github.bonigarcia:webdrivermanager", version.ref = "webdriver-manager" }
+thumbnailator = { module = "net.coobird:thumbnailator", version.ref = "thumbnailator" }
 
 [bundles]
 google = [ "google-client", "google-oauth", "google-calendar" ]

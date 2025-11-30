@@ -106,6 +106,7 @@ dependencies {
     implementation(libs.commons.lang3)
     implementation(libs.selenium)
     implementation(libs.webdriver.manager)
+    implementation(libs.thumbnailator)
 
     // JavaFX
     implementation("org.openjfx:javafx-base:$javafxVersion:$targetPlatform")

@@ -1,6 +1,7 @@
 package open.dolphin.client;
 
 import open.dolphin.dnd.ImageEntryTransferHandler;
+import open.dolphin.helper.ImageHelper;
 import open.dolphin.helper.MouseHelper;
 import open.dolphin.helper.WindowHolder;
 import open.dolphin.ui.PNSBorderFactory;
@@ -10,13 +11,17 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -34,9 +39,9 @@ public class ImagePalette extends JPanel {
     private final Border selectedBorder = PNSBorderFactory.createSelectedBorder();
     // private Border normalBorder = PNSBorderFactory.createClearBorder();
     private final Border normalBorder = BorderFactory.createEmptyBorder();
-    private ImageTableModel imageTableModel;
-    private int imageWidth;
-    private int imageHeight;
+    private final ImageTableModel imageTableModel;
+    private final int imageWidth;
+    private final int imageHeight;
     private JTable imageTable;
     private File imageDirectory;
     private String[] suffix = DEFAULT_IMAGE_SUFFIX;
@@ -103,7 +108,7 @@ public class ImagePalette extends JPanel {
                     URL url = imageFile.toURI().toURL();
                     ImageIcon icon = new ImageIcon(url);
                     ImageEntry entry = new ImageEntry();
-                    entry.setImageIcon(adjustImageSize(icon, imageSize));
+                    entry.setImageIcon(ImageHelper.adjustImageSize(icon, imageSize));
                     entry.setUrl(url.toString());
                     imageList.add(entry);
 
@@ -156,7 +161,7 @@ public class ImagePalette extends JPanel {
 
                     List<EditorFrame> allFrames = WindowHolder.allEditorFrames();
                     if (!allFrames.isEmpty()) {
-                        EditorFrame frame = allFrames.get(0);
+                        EditorFrame frame = allFrames.getFirst();
                         KartePane pane = frame.getEditor().getSOAPane();
                         // caret を最後に送ってから import する
                         JTextPane textPane = pane.getTextPane();
@@ -192,27 +197,6 @@ public class ImagePalette extends JPanel {
         }
 
         imageTable.setIntercellSpacing(new Dimension(0, 0));
-    }
-
-    private ImageIcon adjustImageSize(ImageIcon icon, Dimension dim) {
-
-        if ((icon.getIconHeight() > dim.height) || (icon.getIconWidth() > dim.width)) {
-            Image img = icon.getImage();
-            float hRatio = (float) icon.getIconHeight() / dim.height;
-            float wRatio = (float) icon.getIconWidth() / dim.width;
-            int h, w;
-            if (hRatio > wRatio) {
-                h = dim.height;
-                w = (int) (icon.getIconWidth() / hRatio);
-            } else {
-                w = dim.width;
-                h = (int) (icon.getIconHeight() / wRatio);
-            }
-            img = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
-            return new ImageIcon(img);
-        } else {
-            return icon;
-        }
     }
 
     private File[] listImageFiles(File dir, String[] suffix) {

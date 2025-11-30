@@ -7,8 +7,8 @@ import open.dolphin.delegater.OrcaDelegater;
 import open.dolphin.delegater.StampDelegater;
 import open.dolphin.dnd.SchemaHolderTransferHandler;
 import open.dolphin.dnd.StampListTransferHandler;
-import open.dolphin.helper.PNSTask;
 import open.dolphin.helper.ImageHelper;
+import open.dolphin.helper.PNSTask;
 import open.dolphin.helper.TextComponentUndoManager;
 import open.dolphin.impl.scheam.SchemaEditorImpl;
 import open.dolphin.infomodel.*;
@@ -22,7 +22,10 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyleConstants;
@@ -906,7 +909,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
                 int maxImageHeight = ClientContext.getInt("image.max.height");
 
                 if (width > maxImageWidth || height > maxImageHeight) {
-                    importImage = ImageHelper.getFirstScaledInstance(importImage, maxImageWidth);
+                    importImage = ImageHelper.scaleToMaxDim(importImage, maxImageWidth);
                 }
 
                 return new ImageIcon(importImage);
