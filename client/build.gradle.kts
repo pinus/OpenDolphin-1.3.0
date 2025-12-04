@@ -4,7 +4,6 @@ import java.util.*
 
 val conveyorCommand = "/Applications/Conveyor.app/Contents/MacOS/conveyor"
 val conveyorInputDir = "${projectDir}/output"
-val buildDate: String = SimpleDateFormat("yyyyMMddHHmm").format(Date())
 val javafxVersion = project.findProperty("javafx.version") as String
 
 // win, mac, mac-aarch64
@@ -50,6 +49,7 @@ tasks {
         val jarName = shadowJar.get().archiveFileName.get()
         val projectVersion = project.property("version")
         val javaVersion = project.property("java.version")
+        val buildDate: String = SimpleDateFormat("yyyyMMddHHmm").format(Date())
         // win.amd64:windows-msix, mac.amd64:mac-app, mac.aarch64:mac-app
         val target = when (targetPlatform) {
             "win" -> arrayOf("win.amd64", "windows-msix")
@@ -67,6 +67,7 @@ tasks {
 
     }
     register<Exec>("tar") {
+        val buildDate: String = SimpleDateFormat("yyyyMMddHHmm").format(Date())
         group = "distribution"
         description = "make tar"
         dependsOn.add(conveyor)

@@ -228,9 +228,10 @@ public class BlockGlass2 extends JComponent implements MouseListener {
         frameWidth = getWidth();
         ticker = buildTicker();
         animator = new Animator(true);
-        animationThread = new Thread(animator);
-        animationThread.setPriority(Thread.MIN_PRIORITY);
-        animationThread.start();
+        Thread t = new Thread(animator);
+        animationThread = t;
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.start(); // animationThread can be null if interrupted before starting
     }
 
     /// Stops the waiting animation by stopping the rotation
@@ -242,9 +243,10 @@ public class BlockGlass2 extends JComponent implements MouseListener {
         } else if (animator.rampUp) {
             animationThread.interrupt();
             animator = new Animator(false);
-            animationThread = new Thread(animator);
-            animationThread.setPriority(Thread.MIN_PRIORITY);
-            animationThread.start();
+            Thread t = new Thread(animator);
+            animationThread = t;
+            t.setPriority(Thread.MIN_PRIORITY);
+            t.start();
         }
     }
 
