@@ -66,12 +66,13 @@ public class BasicInfoInspector implements IInspector {
         nameLabel = new JLabel("　");
         nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
         nameLabel.setForeground(FONT_COLOR);
-        nameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        nameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
         nameLabel.setOpaque(false);
 
         kanaLabel = new JLabel(" ");
         kanaLabel.setHorizontalAlignment(SwingConstants.LEFT);
         kanaLabel.setForeground(FONT_COLOR);
+        kanaLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
         kanaLabel.setOpaque(false);
 
         ageLabel = new JLabel(" ");
@@ -162,10 +163,9 @@ public class BasicInfoInspector implements IInspector {
         // agePanel test
         agePanel = new JPanel();
         agePanel.setLayout(new BoxLayout(agePanel, BoxLayout.Y_AXIS));
-        agePanel.add(Box.createVerticalStrut(1));
+        agePanel.add(Box.createVerticalStrut(4));
         agePanel.add(ageLabel);
-        int adjust = Dolphin.forWin ? 2 : 1;
-        agePanel.add(Box.createVerticalStrut(adjust));
+        agePanel.add(Box.createVerticalStrut(1));
 
         ageLayout = new JPanel();
         ageLayout.setLayout(new BoxLayout(ageLayout, BoxLayout.Y_AXIS));

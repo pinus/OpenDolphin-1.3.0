@@ -37,8 +37,11 @@ public class IMEControl {
                         } else {
                             // メニューバーのアイコンは切り替わってるのに, 実際の入力が切り替わってないことがあるのの workaround
                             //server.selectJapanese();
-                            server.selectRoman();
-                            server.selectJapanese();
+                            //server.selectRoman();
+                            Thread.ofPlatform().start(() -> {
+                                try{ Thread.sleep(50); } catch (InterruptedException ex) { }
+                                server.selectJapanese();
+                            });
                         }
                     } else {
                         server.selectABC();
