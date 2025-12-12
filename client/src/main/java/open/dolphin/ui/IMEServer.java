@@ -85,7 +85,7 @@ public class IMEServer {
             process = new ProcessBuilder(tisServer).start();
             output = process.getOutputStream();
             // Thread to receive OK response
-            Thread.ofVirtual().start(() -> {
+            Thread.ofPlatform().start(() -> {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     while (true) {
                         String line = reader.readLine();
@@ -123,9 +123,7 @@ public class IMEServer {
     }
 
     /// Selects the Japanese input method on the IMEServer instance.
-    public void selectJapanese() {
-        select(JAPANESE);
-    }
+    public void selectJapanese() { select(JAPANESE); }
 
     /// Selects the Roman input method on the IMEServer instance.
     public void selectRoman() {
@@ -153,10 +151,14 @@ public class IMEServer {
     /// @param lang a byte array representing the language selection to be sent to the server.
     private void select(byte[] lang) {
         try {
+            // A brief interruption of the EDT
+            // as a workaround for incomplete IME switching
+            Thread.sleep(50);
+
             output.write(lang);
             output.flush();
             waitForResult();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace(System.err);
         }
     }
@@ -167,7 +169,7 @@ public class IMEServer {
     /// expected to be queued in the response queue (res). It waits for a maximum
     /// of 1 second to receive a response. If no response is received within this
     /// period, it logs a timeout event, stops the server, and attempts to restart
-    /// it in order to ensure ongoing communication.
+    /// it to ensure ongoing communication.
     ///
     /// The server response and timeout events are logged using an injected logger.
     /// Throws an InterruptedException in case of a timeout, which is caught and
@@ -188,7 +190,7 @@ public class IMEServer {
         }
     }
 
-    static void main(String[] argv) {
+    static void main() {
         IMEServer server = new IMEServer();
         if (server.start()) {
             server.selectJapanese();
