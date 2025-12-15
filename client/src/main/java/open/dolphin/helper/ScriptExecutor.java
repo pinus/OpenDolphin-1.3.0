@@ -7,11 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Script でいろいろする.
- *
- * @author pns
- */
+/// Script でいろいろする.
+///
+/// @author pns
 public class ScriptExecutor {
 
     private static final String QUOTE = "\"";
@@ -34,13 +32,11 @@ public class ScriptExecutor {
     private static final String DISPLAY_NOTIFICATION_SCRIPT =
             "display notification \"%s\" with title \"%s\" subtitle \"%s\"";
 
-    /**
-     * 通知センターに通知を表示する.
-     *
-     * @param message  Message
-     * @param title    Title
-     * @param subtitle Subtitle
-     */
+    /// 通知センターに通知を表示する.
+    ///
+    /// @param message  Message
+    /// @param title    Title
+    /// @param subtitle Subtitle
     public static void displayNotification(String message, String title, String subtitle) {
         if (Dolphin.forMac) {
             String script = String.format(DISPLAY_NOTIFICATION_SCRIPT, message, title, subtitle);
@@ -48,11 +44,9 @@ public class ScriptExecutor {
         }
     }
 
-    /**
-     * 情報フォルダを開く.
-     *
-     * @param path POSIX path
-     */
+    /// 情報フォルダを開く.
+    ///
+    /// @param path POSIX path
     public static void openPatientFolder(final String path) {
         if (Dolphin.forWin) {
             executeShellScript("explorer", path);
@@ -63,11 +57,9 @@ public class ScriptExecutor {
         }
     }
 
-    /**
-     * 選択ファイルを QuickLook する.
-     *
-     * @param path POSIX Path to target
-     */
+    /// 選択ファイルを QuickLook する.
+    ///
+    /// @param path POSIX Path to target
     public static void quickLook(String path) {
         if (Dolphin.forWin) {
             executeShellScript("explorer", path);
@@ -76,11 +68,31 @@ public class ScriptExecutor {
         }
     }
 
-    /**
-     * shell command を実行する.
-     *
-     * @param command Shell commands in a string array
-     */
+    /// im-select を使って input method を切り替える.<br>
+    /// https://github.com/daipeihust/im-select<br>
+    /// {@code curl -Ls https://raw.githubusercontent.com/daipeihust/im-select/master/install_mac.sh | sh}
+    /// @param inputSourceID 切り替えるID
+    /// com.apple.keylayout.{US,USExtended},
+    /// com.justsystems.inputmethod.atok33.{Roman,Japanese,Japanese.Katakana}
+    public static void imSelect(String inputSourceID) {
+        executeShellScript("im-select", inputSourceID);
+    }
+
+    public static void selectJapanese() {
+        imSelect("com.justsystems.inputmethod.atok35.Japanese");
+    }
+
+    public static void selectRoman() {
+        imSelect("com.justsystems.inputmethod.atok35.Roman");
+    }
+
+    public static void selectABC() {
+        imSelect("com.apple.keylayout.ABC");
+    }
+
+    /// shell command を実行する.
+    ///
+    /// @param command Shell commands in a string array
     private static void executeShellScript(String... command) {
         ProcessBuilder p = new ProcessBuilder(command);
         try {
@@ -90,12 +102,10 @@ public class ScriptExecutor {
         }
     }
 
-    /**
-     * shell command を実行して，標準出力を返す.
-     *
-     * @param command Commands in a string array
-     * @return outPut Result strings in List
-     */
+    /// shell command を実行して，標準出力を返す.
+    ///
+    /// @param command Commands in a string array
+    /// @return outPut Result strings in List
     public static List<String> executeShellScriptWithResponce(String... command) {
         List<String> output = new ArrayList<>();
         ProcessBuilder p = new ProcessBuilder(command);
@@ -114,11 +124,9 @@ public class ScriptExecutor {
         return output;
     }
 
-    /**
-     * AppleScript を osascript で実行する.
-     *
-     * @param script Arrays of script
-     */
+    /// AppleScript を osascript で実行する.
+    ///
+    /// @param script Arrays of scripts
     public static void executeAppleScript(String... script) {
         List<String> codes = new ArrayList<>();
         codes.add("osascript");
@@ -129,7 +137,7 @@ public class ScriptExecutor {
         executeShellScript(codes.toArray(new String[0]));
     }
 
-    public static void main(String[] arg) {
+    static void main() {
         // 7088 /Library/Input Methods/ATOK25.app/Contents/MacOS/ATOK25 -psn_0_512125
         // 1124 /usr/bin/codesign --display --entitlements - /Library/Input Methods/ATOK25.app
 
