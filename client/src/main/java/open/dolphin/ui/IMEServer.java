@@ -151,14 +151,10 @@ public class IMEServer {
     /// @param lang a byte array representing the language selection to be sent to the server.
     private void select(byte[] lang) {
         try {
-            // A brief interruption of the EDT
-            // as a workaround for incomplete IME switching
-            Thread.sleep(50);
-
             output.write(lang);
             output.flush();
             waitForResult();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace(System.err);
         }
     }

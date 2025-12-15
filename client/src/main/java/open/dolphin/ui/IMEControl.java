@@ -35,7 +35,7 @@ public class IMEControl {
                         if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
                             server.selectABC();
                         } else {
-                            server.selectJapanese();
+                            //server.selectJapanese();
                         }
                     } else {
                         server.selectABC();
