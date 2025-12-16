@@ -25,11 +25,11 @@ import java.util.concurrent.TimeUnit;
 /// - Select between different language input modes.
 /// - Handle server responses and timeout events reliably.
 public class IMEServer {
-    private final byte[] JAPANESE = "J\n".getBytes();
-    private final byte[] ROMAN = "R\n".getBytes();
-    private final byte[] ABC = "A\n".getBytes();
-    private final byte[] US = "U\n".getBytes();
-    private final byte[] US_EXT = "X\n".getBytes();
+    private final String JAPANESE = "J";
+    private final String ROMAN = "R";
+    private final String ABC = "A";
+    private final String US = "U";
+    private final String US_EXT = "X";
     private final String tisServer;
     private Process process;
     private OutputStream output;
@@ -105,7 +105,7 @@ public class IMEServer {
             e.printStackTrace(System.err);
             return false;
         }
-        select("?\n".getBytes()); // show version as server response
+        select("?"); // show version as server response
         return true;
     }
 
@@ -148,10 +148,10 @@ public class IMEServer {
     /// Sends the specified language byte array to the output stream, flushes the stream,
     /// and waits for a result from the server.
     ///
-    /// @param lang a byte array representing the language selection to be sent to the server.
-    private void select(byte[] lang) {
+    /// @param lang a string representing the language selection to be sent to the server.
+    private void select(String lang) {
         try {
-            output.write(lang);
+            output.write((lang+"\n").getBytes());
             output.flush();
             waitForResult();
         } catch (IOException e) {
