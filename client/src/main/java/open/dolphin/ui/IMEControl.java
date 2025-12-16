@@ -26,7 +26,9 @@ import java.util.Objects;
 public class IMEControl {
     private final Logger logger = LoggerFactory.getLogger(IMEControl.class);
 
-    public IMEControl() {
+    public IMEControl() {}
+
+    public static void start() {
         IMEServer server = new IMEServer();
         if (server.start()) {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
@@ -46,7 +48,7 @@ public class IMEControl {
     }
 
     void main() {
-        new IMEControl();
+        IMEControl.start();
 
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

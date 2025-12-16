@@ -24,7 +24,7 @@ public class SettingForMac {
         setMacApplication(context);
 
         // IME の制御
-        new IMEControl();
+        IMEControl.start();
 
         // laf replacement
         UIManager.put("TextFieldUI", MyTextFieldUI.class.getName());
