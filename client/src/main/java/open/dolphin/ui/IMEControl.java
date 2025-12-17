@@ -21,6 +21,7 @@ import java.util.Objects;
 /// - ver 7: im-select 呼び出し法 (https://github.com/daipeihust/im-select)
 /// - ver 8: FocusManger で一元管理バージョン
 /// - ver 9: TISServer (TextInputSources Server) バージョン
+/// - ver 10: TISServer (TextInputSources Server) - FFM API で作った実験的バージョン
 ///
 /// @author pns
 public class IMEControl {
@@ -30,17 +31,17 @@ public class IMEControl {
 
     public static void start() {
         IMEServer server = new IMEServer();
-        if (server.start()) {
+        if (IMEServer.start()) {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
                 if (Objects.nonNull(e.getNewValue())) {
                     if (e.getNewValue() instanceof JTextComponent c) {
                         if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
-                            server.selectABC();
+                            IMEServer.selectABC();
                         } else {
-                            server.selectJapanese();
+                            IMEServer.selectJapanese();
                         }
                     } else {
-                        server.selectABC();
+                        IMEServer.selectABC();
                     }
                 }
             });
