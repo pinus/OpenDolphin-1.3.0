@@ -1454,6 +1454,9 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
 
     @Override
     public void stop() {
+        // ステージマネージャ使用時に, chart frame がパタつくのを防ぐ
+        getContext().getFrame().toFront();
+
         if (providers != null) {
             for (String s : providers.keySet()) {
                 ChartDocument doc = providers.get(s);
