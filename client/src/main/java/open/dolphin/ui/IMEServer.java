@@ -30,7 +30,7 @@ public class IMEServer {
     public static boolean start() {
         var command = ProcessHandle.current().info().command().orElseThrow();
         if (command.toLowerCase().contains("java")) {
-            IO.println("called from java");
+            logger.info("called from java");
             try {
                 PROCESS = new ProcessBuilder(
                     command, "-cp", System.getProperty("java.class.path"), "open.dolphin.helper.TISServer"
@@ -43,7 +43,7 @@ public class IMEServer {
             IO.println("called from application: " + command);
             Path path = Paths.get(command).getParent();
             var tisServerPath = path.resolve("tis-server");
-            IO.println("starting tis-server: " + tisServerPath);
+            logger.info("starting tis-server: " + tisServerPath);
             try {
                 PROCESS = new ProcessBuilder(tisServerPath.toString()).start();
             } catch (IOException e) {
@@ -104,6 +104,7 @@ public class IMEServer {
 
     private static void select(String lang) {
         try {
+            //logger.info("selecting language: {}", lang);
             OUTPUT.write((lang + "\n").getBytes());
             OUTPUT.flush();
             waitForResult();

@@ -19,7 +19,7 @@ public class TISServer {
     public TISServer() {
     }
 
-    static void main(String[] args) throws Throwable {
+    public static void main(String[] args) throws Throwable {
         Thread.ofPlatform().start(TISServer::start);
 
         // to prevent the new icon from bouncing eternally
@@ -36,6 +36,7 @@ public class TISServer {
 
             String line;
             while ((line = br.readLine()) != null) {
+                //IO.println("Input: " + line);
                 switch (line.trim()) {
                     case "A" -> select(INPUT_SOURCE.ABC.ref);
                     case "U" -> select(INPUT_SOURCE.US.ref);
