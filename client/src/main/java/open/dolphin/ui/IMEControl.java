@@ -30,8 +30,10 @@ public class IMEControl {
     public IMEControl() {}
 
     public static void start() {
-        IMEServer server = new IMEServer();
         if (IMEServer.start()) {
+            // 終了時 destroy する
+            Runtime.getRuntime().addShutdownHook(new Thread(IMEServer::stop));
+
             KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
                 if (Objects.nonNull(e.getNewValue())) {
                     if (e.getNewValue() instanceof JTextComponent c) {

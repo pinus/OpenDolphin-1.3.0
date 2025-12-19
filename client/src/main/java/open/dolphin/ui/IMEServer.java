@@ -70,11 +70,8 @@ public class IMEServer {
                 logger.info("stdin reader closed");
             }
         });
-        // 終了時 destroy する
-        Runtime.getRuntime().addShutdownHook(new Thread(IMEServer::stop));
         return true;
     }
-
 
     public static void stop() {
         if (PROCESS != null) {
