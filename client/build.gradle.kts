@@ -1,11 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import java.text.SimpleDateFormat
-import java.util.*
 
 val conveyorCommand = "/Applications/Conveyor.app/Contents/MacOS/conveyor"
 val conveyorInputDir = "${projectDir}/output"
 val javafxVersion = project.findProperty("javafx.version") as String
-val buildDate: String = SimpleDateFormat("yyyyMMddHHmm").format(Date())
 
 // win, mac, mac-aarch64
 val targetPlatform =
@@ -41,7 +38,7 @@ tasks {
     val deleteConveyorOutput = register<Delete>("delete-conveyor-output") {
         delete(conveyorInputDir)
     }
-    val conveyor = register<Exec>("conveyor") {
+    register<Exec>("conveyor") {
         group = "distribution"
         description = "make app"
         dependsOn.add(shadowJar)
@@ -56,23 +53,15 @@ tasks {
             "mac" -> arrayOf("mac.amd64", "mac-app")
             else -> arrayOf("mac.aarch64", "mac-app")
         }
-        commandLine = (listOf(
-                conveyorCommand,
-                "-Kjar.name=${jarName}",
-                "-Kproject.version=${projectVersion}",
-                "-Kbuild.date=${buildDate}",
-                "-Kjava.version=${javaVersion}",
-                "-Kapp.machines=${target[0]}",
-                "make", target[1]))
-
-    }
-    register<Exec>("tar") {
-        group = "distribution"
-        description = "make tar"
-        dependsOn.add(conveyor)
-        commandLine = (listOf(
-                "tar", "czf", "${conveyorInputDir}/OpenDolphin-${buildDate}.tgz",
-                "-C", conveyorInputDir, "OpenDolphin.app"))
+        commandLine = listOf(
+            "./conveyor-helper",
+            "OpenDolphin",
+            target[1],
+            "-Kjar.name=${jarName}",
+            "-Kproject.version=${projectVersion}",
+            "-Kjava.version=${javaVersion}",
+            "-Kapp.machines=${target[0]}",
+        )
     }
     build {
         dependsOn.add(":server:jar")
