@@ -19,7 +19,7 @@ public class TISServer {
     public TISServer() {
     }
 
-    public static void main(String[] args) throws Throwable {
+    static void main(String[] args) throws Throwable {
         Thread.ofPlatform().start(TISServer::start);
 
         // to prevent the new icon from bouncing eternally
@@ -126,11 +126,11 @@ public class TISServer {
             var kTISPropertyInputSourceIsSelected = propertyFor("kTISPropertyInputSourceIsSelected");
             var kCFBooleanTrue = propertyFor("kCFBooleanTrue");
             var isSelectedPtr = tisGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsSelected);
-            if (isSelectedPtr.equals(kCFBooleanTrue)) {
-                //logger.info("already selected");
-                IO.println("OK");
-                return;
-            }
+            //if (isSelectedPtr.equals(kCFBooleanTrue)) {
+            //    logger.info("already selected");
+            //    IO.println("OK");
+            //    return;
+            //}
             var mh = LINKER.downcallHandle(
                 HITOOLBOX.find("TISSelectInputSource").orElseThrow(),
                 FunctionDescriptor.of(

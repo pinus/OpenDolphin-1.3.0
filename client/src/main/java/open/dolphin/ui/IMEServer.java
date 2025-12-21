@@ -1,5 +1,7 @@
 package open.dolphin.ui;
 
+import open.dolphin.client.ClientContext;
+import open.dolphin.client.ClientContextStub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -28,27 +31,52 @@ public class IMEServer {
     }
 
     public static boolean start() {
-        var command = ProcessHandle.current().info().command().orElseThrow();
-        if (command.toLowerCase().contains("java")) {
-            logger.info("called from java");
+        // 外部 TISServer ファイルがあるかどうか
+        String tisDir = System.getProperty("user.dir");
+        ClientContextStub stub = ClientContext.getClientContextStub();
+        if (stub != null) {
+            tisDir = stub.getBaseDirectory(); // jar の場合 /Resources が返る
+        } else {
+            // 単独でテストするとき client が付かないので付ける
+            if (!tisDir.contains("client")) {
+                tisDir = tisDir + "/client";
+            }
+        }
+        String tisServer = tisDir + "/TISServer";
+
+        if (Files.exists(Paths.get(tisServer))) {
+            // 外部 TISServer
             try {
-                PROCESS = new ProcessBuilder(
-                    command, "-cp", System.getProperty("java.class.path"), "open.dolphin.helper.TISServer"
-                ).start();
+                PROCESS = new ProcessBuilder(tisServer).start();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
         } else {
-            IO.println("called from application: " + command);
-            Path path = Paths.get(command).getParent();
-            var tisServerPath = path.resolve("tis-server");
-            logger.info("starting tis-server: " + tisServerPath);
-            try {
-                PROCESS = new ProcessBuilder(tisServerPath.toString()).start();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            // 内部 TISServer
+            var command = ProcessHandle.current().info().command().orElseThrow();
+            if (command.toLowerCase().contains("java")) {
+                logger.info("called from java");
+                try {
+                    PROCESS = new ProcessBuilder(
+                        command, "-cp", System.getProperty("java.class.path"), "open.dolphin.helper.TISServer"
+                    ).start();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            } else {
+                IO.println("called from application: " + command);
+                Path path = Paths.get(command).getParent();
+                var tisServerPath = path.resolve("tis-server");
+                logger.info("starting tis-server: " + tisServerPath);
+                try {
+                    PROCESS = new ProcessBuilder(tisServerPath.toString()).start();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
+
         }
 
         OUTPUT = PROCESS.getOutputStream();
@@ -127,8 +155,7 @@ public class IMEServer {
     }
 
     static void main() {
-        IMEServer server = new IMEServer();
-        if (start()) {
+        if (IMEServer.start()) {
             selectJapanese();
         }
     }
