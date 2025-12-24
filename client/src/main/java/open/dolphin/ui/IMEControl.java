@@ -1,5 +1,6 @@
 package open.dolphin.ui;
 
+import open.dolphin.helper.MacImSelect;
 import open.dolphin.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.util.Objects;
 /// - ver 8: FocusManger で一元管理バージョン
 /// - ver 9: TISServer (TextInputSources Server) バージョン
 /// - ver 10: TISServer (TextInputSources Server) - FFM API で作った実験的バージョン
+/// - ver 11: masuda 先生の MacImSelect 導入
 ///
 /// @author pns
 public class IMEControl {
@@ -30,24 +32,40 @@ public class IMEControl {
     public IMEControl() {}
 
     public static void start() {
-        if (IMEServer.start()) {
-            // 終了時 destroy する
-            Runtime.getRuntime().addShutdownHook(new Thread(IMEServer::stop));
+        MacImSelect imSelect = new MacImSelect();
 
-            KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
-                if (Objects.nonNull(e.getNewValue())) {
-                    if (e.getNewValue() instanceof JTextComponent c) {
-                        if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
-                            IMEServer.selectABC();
-                        } else {
-                            IMEServer.selectJapanese();
-                        }
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
+            if (Objects.nonNull(e.getNewValue())) {
+                if (e.getNewValue() instanceof JTextComponent c) {
+                    if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
+                        imSelect.toRomanMode();
                     } else {
-                        IMEServer.selectABC();
+                        imSelect.toKanjiMode();
                     }
+                } else {
+                    imSelect.toRomanMode();
                 }
-            });
-        }
+            }
+        });
+
+//        if (IMEServer.start()) {
+//            // 終了時 destroy する
+//            Runtime.getRuntime().addShutdownHook(new Thread(IMEServer::stop));
+//
+//            KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
+//                if (Objects.nonNull(e.getNewValue())) {
+//                    if (e.getNewValue() instanceof JTextComponent c) {
+//                        if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
+//                            IMEServer.selectABC();
+//                        } else {
+//                            IMEServer.selectJapanese();
+//                        }
+//                    } else {
+//                        IMEServer.selectABC();
+//                    }
+//                }
+//            });
+//        }
     }
 
     void main() {

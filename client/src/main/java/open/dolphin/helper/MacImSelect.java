@@ -17,7 +17,8 @@ import java.util.concurrent.TimeoutException;
 public class MacImSelect {
 
     private String romanId = "com.apple.keylayout.ABC";
-    private String kanjiId = "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese";
+    //private String kanjiId = "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese";
+    private String kanjiId = "com.justsystems.inputmethod.atok35.Japanese";
 
     public void setRomanId(String romanId) {
         this.romanId = romanId;
@@ -175,8 +176,6 @@ public class MacImSelect {
                     Pointer ptr = array.getElementPtr(i);
                     if (ptr != Pointer.NULL) {
                         String is = new NSString(ptr).utf8String();
-                        System.out.println("is=" + is);
-                        System.out.println("source=" + sourceId);
                         if (is != null && is.equals(sourceId)) {
                             return Carbon.objc_msgSend(this, sel_setValueForKey, ptr,
                                 SELECTED_KEYBOARD_INPUT_SOURCE).intValue();
