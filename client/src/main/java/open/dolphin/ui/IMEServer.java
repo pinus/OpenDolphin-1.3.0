@@ -31,115 +31,6 @@ public class IMEServer {
     static final MethodHandle dispatch_sync_f = LINKER.downcallHandle(
         LIB_DISPATCH.findOrThrow("dispatch_sync_f"), ofVoid(ADDRESS, ADDRESS, ADDRESS)
     );
-    /// Main part
-    static String abcId;
-    static String usId;
-    static String usExtendedId;
-    static String japaneseId;
-    static String katakanaId;
-    static String romanId;
-
-    /// Utilities
-    static MemorySegment nsStringToCString(MemorySegment nsString) {
-        MemorySegment sel_UTF8String = LibObjc.sel_registerName("UTF8String");
-        // 戻り値は char * なので, retain してはいけない
-        return (MemorySegment) LibObjc.objc_msgSend(nsString, sel_UTF8String, false);
-    }
-
-    static String cStringToString(MemorySegment cString) {
-        // 最大 10MB までの範囲でヌル文字を探すよう指示
-        return cString.reinterpret(10 * 1024 * 1024).getString(0, StandardCharsets.UTF_8);
-    }
-
-    static String nsStringToString(MemorySegment nsString) {
-        // NSString の release は自己責任
-        return cStringToString(nsStringToCString(nsString));
-    }
-
-    static MemorySegment cStringToNSString(MemorySegment cString) {
-        MemorySegment cls_NSString = LibObjc.objc_getClass("NSString");
-        MemorySegment sel_stringWithUTF8String = LibObjc.sel_registerName("stringWithUTF8String:");
-        return (MemorySegment) LibObjc.objc_msgSend(cls_NSString, sel_stringWithUTF8String, cString, true);
-    }
-
-    static long nsArrayCount(MemorySegment nsArray) {
-        MemorySegment sel_count = LibObjc.sel_registerName("count");
-        return (long) LibObjc.objc_msgSend(nsArray, sel_count, MemorySegment.NULL, 0, false, 3); // of(JAVA_LONG, ADDRESS, ADDRESS)
-    }
-
-    static MemorySegment objectAtIndex(MemorySegment nsArray, long index) {
-        return (MemorySegment) LibObjc.objc_msgSend(nsArray, LibObjc.sel_registerName("objectAtIndex:"), index, true); // of(ADDRESS, ADDRESS, ADDRESS, JAVA_LONG)
-    }
-
-    static boolean inputSourcesInitialized() {
-        if (abcId != null || usId != null || usExtendedId != null || japaneseId != null || katakanaId != null || romanId != null) {
-            return true;
-        }
-        String atokId = null, kotoeriId = null;
-        for (String sourceId : keyboardInputSources()) {
-            if ("com.apple.keylayout.ABC".equals(sourceId)) {
-                abcId = sourceId;
-            } else if ("com.apple.keylayout.US".equals(sourceId)) {
-                usId = sourceId;
-            } else if ("com.apple.keylayout.USExtended".equals(sourceId)) {
-                usExtendedId = sourceId;
-            } else if (sourceId.contains("justsystem")) {
-                if (sourceId.endsWith(".Japanese")) {
-                    atokId = sourceId;
-                } else if (sourceId.endsWith(".Roman")) {
-                    romanId = sourceId;
-                } else if (sourceId.endsWith(".Katakana")) {
-                    katakanaId = sourceId;
-                }
-            } else if (sourceId.contains("Kotoeri")) {
-                if (sourceId.contains(".Japanese")) {
-                    kotoeriId = sourceId;
-                }
-            }
-        }
-        // atok を優先
-        if (atokId != null) {
-            japaneseId = atokId;
-        } else if (kotoeriId != null) {
-            japaneseId = kotoeriId;
-        }
-        return false;
-    }
-
-    static List<String> keyboardInputSources() {
-        return NSTextInputContext.keyboardInputSources();
-    }
-
-    static void select(String inputSourcdId) {
-        if (!inputSourcesInitialized()) {
-            return;
-        }
-        NSTextInputContext.setSelectedInputSource(inputSourcdId);
-    }
-
-    static void selectABC() {
-        select(abcId);
-    }
-
-    static void selectJapanese() {
-        select(japaneseId);
-    }
-
-    static void selectKatakana() {
-        select(katakanaId);
-    }
-
-    static void selectRoman() {
-        select(romanId);
-    }
-
-    static void selectUS() {
-        select(usId);
-    }
-
-    static void selectUSExtended() {
-        select(usExtendedId);
-    }
 
     /// ----------- LIB_OBJC --------------
     static class LibObjc {
@@ -149,7 +40,7 @@ public class IMEServer {
             ADDRESS.withName("classPtr"), // pointer
             ADDRESS.withName("selPtr"),   // pointer
             ADDRESS.withName("argPtr"),   // pointer
-            JAVA_LONG.withName("argLong"),  // arg as a NSInteger
+            JAVA_LONG.withName("argLong"),  // arg as an NSInteger
             ADDRESS.withName("resPtr"),   // response as a pointer
             JAVA_LONG.withName("resLong"), // response as an NSInteger
             JAVA_INT.withName("retain"), // whether to retain the response false = 0, true = 1
@@ -369,9 +260,7 @@ public class IMEServer {
         static MemorySegment currentInputContext;
 
         static void init() {
-            if (cls_NSTextInputContext != null) {
-                return;
-            } // already initialized
+            if (cls_NSTextInputContext != null) { return; } // already initialized
             cls_NSTextInputContext = LibObjc.objc_getClass("NSTextInputContext");
             sel_currentInputContext = LibObjc.sel_registerName("currentInputContext");
             sel_selectedKeyboardInputSource = LibObjc.sel_registerName("selectedKeyboardInputSource");
@@ -415,4 +304,95 @@ public class IMEServer {
             } // else { IO.println("already selected"); }
         }
     }
+
+    /// Utilities
+    static MemorySegment nsStringToCString(MemorySegment nsString) {
+        MemorySegment sel_UTF8String = LibObjc.sel_registerName("UTF8String");
+        // 戻り値は char * なので, retain してはいけない
+        return (MemorySegment) LibObjc.objc_msgSend(nsString, sel_UTF8String, false);
+    }
+
+    static String cStringToString(MemorySegment cString) {
+        // 最大 10MB までの範囲でヌル文字を探すよう指示
+        return cString.reinterpret(10 * 1024 * 1024).getString(0, StandardCharsets.UTF_8);
+    }
+
+    static String nsStringToString(MemorySegment nsString) {
+        // NSString の release は自己責任
+        return cStringToString(nsStringToCString(nsString));
+    }
+
+    static MemorySegment cStringToNSString(MemorySegment cString) {
+        MemorySegment cls_NSString = LibObjc.objc_getClass("NSString");
+        MemorySegment sel_stringWithUTF8String = LibObjc.sel_registerName("stringWithUTF8String:");
+        return (MemorySegment) LibObjc.objc_msgSend(cls_NSString, sel_stringWithUTF8String, cString, true);
+    }
+
+    static long nsArrayCount(MemorySegment nsArray) {
+        MemorySegment sel_count = LibObjc.sel_registerName("count");
+        return (long) LibObjc.objc_msgSend(nsArray, sel_count, MemorySegment.NULL, 0, false, 3); // of(JAVA_LONG, ADDRESS, ADDRESS)
+    }
+
+    static MemorySegment objectAtIndex(MemorySegment nsArray, long index) {
+        return (MemorySegment) LibObjc.objc_msgSend(nsArray, LibObjc.sel_registerName("objectAtIndex:"), index, true); // of(ADDRESS, ADDRESS, ADDRESS, JAVA_LONG)
+    }
+
+    /// Main part
+    static String abcId;
+    static String usId;
+    static String usExtendedId;
+    static String japaneseId;
+    static String katakanaId;
+    static String romanId;
+
+    static boolean inputSourcesInitialized() {
+        if (abcId != null || usId != null || usExtendedId != null || japaneseId != null || katakanaId != null || romanId != null) {
+            return true;
+        }
+        String atokId = null, kotoeriId = null;
+        for (String sourceId : keyboardInputSources()) {
+            if ("com.apple.keylayout.ABC".equals(sourceId)) {
+                abcId = sourceId;
+            } else if ("com.apple.keylayout.US".equals(sourceId)) {
+                usId = sourceId;
+            } else if ("com.apple.keylayout.USExtended".equals(sourceId)) {
+                usExtendedId = sourceId;
+            } else if (sourceId.contains("justsystem")) {
+                if (sourceId.endsWith(".Japanese")) {
+                    atokId = sourceId;
+                } else if (sourceId.endsWith(".Roman")) {
+                    romanId = sourceId;
+                } else if (sourceId.endsWith(".Katakana")) {
+                    katakanaId = sourceId;
+                }
+            } else if (sourceId.contains("Kotoeri")) {
+                if (sourceId.contains(".Japanese")) {
+                    kotoeriId = sourceId;
+                }
+            }
+        }
+        // atok を優先
+        if (atokId != null) {
+            japaneseId = atokId;
+        } else if (kotoeriId != null) {
+            japaneseId = kotoeriId;
+        }
+        return false;
+    }
+
+    static List<String> keyboardInputSources() {
+        return NSTextInputContext.keyboardInputSources();
+    }
+
+    static void select(String inputSourcdId) {
+        if (!inputSourcesInitialized()) { return; }
+        NSTextInputContext.setSelectedInputSource(inputSourcdId);
+    }
+
+    static void selectABC() { select(abcId); }
+    static void selectJapanese() { select(japaneseId); }
+    static void selectKatakana() { select(katakanaId); }
+    static void selectRoman() { select(romanId); }
+    static void selectUS() { select(usId); }
+    static void selectUSExtended() { select(usExtendedId); }
 }
