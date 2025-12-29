@@ -1,6 +1,5 @@
 package open.dolphin.ui;
 
-import open.dolphin.helper.MacImSelect;
 import open.dolphin.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,53 +23,32 @@ import java.util.Objects;
 /// - ver 9: TISServer (TextInputSources Server) バージョン
 /// - ver 10: TISServer (TextInputSources Server) - FFM API で作った実験的バージョン
 /// - ver 11: masuda 先生の MacImSelect 導入
+/// - ver 12: masuda 先生の MacImSelect を参考に FFM API で再挑戦
 ///
 /// @author pns
 public class IMEControl {
     private final Logger logger = LoggerFactory.getLogger(IMEControl.class);
 
-    public IMEControl() {}
+    public IMEControl() {
+    }
 
     public static void start() {
-        MacImSelect imSelect = new MacImSelect();
-
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
             if (Objects.nonNull(e.getNewValue())) {
                 if (e.getNewValue() instanceof JTextComponent c) {
                     if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
-                        imSelect.toRomanMode();
+                        IMEServer.selectABC();
                     } else {
-                        imSelect.toKanjiMode();
+                        IMEServer.selectJapanese();
                     }
                 } else {
-                    imSelect.toRomanMode();
+                    IMEServer.selectABC();
                 }
             }
         });
-
-//        if (IMEServer.start()) {
-//            // 終了時 destroy する
-//            Runtime.getRuntime().addShutdownHook(new Thread(IMEServer::stop));
-//
-//            KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
-//                if (Objects.nonNull(e.getNewValue())) {
-//                    if (e.getNewValue() instanceof JTextComponent c) {
-//                        if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
-//                            IMEServer.selectABC();
-//                        } else {
-//                            IMEServer.selectJapanese();
-//                        }
-//                    } else {
-//                        IMEServer.selectABC();
-//                    }
-//                }
-//            });
-//        }
     }
 
     void main() {
-        IMEControl.start();
-
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -103,5 +81,7 @@ public class IMEControl {
         f.pack();
         f.setLocation(200, 100);
         f.setVisible(true);
+
+        IMEControl.start();
     }
 }
