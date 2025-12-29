@@ -372,11 +372,8 @@ public class IMEServer {
             }
         }
         // atok を優先
-        if (atokId != null) {
-            japaneseId = atokId;
-        } else if (kotoeriId != null) {
-            japaneseId = kotoeriId;
-        }
+        if (atokId != null) { japaneseId = atokId; }
+        else if (kotoeriId != null) { japaneseId = kotoeriId; }
         return false;
     }
 
@@ -385,8 +382,11 @@ public class IMEServer {
     }
 
     static void select(String inputSourcdId) {
-        if (!inputSourcesInitialized()) { return; }
-        NSTextInputContext.setSelectedInputSource(inputSourcdId);
+        // AWT-EventQueue から呼ぶと conveyor app にしたときフリーズしてしまう
+        Thread.ofPlatform().start(() -> {
+            if (!inputSourcesInitialized()) { return; }
+            NSTextInputContext.setSelectedInputSource(inputSourcdId);
+        });
     }
 
     static void selectABC() { select(abcId); }
