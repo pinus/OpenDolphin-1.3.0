@@ -55,7 +55,7 @@ public class IMEServer {
         static final VarHandle vhResLong = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("resLong"));
 
         /// id objc_getClass(const char * name);
-        static MethodHandle mh_objc_getClass = LINKER.downcallHandle(LIB_OBJC.findOrThrow("objc_getClass"), of(ADDRESS, ADDRESS));
+        static final MethodHandle mh_objc_getClass = LINKER.downcallHandle(LIB_OBJC.findOrThrow("objc_getClass"), of(ADDRESS, ADDRESS));
         static MemorySegment objc_getClass(String name) {
             try (Arena arena = Arena.ofConfined()) {
                 MemorySegment cName = arena.allocateFrom(name);
@@ -67,7 +67,7 @@ public class IMEServer {
         }
 
         /// id sel_registerName(const char * str)
-        static MethodHandle mh_sel_registerName = LINKER.downcallHandle(LIB_OBJC.findOrThrow("sel_registerName"), of(ADDRESS, ADDRESS));
+        static final MethodHandle mh_sel_registerName = LINKER.downcallHandle(LIB_OBJC.findOrThrow("sel_registerName"), of(ADDRESS, ADDRESS));
         static MemorySegment sel_registerName(String name) {
             try (Arena arena = Arena.ofConfined()) {
                 MemorySegment cName = arena.allocateFrom(name);
