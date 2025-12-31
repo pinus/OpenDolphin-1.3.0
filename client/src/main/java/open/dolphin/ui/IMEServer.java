@@ -66,7 +66,7 @@ public class IMEServer {
             }
         }
 
-        /// id sel_registerName(const char *str)
+        /// id sel_registerName(const char * str)
         static MethodHandle mh_sel_registerName = LINKER.downcallHandle(LIB_OBJC.findOrThrow("sel_registerName"), of(ADDRESS, ADDRESS));
         static MemorySegment sel_registerName(String name) {
             try (Arena arena = Arena.ofConfined()) {
@@ -88,20 +88,28 @@ public class IMEServer {
             LINKER.downcallHandle(LIB_OBJC.findOrThrow("objc_msgSend"), ofVoid(ADDRESS, ADDRESS, ADDRESS)),
         };
         static final int AAAA = 0, AAA = 1, VAA = 2, LAA = 3, AAAL = 4, VAAA = 5;
+        static final MethodHandle mh_javaMethodInvoker;
+        static {
+            try { mh_javaMethodInvoker = MethodHandles.lookup().
+                    findStatic(LibObjc.class, "objc_msgSend_native", MethodType.methodType(void.class, MemorySegment.class));
+            } catch (NoSuchMethodException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         // Takes Class and Selector and returns a MemorySegment.
         static Object objc_msgSend(MemorySegment classPtr, MemorySegment selPtr, boolean shouldRetain) {
-            return objc_msgSend(classPtr, selPtr, MemorySegment.NULL, 0, shouldRetain, AAA); // of(ADDRESS, ADDRESS, ADDRESS)
+            return objc_msgSend(classPtr, selPtr, MemorySegment.NULL, 0, shouldRetain, AAA);
         }
 
         // Takes Class, Selector and an Argument of MemorySegment and returns a MemorySegment.
         static Object objc_msgSend(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr, boolean shouldRetain) {
-            return objc_msgSend(classPtr, selPtr, argPtr, 0, shouldRetain, AAAA); // of(ADDRESS, ADDRESS, ADDRESS, ADDRESS)
+            return objc_msgSend(classPtr, selPtr, argPtr, 0, shouldRetain, AAAA);
         }
 
         // Takes Class, Selector and an Argument of Long and returns a MemorySegment.
         static Object objc_msgSend(MemorySegment classPtr, MemorySegment selPtr, long argLong, boolean shouldRetain) {
-            return objc_msgSend(classPtr, selPtr, MemorySegment.NULL, argLong, shouldRetain, AAAL); // of(ADDRESS, ADDRESS, ADDRESS, JAVA_LONG)
+            return objc_msgSend(classPtr, selPtr, MemorySegment.NULL, argLong, shouldRetain, AAAL);
         }
 
         // Takes Class, Selector and an Argument of MemorySegment and returns nothing.
@@ -113,8 +121,8 @@ public class IMEServer {
             return (long) objc_msgSend(classPtr, selPtr, MemorySegment.NULL, 0, shouldRetain, LAA);
         }
 
-        // Takes Class, Selector and an Argument of MemorySegment or Long and returns a MemorySegment.
-        // The combination of FunctionDescriptor is selectable via desc integer (AAAA, AAA, etc.)
+        // Takes Class, Selector and an Argument of MemorySegment or Long and returns a MemorySegment or Long.
+        // The combination of FunctionDescriptor is selectable via desc integer (AAAA, AAA, etc...)
         static Object objc_msgSend(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr, long argLong, boolean shouldRetain, int desc) {
             try (Arena arena = Arena.ofConfined()) {
                 MemorySegment context = arena.allocate(CONTEXT);
@@ -125,12 +133,10 @@ public class IMEServer {
                 vhRetain.set(context, 0, shouldRetain ? 1 : 0); // false = 0
                 vhDesc.set(context, 0, desc);
 
-                MethodHandle handleJava = MethodHandles.lookup().
-                    findStatic(LibObjc.class, "objc_msgSend_native", MethodType.methodType(void.class, MemorySegment.class));
-                MemorySegment work = LINKER.upcallStub(handleJava, ofVoid(ADDRESS), Arena.ofAuto());
-
+                // dispatch_sync_f executes the function synchronously and blocks until it completes,
+                // so the result can be obtained synchronously and the arena remains alive until completion.
+                MemorySegment work = LINKER.upcallStub(mh_javaMethodInvoker, ofVoid(ADDRESS), arena);
                 dispatch_sync_f.invokeExact(_dispatch_main_q, context, work);
-
                 return desc == LAA ? // of(JAVA_LONG, ADDRESS, ADDRESS)
                     (long) vhResLong.get(context, 0) : (MemorySegment) vhResPtr.get(context, 0);
 
@@ -141,7 +147,7 @@ public class IMEServer {
 
         /// Called via dispatch_sync_f and executes on the main queue (_dispatch_main_q).
         static void objc_msgSend_native(MemorySegment cContext) {
-            // reinterpret context c pointer
+            // The context is returned as a C pointer, so it needs to be reinterpreted.
             MemorySegment context = cContext.reinterpret(CONTEXT.byteSize());
             MemorySegment classPtr = (MemorySegment) vhClassPtr.get(context, 0);
             MemorySegment selPtr = (MemorySegment) vhSelPtr.get(context, 0);
@@ -325,11 +331,11 @@ public class IMEServer {
         return NSTextInputContext.keyboardInputSources();
     }
 
-    static void select(String inputSourcdId) {
+    static void select(String inputSourceId) {
         Thread.ofPlatform().start(() ->{
+            // Invoking on the AWT-EventQueue results in a deadlock.
             if (!inputSourcesInitialized()) { return; }
-            NSTextInputContext.setSelectedInputSource(inputSourcdId);
-
+            NSTextInputContext.setSelectedInputSource(inputSourceId);
         });
     }
 
