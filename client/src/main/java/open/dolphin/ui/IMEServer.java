@@ -116,9 +116,6 @@ public class IMEServer {
         static final VarHandle vhDesc = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("desc"));
 
         // objc_msgSend via _dispatch_main_q
-        static Object objc_msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr) {
-            return objc_msgSend_mainq(classPtr, selPtr, MemorySegment.NULL, LibObjc.AAA);
-        }
         static Object objc_msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr, int desc) {
             try (Arena arena = Arena.ofConfined()) {
                 MemorySegment context = arena.allocate(CONTEXT);
@@ -185,14 +182,25 @@ public class IMEServer {
             sel_selectedKeyboardInputSource = LibObjc.sel_registerName("selectedKeyboardInputSource");
             sel_keyboardInputSources = LibObjc.sel_registerName("keyboardInputSources");
             sel_setSelectedKeyboardInputSource = LibObjc.sel_registerName("setSelectedKeyboardInputSource:");
-            current = (MemorySegment) LibObjc.objc_msgSend_mainq(cls_NSTextInputContext, sel_currentInputContext);
+            current = msgSend_mainq(cls_NSTextInputContext, sel_currentInputContext);
         }
 
+        ///  Helper method to call objc_msgSend_mainq with AAA descriptor
+        static MemorySegment msgSend_mainq(MemorySegment cls, MemorySegment sel) {
+            return (MemorySegment) LibObjc.objc_msgSend_mainq(cls, sel, MemorySegment.NULL, LibObjc.AAA);
+        }
+
+        ///  Helper method to call objc_msgSend_mainq with VAAA descriptor
+        static void msgSend_mainq(MemorySegment cls, MemorySegment sel, MemorySegment arg) {
+            LibObjc.objc_msgSend_mainq(cls, sel, arg, LibObjc.VAAA);
+        }
+
+        /// NSArray<NSString *> * keyboardInputSources;
         static List<String> keyboardInputSources() {
             init();
             List<String> list = new ArrayList<>();
             // NSArray<NSString *> *
-            MemorySegment nsArray = (MemorySegment) LibObjc.objc_msgSend_mainq(current, sel_keyboardInputSources);
+            MemorySegment nsArray = msgSend_mainq(current, sel_keyboardInputSources);
             long count = nsArrayCount(nsArray);
             for (long i = 0; i < count; i++) {
                 // Creates new objects so that NSObjects can be safely released.
@@ -202,22 +210,24 @@ public class IMEServer {
             return list;
         }
 
+        /// NSString * selectedKeyboardInputSource;
         static String selectedInputSource() {
             init();
-            MemorySegment nsSelectedInputSource = (MemorySegment) LibObjc.objc_msgSend_mainq(current, sel_selectedKeyboardInputSource);
+            MemorySegment nsSelectedInputSource = msgSend_mainq(current, sel_selectedKeyboardInputSource);
             // Creates a new object so that the NSObject can be safely released.
             String inputSourceId = nsStringToString(nsSelectedInputSource);
             LibObjc.release(nsSelectedInputSource);
             return inputSourceId;
         }
 
+        /// void setSelectedKeyboardInputSource(NSString * inputSourceId);
         static void setSelectedInputSource(String inputSourceId) {
             String selectedInputSourceId = selectedInputSource();
             if (!inputSourceId.equals(selectedInputSourceId)) {
                 try (Arena arena = Arena.ofConfined()) {
                     MemorySegment cStr = arena.allocateFrom(inputSourceId);
                     MemorySegment nsInputSource = cStringToNSString(cStr);
-                    LibObjc.objc_msgSend_mainq(current, sel_setSelectedKeyboardInputSource, nsInputSource, LibObjc.VAAA);
+                    msgSend_mainq(current, sel_setSelectedKeyboardInputSource, nsInputSource);
                     LibObjc.release(nsInputSource);
                 }
             }  //else { IO.println("already selected"); }
