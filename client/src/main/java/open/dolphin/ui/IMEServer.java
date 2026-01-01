@@ -34,25 +34,6 @@ public class IMEServer {
 
     /// ----------- LIB_OBJC --------------
     static class LibObjc {
-        /// Structure to be passed as the context for dispatch_sync_f
-        static final StructLayout CONTEXT = MemoryLayout.structLayout(
-            ADDRESS.withName("classPtr"),  // pointer
-            ADDRESS.withName("selPtr"),    // pointer
-            ADDRESS.withName("argPtr"),    // pointer
-            JAVA_LONG.withName("argLong"), // arg as an NSInteger
-            ADDRESS.withName("resPtr"),    // response as a pointer
-            JAVA_LONG.withName("resLong"), // response as an NSInteger
-            JAVA_INT.withName("retain"),   // whether to retain the response false = 0, true = 1
-            JAVA_INT.withName("desc")      // combination of FunctionDescriptor
-        );
-        static final VarHandle vhClassPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("classPtr"));
-        static final VarHandle vhSelPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("selPtr"));
-        static final VarHandle vhArgPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("argPtr"));
-        static final VarHandle vhArgLong = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("argLong"));
-        static final VarHandle vhResPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("resPtr"));
-        static final VarHandle vhRetain = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("retain"));
-        static final VarHandle vhDesc = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("desc"));
-        static final VarHandle vhResLong = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("resLong"));
 
         /// id objc_getClass(const char * name);
         static final MethodHandle mh_objc_getClass = LINKER.downcallHandle(LIB_OBJC.findOrThrow("objc_getClass"), of(ADDRESS, ADDRESS));
@@ -78,7 +59,29 @@ public class IMEServer {
             }
         }
 
-        /// id objc_msgSend(id self, SEL op, arg...)
+        /// - (void) retain
+        static MemorySegment retain(MemorySegment objPtr) {
+            try {
+                return (MemorySegment) mh_objc_msgSend[AAA].invokeExact(objPtr, sel_registerName("retain"));
+
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        /// - (void) release
+        static void release(MemorySegment objPtr) {
+            try {
+                if (objPtr.equals(MemorySegment.NULL)) { return; }
+                mh_objc_msgSend[VAA].invokeExact(objPtr, sel_registerName("release"));
+
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        /// objc_msgSend(id self, SEL op, arg...)
+        /// The combination of FunctionDescriptor is selectable via desc integer (AAAA, AAA, etc...)
         static final MethodHandle[] mh_objc_msgSend = {
             LINKER.downcallHandle(LIB_OBJC.findOrThrow("objc_msgSend"), of(ADDRESS, ADDRESS, ADDRESS, ADDRESS)),
             LINKER.downcallHandle(LIB_OBJC.findOrThrow("objc_msgSend"), of(ADDRESS, ADDRESS, ADDRESS)),
@@ -88,57 +91,47 @@ public class IMEServer {
             LINKER.downcallHandle(LIB_OBJC.findOrThrow("objc_msgSend"), ofVoid(ADDRESS, ADDRESS, ADDRESS)),
         };
         static final int AAAA = 0, AAA = 1, VAA = 2, LAA = 3, AAAL = 4, VAAA = 5;
+
         static final MethodHandle mh_javaMethodInvoker;
         static {
             try { mh_javaMethodInvoker = MethodHandles.lookup().
-                    findStatic(LibObjc.class, "objc_msgSend_native", MethodType.methodType(void.class, MemorySegment.class));
+                findStatic(LibObjc.class, "objc_msgSend_native", MethodType.methodType(void.class, MemorySegment.class));
             } catch (NoSuchMethodException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        // Takes Class and Selector and returns a MemorySegment.
-        static Object objc_msgSend(MemorySegment classPtr, MemorySegment selPtr, boolean shouldRetain) {
-            return objc_msgSend(classPtr, selPtr, MemorySegment.NULL, 0, shouldRetain, AAA);
-        }
+        // Structure to be allocated as the context for dispatch_sync_f
+        static final StructLayout CONTEXT = MemoryLayout.structLayout(
+            ADDRESS.withName("classPtr"),  // pointer
+            ADDRESS.withName("selPtr"),    // pointer
+            ADDRESS.withName("argPtr"),    // pointer
+            ADDRESS.withName("resPtr"),    // response as a pointer
+            JAVA_INT.withName("desc")      // combination of FunctionDescriptor
+        );
+        static final VarHandle vhClassPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("classPtr"));
+        static final VarHandle vhSelPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("selPtr"));
+        static final VarHandle vhArgPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("argPtr"));
+        static final VarHandle vhResPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("resPtr"));
+        static final VarHandle vhDesc = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("desc"));
 
-        // Takes Class, Selector and an Argument of MemorySegment and returns a MemorySegment.
-        static Object objc_msgSend(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr, boolean shouldRetain) {
-            return objc_msgSend(classPtr, selPtr, argPtr, 0, shouldRetain, AAAA);
+        // objc_msgSend via _dispatch_main_q
+        static Object objc_msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr) {
+            return objc_msgSend_mainq(classPtr, selPtr, MemorySegment.NULL, LibObjc.AAA);
         }
-
-        // Takes Class, Selector and an Argument of Long and returns a MemorySegment.
-        static Object objc_msgSend(MemorySegment classPtr, MemorySegment selPtr, long argLong, boolean shouldRetain) {
-            return objc_msgSend(classPtr, selPtr, MemorySegment.NULL, argLong, shouldRetain, AAAL);
-        }
-
-        // Takes Class, Selector and an Argument of MemorySegment and returns nothing.
-        static void objc_msgSend_void(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr) {
-            objc_msgSend(classPtr, selPtr, argPtr, 0, false, VAAA);
-        }
-        // Takes Class and Selector and returns Long.
-        static long objc_msgSend_long(MemorySegment classPtr, MemorySegment selPtr, boolean shouldRetain) {
-            return (long) objc_msgSend(classPtr, selPtr, MemorySegment.NULL, 0, shouldRetain, LAA);
-        }
-
-        // Takes Class, Selector and an Argument of MemorySegment or Long and returns a MemorySegment or Long.
-        // The combination of FunctionDescriptor is selectable via desc integer (AAAA, AAA, etc...)
-        static Object objc_msgSend(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr, long argLong, boolean shouldRetain, int desc) {
+        static Object objc_msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr, int desc) {
             try (Arena arena = Arena.ofConfined()) {
                 MemorySegment context = arena.allocate(CONTEXT);
                 vhClassPtr.set(context, 0, classPtr);
                 vhSelPtr.set(context, 0, selPtr);
                 vhArgPtr.set(context, 0, argPtr);
-                vhArgLong.set(context, 0, argLong);
-                vhRetain.set(context, 0, shouldRetain ? 1 : 0); // false = 0
                 vhDesc.set(context, 0, desc);
 
                 // dispatch_sync_f executes the function synchronously and blocks until it completes,
                 // so the result can be obtained synchronously and the arena remains alive until completion.
                 MemorySegment work = LINKER.upcallStub(mh_javaMethodInvoker, ofVoid(ADDRESS), arena);
                 dispatch_sync_f.invokeExact(_dispatch_main_q, context, work);
-                return desc == LAA ? // of(JAVA_LONG, ADDRESS, ADDRESS)
-                    (long) vhResLong.get(context, 0) : (MemorySegment) vhResPtr.get(context, 0);
+                return (MemorySegment) vhResPtr.get(context, 0);
 
             } catch (Throwable e) {
                 throw new RuntimeException(e);
@@ -152,44 +145,23 @@ public class IMEServer {
             MemorySegment classPtr = (MemorySegment) vhClassPtr.get(context, 0);
             MemorySegment selPtr = (MemorySegment) vhSelPtr.get(context, 0);
             MemorySegment argPtr = (MemorySegment) vhArgPtr.get(context, 0);
-            long argLong = (long) vhArgLong.get(context, 0);
-            int shouldRetain = (int) vhRetain.get(context, 0);
             int desc = (int) vhDesc.get(context, 0);
 
             try {
                 MethodHandle mh = mh_objc_msgSend[desc];
                 MemorySegment resPtr = MemorySegment.NULL;
-                long resLong = 0;
 
                 switch (desc) {
                     case AAA -> resPtr = (MemorySegment) mh.invokeExact(classPtr, selPtr);
-                    case VAA -> mh.invokeExact(classPtr, selPtr);
-                    case LAA -> resLong = (long) mh.invokeExact(classPtr, selPtr);
-                    case AAAL -> resPtr = (MemorySegment) mh.invokeExact(classPtr, selPtr, argLong);
                     case VAAA -> mh.invokeExact(classPtr, selPtr, argPtr);
-                    case AAAA -> resPtr = (MemorySegment) mh.invokeExact(classPtr, selPtr, argPtr);
                 }
 
                 // Objective-C オブジェクトの場合 autorelease されるので retain が必須
                 // 戻り値が C ポインタ(char* 等)やプリミティブの場合は retain してはダメ
-                if (!resPtr.equals(MemorySegment.NULL) && shouldRetain != 0) { // 0 == false
-                    // - (instancetype) retain
-                    MethodHandle mh_retain = mh_objc_msgSend[AAA];
-                    resPtr = (MemorySegment) mh_retain.invokeExact(resPtr, sel_registerName("retain"));
+                if (!resPtr.equals(MemorySegment.NULL)) { // 0 == false
+                    resPtr = retain(resPtr);
                 }
                 vhResPtr.set(context, 0, resPtr);
-                vhResLong.set(context, 0, resLong);
-
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        /// - (void) release
-        static void release(MemorySegment objPtr) {
-            if (objPtr.equals(MemorySegment.NULL)) { return; }
-            try {
-                mh_objc_msgSend[VAA].invokeExact(objPtr, sel_registerName("release"));
 
             } catch (Throwable e) {
                 throw new RuntimeException(e);
@@ -204,7 +176,7 @@ public class IMEServer {
         static MemorySegment sel_selectedKeyboardInputSource;
         static MemorySegment sel_keyboardInputSources;
         static MemorySegment sel_setSelectedKeyboardInputSource;
-        static MemorySegment currentInputContext;
+        static MemorySegment current;
 
         static void init() {
             if (cls_NSTextInputContext != null) { return; } // already initialized
@@ -213,14 +185,14 @@ public class IMEServer {
             sel_selectedKeyboardInputSource = LibObjc.sel_registerName("selectedKeyboardInputSource");
             sel_keyboardInputSources = LibObjc.sel_registerName("keyboardInputSources");
             sel_setSelectedKeyboardInputSource = LibObjc.sel_registerName("setSelectedKeyboardInputSource:");
-            currentInputContext = (MemorySegment) LibObjc.objc_msgSend(cls_NSTextInputContext, sel_currentInputContext, true);
+            current = (MemorySegment) LibObjc.objc_msgSend_mainq(cls_NSTextInputContext, sel_currentInputContext);
         }
 
         static List<String> keyboardInputSources() {
             init();
             List<String> list = new ArrayList<>();
             // NSArray<NSString *> *
-            MemorySegment nsArray = (MemorySegment) LibObjc.objc_msgSend(currentInputContext, sel_keyboardInputSources, true);
+            MemorySegment nsArray = (MemorySegment) LibObjc.objc_msgSend_mainq(current, sel_keyboardInputSources);
             long count = nsArrayCount(nsArray);
             for (long i = 0; i < count; i++) {
                 // Creates new objects so that NSObjects can be safely released.
@@ -232,7 +204,7 @@ public class IMEServer {
 
         static String selectedInputSource() {
             init();
-            MemorySegment nsSelectedInputSource = (MemorySegment) LibObjc.objc_msgSend(currentInputContext, sel_selectedKeyboardInputSource, true);
+            MemorySegment nsSelectedInputSource = (MemorySegment) LibObjc.objc_msgSend_mainq(current, sel_selectedKeyboardInputSource);
             // Creates a new object so that the NSObject can be safely released.
             String inputSourceId = nsStringToString(nsSelectedInputSource);
             LibObjc.release(nsSelectedInputSource);
@@ -245,23 +217,25 @@ public class IMEServer {
                 try (Arena arena = Arena.ofConfined()) {
                     MemorySegment cStr = arena.allocateFrom(inputSourceId);
                     MemorySegment nsInputSource = cStringToNSString(cStr);
-                    LibObjc.objc_msgSend_void(currentInputContext, sel_setSelectedKeyboardInputSource, nsInputSource);
+                    LibObjc.objc_msgSend_mainq(current, sel_setSelectedKeyboardInputSource, nsInputSource, LibObjc.VAAA);
                     LibObjc.release(nsInputSource);
                 }
-            } // else { IO.println("already selected"); }
+            }  //else { IO.println("already selected"); }
         }
     }
 
     /// Utilities
     static MemorySegment nsStringToCString(MemorySegment nsString) {
-        MemorySegment sel_UTF8String = LibObjc.sel_registerName("UTF8String");
-        // 戻り値は char * なので, retain してはいけない
-        return (MemorySegment) LibObjc.objc_msgSend(nsString, sel_UTF8String, false);
+        try {
+            MemorySegment sel_UTF8String = LibObjc.sel_registerName("UTF8String");
+            return (MemorySegment) LibObjc.mh_objc_msgSend[LibObjc.AAA].invokeExact(nsString, sel_UTF8String);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static String cStringToString(MemorySegment cString) {
-        // 最大 1024 バイトまでの範囲でヌル文字を探すよう指示
-        return cString.reinterpret(1024).getString(0, StandardCharsets.UTF_8);
+        return cString.reinterpret(Integer.MAX_VALUE).getString(0, StandardCharsets.UTF_8);
     }
 
     static String nsStringToString(MemorySegment nsString) {
@@ -270,18 +244,32 @@ public class IMEServer {
     }
 
     static MemorySegment cStringToNSString(MemorySegment cString) {
-        MemorySegment cls_NSString = LibObjc.objc_getClass("NSString");
-        MemorySegment sel_stringWithUTF8String = LibObjc.sel_registerName("stringWithUTF8String:");
-        return (MemorySegment) LibObjc.objc_msgSend(cls_NSString, sel_stringWithUTF8String, cString, true);
+        try {
+            MemorySegment cls_NSString = LibObjc.objc_getClass("NSString");
+            MemorySegment sel_stringWithUTF8String = LibObjc.sel_registerName("stringWithUTF8String:");
+            MemorySegment nsString = (MemorySegment) LibObjc.mh_objc_msgSend[LibObjc.AAAA].invokeExact(cls_NSString, sel_stringWithUTF8String, cString);
+            return LibObjc.retain(nsString);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static long nsArrayCount(MemorySegment nsArray) {
-        MemorySegment sel_count = LibObjc.sel_registerName("count");
-        return LibObjc.objc_msgSend_long(nsArray, sel_count, false);
+        try {
+            MemorySegment sel_count = LibObjc.sel_registerName("count");
+            return (long) LibObjc.mh_objc_msgSend[LibObjc.LAA].invokeExact(nsArray, sel_count);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static MemorySegment objectAtIndex(MemorySegment nsArray, long index) {
-        return (MemorySegment) LibObjc.objc_msgSend(nsArray, LibObjc.sel_registerName("objectAtIndex:"), index, true);
+        try {
+            MemorySegment sel_objectAtIndex = LibObjc.sel_registerName("objectAtIndex:");
+            return (MemorySegment) LibObjc.mh_objc_msgSend[LibObjc.AAAL].invokeExact(nsArray, sel_objectAtIndex, index);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /// Main part
