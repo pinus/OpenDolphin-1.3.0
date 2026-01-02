@@ -135,10 +135,10 @@ public class IMEServer {
         static MemorySegment sel_selectedKeyboardInputSource;
         static MemorySegment sel_keyboardInputSources;
         static MemorySegment sel_setSelectedKeyboardInputSource;
-        static MemorySegment current;
+        static MemorySegment current = MemorySegment.NULL;
 
         static void init() {
-            if (cls_NSTextInputContext != null) { return; } // already initialized
+            if (!MemorySegment.NULL.equals(current)) { return; } // already initialized
             cls_NSTextInputContext = LibObjc.objc_getClass("NSTextInputContext");
             sel_currentInputContext = LibObjc.sel_registerName("currentInputContext");
             sel_selectedKeyboardInputSource = LibObjc.sel_registerName("selectedKeyboardInputSource");
@@ -299,7 +299,7 @@ public class IMEServer {
     static String katakanaId;
     static String romanId;
 
-    static boolean inputSourcesInitialized() {
+    static boolean initialized() {
         if (abcId != null || usId != null || usExtendedId != null || japaneseId != null || katakanaId != null || romanId != null) {
             return true;
         }
@@ -341,7 +341,7 @@ public class IMEServer {
     static void select(String inputSourceId) {
         Thread.ofPlatform().start(() ->{
             // Invoking on the AWT-EventQueue results in a deadlock.
-            if (!inputSourcesInitialized()) { return; }
+            if (!initialized()) { return; }
             NSTextInputContext.setSelectedInputSource(inputSourceId);
         });
     }

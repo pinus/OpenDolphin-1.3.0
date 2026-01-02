@@ -33,6 +33,8 @@ public class IMEControl {
     }
 
     public static void start() {
+        //IMEServer.initialized();
+        //IMEServerTIS.initialized();
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", e -> {
             if (Objects.nonNull(e.getNewValue())) {
                 if (e.getNewValue() instanceof JTextComponent c) {
