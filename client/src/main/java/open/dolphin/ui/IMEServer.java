@@ -115,7 +115,7 @@ public class IMEServer {
         static final VarHandle vhResPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("resPtr"));
         static final VarHandle vhDesc = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("desc"));
 
-        // objc_msgSend via _dispatch_main_q
+        /// objc_msgSend via _dispatch_main_q
         static Object objc_msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr, int desc) {
             try (Arena arena = Arena.ofConfined()) {
                 MemorySegment context = arena.allocate(CONTEXT);
