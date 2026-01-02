@@ -23,7 +23,7 @@ import java.util.Objects;
 /// - ver 9: TISServer (TextInputSources Server) バージョン
 /// - ver 10: TISServer (TextInputSources Server) - FFM API で作った実験的バージョン
 /// - ver 11: masuda 先生の MacImSelect 導入
-/// - ver 12: masuda 先生の MacImSelect を参考に FFM API で再挑戦
+/// - ver 12: masuda 先生の MacImSelect を参考に FFM API で IMEServer/IMEServerTIS 作成
 ///
 /// @author pns
 public class IMEControl {
@@ -38,11 +38,14 @@ public class IMEControl {
                 if (e.getNewValue() instanceof JTextComponent c) {
                     if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
                         IMEServer.selectABC();
+                        //IMEServerTIS.selectABC();
                     } else {
                         IMEServer.selectJapanese();
+                        //IMEServerTIS.selectJapanese();
                     }
                 } else {
                     IMEServer.selectABC();
+                    //IMEServerTIS.selectABC();
                 }
             }
         });

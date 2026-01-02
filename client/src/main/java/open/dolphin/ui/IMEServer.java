@@ -11,7 +11,8 @@ import java.util.List;
 
 import static java.lang.foreign.FunctionDescriptor.of;
 import static java.lang.foreign.FunctionDescriptor.ofVoid;
-import static java.lang.foreign.ValueLayout.*;
+import static java.lang.foreign.ValueLayout.ADDRESS;
+import static java.lang.foreign.ValueLayout.JAVA_LONG;
 
 /// Input Source Selection via Foreign Function and Memory API
 ///
@@ -31,6 +32,33 @@ public class IMEServer {
     static final MethodHandle dispatch_sync_f = LINKER.downcallHandle(
         LIB_DISPATCH.findOrThrow("dispatch_sync_f"), ofVoid(ADDRESS, ADDRESS, ADDRESS)
     );
+
+    /// Receiver as a work for dispatch_sync_f
+    interface Receiver {
+        void receive(MemorySegment context);
+    }
+
+    // Dispatched work calls Receiver.receive(context)
+    static final MethodHandle mh_dispatchTask;
+    static {
+        try {
+            mh_dispatchTask = MethodHandles.lookup().findVirtual(Receiver.class, "receive", MethodType.methodType(void.class, MemorySegment.class));
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Struct to be allocated as the context for dispatch_sync_f
+    static final StructLayout STRUCT = MemoryLayout.structLayout(
+        ADDRESS.withName("classPtr"),  // pointer
+        ADDRESS.withName("selPtr"),    // pointer
+        ADDRESS.withName("argPtr"),    // pointer
+        ADDRESS.withName("resPtr")    // response as a pointer
+    );
+    static final VarHandle vhClassPtr = STRUCT.varHandle(MemoryLayout.PathElement.groupElement("classPtr"));
+    static final VarHandle vhSelPtr = STRUCT.varHandle(MemoryLayout.PathElement.groupElement("selPtr"));
+    static final VarHandle vhArgPtr = STRUCT.varHandle(MemoryLayout.PathElement.groupElement("argPtr"));
+    static final VarHandle vhResPtr = STRUCT.varHandle(MemoryLayout.PathElement.groupElement("resPtr"));
 
     /// ----------- LIB_OBJC --------------
     static class LibObjc {
@@ -80,7 +108,7 @@ public class IMEServer {
             }
         }
 
-        /// objc_msgSend(id self, SEL op, arg...)
+        /// (void *) objc_msgSend(id self, SEL op, arg...)
         /// The combination of FunctionDescriptor is selectable via desc integer (AAAA, AAA, etc...)
         static final MethodHandle[] mh_objc_msgSend = {
             LINKER.downcallHandle(LIB_OBJC.findOrThrow("objc_msgSend"), of(ADDRESS, ADDRESS, ADDRESS, ADDRESS)),
@@ -92,77 +120,11 @@ public class IMEServer {
         };
         static final int AAAA = 0, AAA = 1, VAA = 2, LAA = 3, AAAL = 4, VAAA = 5;
 
-        static final MethodHandle mh_javaMethodInvoker;
-        static {
-            try { mh_javaMethodInvoker = MethodHandles.lookup().
-                findStatic(LibObjc.class, "objc_msgSend_native", MethodType.methodType(void.class, MemorySegment.class));
-            } catch (NoSuchMethodException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        // Structure to be allocated as the context for dispatch_sync_f
-        static final StructLayout CONTEXT = MemoryLayout.structLayout(
-            ADDRESS.withName("classPtr"),  // pointer
-            ADDRESS.withName("selPtr"),    // pointer
-            ADDRESS.withName("argPtr"),    // pointer
-            ADDRESS.withName("resPtr"),    // response as a pointer
-            JAVA_INT.withName("desc")      // combination of FunctionDescriptor
-        );
-        static final VarHandle vhClassPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("classPtr"));
-        static final VarHandle vhSelPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("selPtr"));
-        static final VarHandle vhArgPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("argPtr"));
-        static final VarHandle vhResPtr = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("resPtr"));
-        static final VarHandle vhDesc = CONTEXT.varHandle(MemoryLayout.PathElement.groupElement("desc"));
-
-        /// objc_msgSend via _dispatch_main_q
-        static Object objc_msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr, int desc) {
-            try (Arena arena = Arena.ofConfined()) {
-                MemorySegment context = arena.allocate(CONTEXT);
-                vhClassPtr.set(context, 0, classPtr);
-                vhSelPtr.set(context, 0, selPtr);
-                vhArgPtr.set(context, 0, argPtr);
-                vhDesc.set(context, 0, desc);
-
-                // dispatch_sync_f executes the function synchronously and blocks until it completes,
-                // so the result can be obtained synchronously and the arena remains alive until completion.
-                MemorySegment work = LINKER.upcallStub(mh_javaMethodInvoker, ofVoid(ADDRESS), arena);
-                dispatch_sync_f.invokeExact(_dispatch_main_q, context, work);
-                return (MemorySegment) vhResPtr.get(context, 0);
-
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        /// Called via dispatch_sync_f and executes on the main queue (_dispatch_main_q).
-        static void objc_msgSend_native(MemorySegment cContext) {
-            // The context is returned as a C pointer, so it needs to be reinterpreted.
-            MemorySegment context = cContext.reinterpret(CONTEXT.byteSize());
-            MemorySegment classPtr = (MemorySegment) vhClassPtr.get(context, 0);
-            MemorySegment selPtr = (MemorySegment) vhSelPtr.get(context, 0);
-            MemorySegment argPtr = (MemorySegment) vhArgPtr.get(context, 0);
-            int desc = (int) vhDesc.get(context, 0);
-
-            try {
-                MethodHandle mh = mh_objc_msgSend[desc];
-                MemorySegment resPtr = MemorySegment.NULL;
-
-                switch (desc) {
-                    case AAA -> resPtr = (MemorySegment) mh.invokeExact(classPtr, selPtr);
-                    case VAAA -> mh.invokeExact(classPtr, selPtr, argPtr);
-                }
-
-                // Objective-C オブジェクトの場合 autorelease されるので retain が必須
-                // 戻り値が C ポインタ(char* 等)やプリミティブの場合は retain してはダメ
-                if (!resPtr.equals(MemorySegment.NULL)) { // 0 == false
-                    resPtr = retain(resPtr);
-                }
-                vhResPtr.set(context, 0, resPtr);
-
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+        /// receiver から upcallStub を作って dispatch_sync_f にわたす
+        static void dispatchSync(MemorySegment context, Receiver receiver, Arena arena) throws Throwable {
+            var mh = mh_dispatchTask.bindTo(receiver);
+            var work = LINKER.upcallStub(mh, ofVoid(ADDRESS), arena);
+            dispatch_sync_f.invokeExact(_dispatch_main_q, context, work);
         }
     }
 
@@ -185,14 +147,61 @@ public class IMEServer {
             current = msgSend_mainq(cls_NSTextInputContext, sel_currentInputContext);
         }
 
-        ///  Helper method to call objc_msgSend_mainq with AAA descriptor
-        static MemorySegment msgSend_mainq(MemorySegment cls, MemorySegment sel) {
-            return (MemorySegment) LibObjc.objc_msgSend_mainq(cls, sel, MemorySegment.NULL, LibObjc.AAA);
+        ///  Helper method to call objc_msgSend with AAA descriptor
+        static MemorySegment msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr) {
+            try (Arena arena = Arena.ofConfined()) {
+                MemorySegment context = arena.allocate(STRUCT);
+                vhClassPtr.set(context, 0, classPtr);
+                vhSelPtr.set(context, 0, selPtr);
+
+                Receiver receiver = cContext -> {
+                    try {
+                        // The context is returned as a C pointer, so it needs to be reinterpreted.
+                        MemorySegment ctx = cContext.reinterpret(STRUCT.byteSize());
+                        MemorySegment cls = (MemorySegment) vhClassPtr.get(ctx, 0);
+                        MemorySegment sel = (MemorySegment) vhSelPtr.get(ctx, 0);
+                        MemorySegment res = (MemorySegment) LibObjc.mh_objc_msgSend[LibObjc.AAA].invokeExact(cls, sel);
+                        vhResPtr.set(ctx, 0, res);
+
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                };
+                LibObjc.dispatchSync(context, receiver, arena);
+                MemorySegment resPtr = (MemorySegment) vhResPtr.get(context, 0);
+                // Objective-C オブジェクトの場合 autorelease されるので retain が必須
+                return LibObjc.retain(resPtr);
+
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        ///  Helper method to call objc_msgSend_mainq with VAAA descriptor
-        static void msgSend_mainq(MemorySegment cls, MemorySegment sel, MemorySegment arg) {
-            LibObjc.objc_msgSend_mainq(cls, sel, arg, LibObjc.VAAA);
+        ///  Helper method to call objc_msgSend with VAAA descriptor
+        static void msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr) {
+            try (Arena arena = Arena.ofConfined()) {
+                MemorySegment context = arena.allocate(STRUCT);
+                vhClassPtr.set(context, 0, classPtr);
+                vhSelPtr.set(context, 0, selPtr);
+                vhArgPtr.set(context, 0, argPtr);
+
+                Receiver receiver = cContext -> {
+                    try {
+                        MemorySegment ctx = cContext.reinterpret(STRUCT.byteSize());
+                        MemorySegment cls = (MemorySegment) vhClassPtr.get(ctx, 0);
+                        MemorySegment sel = (MemorySegment) vhSelPtr.get(ctx, 0);
+                        MemorySegment arg = (MemorySegment) vhArgPtr.get(ctx, 0);
+                        LibObjc.mh_objc_msgSend[LibObjc.VAAA].invokeExact(cls, sel, arg);
+
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                };
+                LibObjc.dispatchSync(context, receiver, arena);
+
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
         }
 
         /// NSArray<NSString *> * keyboardInputSources;

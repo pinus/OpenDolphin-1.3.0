@@ -17,8 +17,8 @@ import static java.lang.foreign.ValueLayout.*;
 /// Text Input Source Selection via Foreign Function and Memory API
 ///
 /// @author pns
-public class TISServer {
-    static final Logger logger = LoggerFactory.getLogger(TISServer.class);
+public class IMEServerTIS {
+    static final Logger logger = LoggerFactory.getLogger(IMEServerTIS.class);
     static final Linker LINKER = Linker.nativeLinker();
     static final SymbolLookup HITOOLBOX = SymbolLookup.libraryLookup("/System/Library/Frameworks/Carbon.framework/Carbon", Arena.global());
     static final MemorySegment _dispatch_main_q = HITOOLBOX.find("_dispatch_main_q").orElseThrow();
@@ -41,7 +41,7 @@ public class TISServer {
     static final MethodHandle mh_TISCreateinputSourceList = LINKER.downcallHandle(HITOOLBOX.find("TISCreateInputSourceList").orElseThrow(), of(ADDRESS, ADDRESS, JAVA_BOOLEAN));
     static final MethodHandle mh_TISSelectInputSource = LINKER.downcallHandle(HITOOLBOX.find("TISSelectInputSource").orElseThrow(), of(JAVA_INT, ADDRESS));
 
-    // struct to allocate on context
+    // struct to be allocated on context
     static final StructLayout STRUCT = MemoryLayout.structLayout(ADDRESS.withName("resPtr"), ADDRESS.withName("arg1"), ADDRESS.withName("arg2"));
     static final VarHandle vhArg1 = STRUCT.varHandle(PathElement.groupElement("arg1"));
     static final VarHandle vhArg2 = STRUCT.varHandle(PathElement.groupElement("arg2"));
@@ -49,7 +49,6 @@ public class TISServer {
 
     // properties are kept on memory
     static final MemorySegment kTISPropertyInputSourceID = propertyFor("kTISPropertyInputSourceID");
-    static final MemorySegment kTISPropertyInputModeID = propertyFor("kTISPropertyInputModeID");
     static final MemorySegment kTISPropertyInputSourceIsSelected = propertyFor("kTISPropertyInputSourceIsSelected");
     static final MemorySegment kCFBooleanTrue = propertyFor("kCFBooleanTrue");
 
@@ -71,7 +70,7 @@ public class TISServer {
         }
     }
 
-    public TISServer() {}
+    public IMEServerTIS() {}
 
     static void selectJapanese() { select(INPUT_SOURCE.JAPANESE.ref); }
     static void selectRoman() { select(INPUT_SOURCE.ROMAN.ref); }
@@ -88,12 +87,12 @@ public class TISServer {
         // initialize INPUT_SOURCE
         try (var arena = Arena.ofConfined()) {
             // allocate context
-            MemorySegment context = arena.allocate(STRUCT);
+            var context = arena.allocate(STRUCT);
             // define receiver
             Receiver receiver = cContext -> {
                 try {
                     // context should be reinterpreted
-                    MemorySegment ctx = cContext.reinterpret(STRUCT.byteSize());
+                    var ctx = cContext.reinterpret(STRUCT.byteSize());
                     // CFArrayRef TISCreateInputSourceList(CFDictionaryRef properties, Boolean includeAllInstalled)
                     var arrayRef = (MemorySegment) mh_TISCreateinputSourceList.invoke(MemorySegment.NULL, false);
                     vhResPtr.set(ctx, 0, arrayRef); // write response value on context
@@ -113,7 +112,7 @@ public class TISServer {
 
                 // Lookup by sourceId: com.apple.keylayout {.US, .USExtended, .ABC, ... }
                 var sourceIdPtr = tisGetInputSourceProperty(inputSourceRef, kTISPropertyInputSourceID);
-                String sourceID = cfStringToJavaString(sourceIdPtr);
+                var sourceID = cfStringToJavaString(sourceIdPtr);
                 if (sourceID == null) { continue; }
                 // inputSource を設定
                 if (sourceID.equals(INPUT_SOURCE.ABC.id)) { INPUT_SOURCE.ABC.ref = inputSourceRef; }
@@ -156,8 +155,8 @@ public class TISServer {
 
                     Receiver receiver = cContext -> {
                         try {
-                            MemorySegment ctx = cContext.reinterpret(STRUCT.byteSize());
-                            MemorySegment source = (MemorySegment) vhArg1.get(ctx, 0);
+                            var ctx = cContext.reinterpret(STRUCT.byteSize());
+                            var source = (MemorySegment) vhArg1.get(ctx, 0);
                             int status = (int) mh_TISSelectInputSource.invoke(source);
                         } catch (Throwable e) {
                             throw new RuntimeException(e);
@@ -179,23 +178,23 @@ public class TISServer {
 
     /// receiver から upcallStub を作って dispatch_sync_f にわたす
     static void dispatchSync(MemorySegment context, Receiver receiver, Arena arena) throws Throwable {
-        MethodHandle mh = mh_dispatchTask.bindTo(receiver);
-        MemorySegment work = LINKER.upcallStub(mh, ofVoid(ADDRESS), arena);
+        var mh = mh_dispatchTask.bindTo(receiver);
+        var work = LINKER.upcallStub(mh, ofVoid(ADDRESS), arena);
         dispatch_sync_f.invokeExact(_dispatch_main_q, context, work);
     }
 
     /// TISGetInputSourceProperty を呼んで, propertyKey に対応するプロパティーを取得する
     static MemorySegment tisGetInputSourceProperty(MemorySegment inputSourceRef, MemorySegment propertyKey) throws Throwable {
         try (var arena = Arena.ofConfined()) {
-            MemorySegment context = arena.allocate(STRUCT);
+            var context = arena.allocate(STRUCT);
             vhArg1.set(context, 0, inputSourceRef);
             vhArg2.set(context, 0, propertyKey);
 
             Receiver receiver = cContext -> {
                 try {
-                    MemorySegment ctx = cContext.reinterpret(STRUCT.byteSize());
-                    MemorySegment source = (MemorySegment) vhArg1.get(ctx, 0);
-                    MemorySegment property = (MemorySegment) vhArg2.get(ctx, 0);
+                    var ctx = cContext.reinterpret(STRUCT.byteSize());
+                    var source = (MemorySegment) vhArg1.get(ctx, 0);
+                    var property = (MemorySegment) vhArg2.get(ctx, 0);
                     // (void *) TISGetInputSourceProperty (TISInputSourceRef, CFStringRef propertyKey)
                     var prop = mh_GetProperty.invoke(source, property);
                     vhResPtr.set(ctx, 0, prop);
@@ -242,7 +241,7 @@ public class TISServer {
         // 最大バイトサイズを計算する関数があればベストですが、今回は安全マージンを取って (length * 3 + 1) 確保します
         long bufferSize = length * 3 + 1;
 
-        try (Arena localArena = Arena.ofShared()) {
+        try (var localArena = Arena.ofShared()) {
             var mhGetCString = LINKER.downcallHandle(
                 HITOOLBOX.find("CFStringGetCString").orElseThrow(),
                 of(

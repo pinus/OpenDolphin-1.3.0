@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 
-/// Experimental TISServer built with Foreign Function and Memory API
+/// Experimental IMEServerTIS built with Foreign Function and Memory API
 public class TISServer {
     static final String HITOOLBOX_PATH = "/System/Library/Frameworks/Carbon.framework/Carbon";
     static Logger logger = LoggerFactory.getLogger(TISServer.class);
