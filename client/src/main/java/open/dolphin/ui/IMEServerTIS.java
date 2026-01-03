@@ -3,7 +3,10 @@ package open.dolphin.ui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.foreign.*;
+import java.lang.foreign.Arena;
+import java.lang.foreign.Linker;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.SymbolLookup;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -40,12 +43,6 @@ public class IMEServerTIS {
     static final MethodHandle mh_GetProperty = LINKER.downcallHandle(HITOOLBOX.find("TISGetInputSourceProperty").orElseThrow(), of(ADDRESS, ADDRESS, ADDRESS));
     static final MethodHandle mh_TISCreateinputSourceList = LINKER.downcallHandle(HITOOLBOX.find("TISCreateInputSourceList").orElseThrow(), of(ADDRESS, ADDRESS, JAVA_BOOLEAN));
     static final MethodHandle mh_TISSelectInputSource = LINKER.downcallHandle(HITOOLBOX.find("TISSelectInputSource").orElseThrow(), of(JAVA_INT, ADDRESS));
-
-    // struct to be allocated on context
-    static final StructLayout STRUCT = MemoryLayout.structLayout(ADDRESS.withName("resPtr"), ADDRESS.withName("arg1"), ADDRESS.withName("arg2"));
-    static final VarHandle vhArg1 = STRUCT.varHandle(PathElement.groupElement("arg1"));
-    static final VarHandle vhArg2 = STRUCT.varHandle(PathElement.groupElement("arg2"));
-    static final VarHandle vhResPtr = STRUCT.varHandle(PathElement.groupElement("resPtr"));
 
     // properties are kept on memory
     static final MemorySegment kTISPropertyInputSourceID = propertyFor("kTISPropertyInputSourceID");
@@ -87,22 +84,23 @@ public class IMEServerTIS {
         // initialize INPUT_SOURCE
         try (var arena = Arena.ofConfined()) {
             // allocate context
-            var context = arena.allocate(STRUCT);
+            var context = arena.allocate(ADDRESS);
+            VarHandle vhContext = ADDRESS.varHandle();
             // define receiver
             Receiver receiver = cContext -> {
                 try {
                     // context should be reinterpreted
-                    var ctx = cContext.reinterpret(STRUCT.byteSize());
+                    var ctx = cContext.reinterpret(ADDRESS.byteSize());
                     // CFArrayRef TISCreateInputSourceList(CFDictionaryRef properties, Boolean includeAllInstalled)
                     var arrayRef = (MemorySegment) mh_TISCreateinputSourceList.invoke(MemorySegment.NULL, false);
-                    vhResPtr.set(ctx, 0, arrayRef); // write response value on context
+                    vhContext.set(ctx, 0, arrayRef); // write response value on context
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
             };
             dispatchSync(context, receiver, arena);
 
-            var arrayRef = (MemorySegment) vhResPtr.get(context, 0); // read response value from context
+            var arrayRef = (MemorySegment) vhContext.get(context, 0); // read response value from context
             long count = (long) mh_CFArrayGetCount.invoke(arrayRef);
 
             for (long i = 0; i < count; i++) {
@@ -142,7 +140,7 @@ public class IMEServerTIS {
     }
 
     ///  change input source according to inputSourceRef
-    static void select(MemorySegment inputSourceRef) {
+    static void select(final MemorySegment inputSourceRef) {
         // EDT で呼ぶと deadlock する
         Thread.ofPlatform().start(() -> {
             if (!initialized()) { return; }
@@ -150,19 +148,15 @@ public class IMEServerTIS {
             try (var arena = Arena.ofConfined()) {
                 var isSelectedPtr = tisGetInputSourceProperty(inputSourceRef, kTISPropertyInputSourceIsSelected);
                 if (!isSelectedPtr.equals(kCFBooleanTrue)) {
-                    MemorySegment context = arena.allocate(STRUCT);
-                    vhArg1.set(context, 0, inputSourceRef);
 
                     Receiver receiver = cContext -> {
                         try {
-                            var ctx = cContext.reinterpret(STRUCT.byteSize());
-                            var source = (MemorySegment) vhArg1.get(ctx, 0);
-                            int status = (int) mh_TISSelectInputSource.invoke(source);
+                            int status = (int) mh_TISSelectInputSource.invoke(inputSourceRef);
                         } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
                     };
-                    dispatchSync(context, receiver, arena);
+                    dispatchSync(MemorySegment.NULL, receiver, arena);
 
                 } else { logger.info("already selected"); }
             } catch (Throwable e) {
@@ -184,26 +178,23 @@ public class IMEServerTIS {
     }
 
     /// TISGetInputSourceProperty を呼んで, propertyKey に対応するプロパティーを取得する
-    static MemorySegment tisGetInputSourceProperty(MemorySegment inputSourceRef, MemorySegment propertyKey) throws Throwable {
+    static MemorySegment tisGetInputSourceProperty(final MemorySegment inputSourceRef, final MemorySegment propertyKey) throws Throwable {
         try (var arena = Arena.ofConfined()) {
-            var context = arena.allocate(STRUCT);
-            vhArg1.set(context, 0, inputSourceRef);
-            vhArg2.set(context, 0, propertyKey);
+            var context = arena.allocate(ADDRESS);
+            VarHandle vhContext = ADDRESS.varHandle();
 
             Receiver receiver = cContext -> {
                 try {
-                    var ctx = cContext.reinterpret(STRUCT.byteSize());
-                    var source = (MemorySegment) vhArg1.get(ctx, 0);
-                    var property = (MemorySegment) vhArg2.get(ctx, 0);
+                    var ctx = cContext.reinterpret(ADDRESS.byteSize());
                     // (void *) TISGetInputSourceProperty (TISInputSourceRef, CFStringRef propertyKey)
-                    var prop = mh_GetProperty.invoke(source, property);
-                    vhResPtr.set(ctx, 0, prop);
+                    var prop = mh_GetProperty.invoke(inputSourceRef, propertyKey);
+                    vhContext.set(ctx, 0, prop);
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
             };
             dispatchSync(context, receiver, arena);
-            return (MemorySegment) vhResPtr.get(context, 0);
+            return (MemorySegment) vhContext.get(context, 0);
         }
     }
 

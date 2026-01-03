@@ -1,6 +1,9 @@
 package open.dolphin.ui;
 
-import java.lang.foreign.*;
+import java.lang.foreign.Arena;
+import java.lang.foreign.Linker;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.SymbolLookup;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -47,18 +50,6 @@ public class IMEServer {
             throw new RuntimeException(e);
         }
     }
-
-    // Struct to be allocated as the context for dispatch_sync_f
-    static final StructLayout STRUCT = MemoryLayout.structLayout(
-        ADDRESS.withName("classPtr"),  // pointer
-        ADDRESS.withName("selPtr"),    // pointer
-        ADDRESS.withName("argPtr"),    // pointer
-        ADDRESS.withName("resPtr")    // response as a pointer
-    );
-    static final VarHandle vhClassPtr = STRUCT.varHandle(MemoryLayout.PathElement.groupElement("classPtr"));
-    static final VarHandle vhSelPtr = STRUCT.varHandle(MemoryLayout.PathElement.groupElement("selPtr"));
-    static final VarHandle vhArgPtr = STRUCT.varHandle(MemoryLayout.PathElement.groupElement("argPtr"));
-    static final VarHandle vhResPtr = STRUCT.varHandle(MemoryLayout.PathElement.groupElement("resPtr"));
 
     /// ----------- LIB_OBJC --------------
     static class LibObjc {
@@ -148,27 +139,23 @@ public class IMEServer {
         }
 
         ///  Helper method to call objc_msgSend with AAA descriptor
-        static MemorySegment msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr) {
+        static MemorySegment msgSend_mainq(final MemorySegment classPtr, final MemorySegment selPtr) {
             try (Arena arena = Arena.ofConfined()) {
-                MemorySegment context = arena.allocate(STRUCT);
-                vhClassPtr.set(context, 0, classPtr);
-                vhSelPtr.set(context, 0, selPtr);
-
+                MemorySegment context = arena.allocate(ADDRESS);
+                VarHandle vhContext = ADDRESS.varHandle();
                 Receiver receiver = cContext -> {
                     try {
                         // The context is returned as a C pointer, so it needs to be reinterpreted.
-                        MemorySegment ctx = cContext.reinterpret(STRUCT.byteSize());
-                        MemorySegment cls = (MemorySegment) vhClassPtr.get(ctx, 0);
-                        MemorySegment sel = (MemorySegment) vhSelPtr.get(ctx, 0);
-                        MemorySegment res = (MemorySegment) LibObjc.mh_objc_msgSend[LibObjc.AAA].invokeExact(cls, sel);
-                        vhResPtr.set(ctx, 0, res);
+                        MemorySegment ctx = cContext.reinterpret(ADDRESS.byteSize());
+                        MemorySegment res = (MemorySegment) LibObjc.mh_objc_msgSend[LibObjc.AAA].invokeExact(classPtr, selPtr);
+                        vhContext.set(ctx, 0, res);
 
                     } catch (Throwable e) {
                         throw new RuntimeException(e);
                     }
                 };
                 LibObjc.dispatchSync(context, receiver, arena);
-                MemorySegment resPtr = (MemorySegment) vhResPtr.get(context, 0);
+                MemorySegment resPtr = (MemorySegment) vhContext.get(context, 0);
                 // Objective-C オブジェクトの場合 autorelease されるので retain が必須
                 return LibObjc.retain(resPtr);
 
@@ -178,26 +165,17 @@ public class IMEServer {
         }
 
         ///  Helper method to call objc_msgSend with VAAA descriptor
-        static void msgSend_mainq(MemorySegment classPtr, MemorySegment selPtr, MemorySegment argPtr) {
+        static void msgSend_mainq(final MemorySegment classPtr, final MemorySegment selPtr, final MemorySegment argPtr) {
             try (Arena arena = Arena.ofConfined()) {
-                MemorySegment context = arena.allocate(STRUCT);
-                vhClassPtr.set(context, 0, classPtr);
-                vhSelPtr.set(context, 0, selPtr);
-                vhArgPtr.set(context, 0, argPtr);
-
                 Receiver receiver = cContext -> {
                     try {
-                        MemorySegment ctx = cContext.reinterpret(STRUCT.byteSize());
-                        MemorySegment cls = (MemorySegment) vhClassPtr.get(ctx, 0);
-                        MemorySegment sel = (MemorySegment) vhSelPtr.get(ctx, 0);
-                        MemorySegment arg = (MemorySegment) vhArgPtr.get(ctx, 0);
-                        LibObjc.mh_objc_msgSend[LibObjc.VAAA].invokeExact(cls, sel, arg);
+                        LibObjc.mh_objc_msgSend[LibObjc.VAAA].invokeExact(classPtr, selPtr, argPtr);
 
                     } catch (Throwable e) {
                         throw new RuntimeException(e);
                     }
                 };
-                LibObjc.dispatchSync(context, receiver, arena);
+                LibObjc.dispatchSync(MemorySegment.NULL, receiver, arena);
 
             } catch (Throwable e) {
                 throw new RuntimeException(e);
@@ -339,8 +317,8 @@ public class IMEServer {
     }
 
     static void select(String inputSourceId) {
+        // Invoking on the AWT-EventQueue results in a deadlock.
         Thread.ofPlatform().start(() ->{
-            // Invoking on the AWT-EventQueue results in a deadlock.
             if (!initialized()) { return; }
             NSTextInputContext.setSelectedInputSource(inputSourceId);
         });
