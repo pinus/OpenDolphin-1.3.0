@@ -47,6 +47,7 @@ public class IMEServerExternal {
             // 外部 TISServer
             try {
                 PROCESS = new ProcessBuilder(tisServer).start();
+                Runtime.getRuntime().addShutdownHook(new Thread(IMEServerExternal::stop));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
