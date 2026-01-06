@@ -39,7 +39,7 @@ public class DrawTest {
         });
 
         Platform.runLater(new DrawTest()::start);
-        JOptionPane.showMessageDialog(null, "Keep this window to keep thread active");
+        //JOptionPane.showMessageDialog(null, "Keep this window to keep thread active");
     }
 
     public void start() {

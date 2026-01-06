@@ -225,6 +225,96 @@ public class SchemaUtils {
     }
 
     /**
+     * Poisson Disk Sampling を使用して、与えられた範囲内に点列を生成する.
+     * 各点の間隔が interval 以上になるように配置される.
+     *
+     * @param x 左上x
+     * @param y 左上y
+     * @param w 幅
+     * @param h 高さ
+     * @param interval 最小間隔
+     * @return 点列のリスト
+     */
+    public static List<Point2D> getPoissonDiskPoints(double x, double y, double w, double h, double interval) {
+        if (w <= 0 || h <= 0 || interval <= 0) {
+            return new ArrayList<>();
+        }
+        int k = 30; // 試行回数
+        List<Point2D> points = new ArrayList<>();
+        List<Point2D> activeList = new ArrayList<>();
+        Random random = new Random();
+
+        // 背景グリッドのサイズを計算
+        double cellSize = interval / Math.sqrt(2);
+        int cols = (int) Math.ceil(w / cellSize);
+        int rows = (int) Math.ceil(h / cellSize);
+        Point2D[][] grid = new Point2D[cols][rows];
+
+        // 最初の点をランダムに生成
+        Point2D firstPoint = new Point2D(random.nextDouble() * w, random.nextDouble() * h);
+        activeList.add(firstPoint);
+        points.add(new Point2D(x + firstPoint.getX(), y + firstPoint.getY()));
+        grid[(int) (firstPoint.getX() / cellSize)][(int) (firstPoint.getY() / cellSize)] = firstPoint;
+
+        while (!activeList.isEmpty()) {
+            int activeIndex = random.nextInt(activeList.size());
+            Point2D p = activeList.get(activeIndex);
+            boolean found = false;
+
+            for (int i = 0; i < k; i++) {
+                // p の周囲に新しい候補点を生成 (距離 interval 〜 2*interval)
+                double angle = 2 * Math.PI * random.nextDouble();
+                double radius = interval * (random.nextDouble() + 1.0);
+                double nx = p.getX() + radius * Math.cos(angle);
+                double ny = p.getY() + radius * Math.sin(angle);
+
+                if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                    int col = (int) (nx / cellSize);
+                    int row = (int) (ny / cellSize);
+
+                    if (isValid(nx, ny, w, h, cellSize, interval, grid, cols, rows)) {
+                        Point2D newPoint = new Point2D(nx, ny);
+                        points.add(new Point2D(x + nx, y + ny));
+                        activeList.add(newPoint);
+                        grid[col][row] = newPoint;
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                activeList.remove(activeIndex);
+            }
+        }
+        return points;
+    }
+
+    private static boolean isValid(double nx, double ny, double w, double h, double cellSize, double interval, Point2D[][] grid, int cols, int rows) {
+        int col = (int) (nx / cellSize);
+        int row = (int) (ny / cellSize);
+
+        // 周囲のセルを確認
+        int startCol = Math.max(0, col - 2);
+        int endCol = Math.min(cols - 1, col + 2);
+        int startRow = Math.max(0, row - 2);
+        int endRow = Math.min(rows - 1, row + 2);
+
+        for (int i = startCol; i <= endCol; i++) {
+            for (int j = startRow; j <= endRow; j++) {
+                Point2D neighbor = grid[i][j];
+                if (neighbor != null) {
+                    double dx = neighbor.getX() - nx;
+                    double dy = neighbor.getY() - ny;
+                    if (dx * dx + dy * dy < interval * interval) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * 与えられた範囲内の網を表す点列を返す.
      *
      * @param x

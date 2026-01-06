@@ -51,7 +51,8 @@ public class DotsEditor extends PolygonEditorBase {
         //interval = Math.abs((width + height) / 2) / DOTS_PER_WIDTH / intervalFactor;
         interval = 10 / intervalFactor;
 
-        List<Point2D> points = SchemaUtils.getRandomPoints(x, y, width, height, interval);
+        //List<Point2D> points = SchemaUtils.getRandomPoints(x, y, width, height, interval);
+        List<Point2D> points = SchemaUtils.getPoissonDiskPoints(x, y, width, height, interval);
 
         points.forEach(p -> {
             if (gc.isPointInPath(p.getX(), p.getY())) {
@@ -81,9 +82,9 @@ public class DotsEditor extends PolygonEditorBase {
         // option key を押すたびにドットが増えて，shift-option なら減る
         if (e.isAltDown()) {
             if (e.isShiftDown()) {
-                intervalFactor *= 0.8;
+                intervalFactor *= 0.9;
             } else {
-                intervalFactor *= 1.2;
+                intervalFactor *= 1.1;
             }
         }
 
