@@ -20,6 +20,7 @@ import static java.lang.foreign.ValueLayout.*;
 /// Text Input Source Selection via Foreign Function and Memory API
 ///
 /// @author pns
+@Deprecated
 public class IMEServerTIS {
     static final Logger logger = LoggerFactory.getLogger(IMEServerTIS.class);
     static final Linker LINKER = Linker.nativeLinker();

@@ -15,6 +15,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+@Deprecated
 public class IMEServerExternal {
     private static final String JAPANESE = "J";
     private static final String ROMAN = "R";
