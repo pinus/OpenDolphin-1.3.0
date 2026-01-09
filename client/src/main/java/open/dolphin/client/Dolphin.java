@@ -212,8 +212,8 @@ public class Dolphin implements MainWindow {
         // System.out.println(title);
         windowSupport = new WindowSupport<>(title, this);
         PNSFrame myFrame = windowSupport.getFrame();        // MainWindow の JFrame
-        //myFrame.getRootPane().putClientProperty("apple.awt.fullWindowContent", true);
-        //myFrame.getRootPane().putClientProperty( "apple.awt.windowTitleVisible", false );
+        myFrame.getRootPane().putClientProperty("apple.awt.fullWindowContent", true);
+        myFrame.getRootPane().putClientProperty( "apple.awt.windowTitleVisible", false );
 
         JMenuBar myMenuBar = windowSupport.getMenuBar();    // MainWindow の JMenuBar
 
@@ -234,7 +234,7 @@ public class Dolphin implements MainWindow {
 
         // mainWindowのコンテントGUIを生成しFrameに追加する
         tabbedPane = new PNSBadgeTabbedPane();
-        //tabbedPane.setButtonVgap(4);
+        if (Dolphin.forMac) { tabbedPane.setButtonVgap(12); }
 
         PNSFrame.MainPanel mainPanel = myFrame.getMainPanel();
         mainPanel.setLayout(new BorderLayout(0, 0));

@@ -5,8 +5,6 @@ import open.dolphin.client.GUIConst;
 import open.dolphin.client.MainComponentPanel;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.ui.StatusPanel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -14,11 +12,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-/**
- * WaitingListView 互換 JPanel
- *
- * @author pns
- */
+/// WaitingListView 互換 JPanel
+///
+/// @author pns
 public class WaitingListPanel extends MainComponentPanel {
     // アイコン
     private static final ImageIcon KUTU_ICON = GUIConst.ICON_ARROW_CIRCULAR_ALT1_16;
@@ -38,15 +34,12 @@ public class WaitingListPanel extends MainComponentPanel {
     private static final int[] COLUMN_WIDTH_24 = {68, 136, 144, 280, 80, 100, 200, 150, 100, 80, 60};
     // command panel
     private JButton kutuBtn;
-    private JLabel legendLbl;
     // main panel
     private JTable table;
     // status panel
     private JLabel checkedTimeLbl;
     private JLabel countLbl;
     private JLabel dateLbl;
-    // table parameters
-    private int rowHeight;
     private Font normalFont = NORMAL_FONT_12;
     private Font smallFont = SMALL_FONT_12;
     private int[] columnWidth;
@@ -69,7 +62,7 @@ public class WaitingListPanel extends MainComponentPanel {
         kutuBtn.setFocusable(false);
 
         // popup で状態アイコンの legend を出す
-        legendLbl = new JLabel();
+        JLabel legendLbl = new JLabel();
         legendLbl.setIcon(GUIConst.ICON_QUESTION_16);
         legendLbl.setText("");
         legendLbl.addMouseListener(new MouseAdapter() {
@@ -100,6 +93,7 @@ public class WaitingListPanel extends MainComponentPanel {
         statusPanel.add(dateLbl);
         statusPanel.addSeparator();
         statusPanel.add(countLbl);
+        statusPanel.addSpace(12);
         statusPanel.setMargin(4);
     }
 
@@ -130,6 +124,8 @@ public class WaitingListPanel extends MainComponentPanel {
     }
 
     public void setFontSize(int size) {
+        // table parameters
+        int rowHeight;
         switch (size) {
             case 18 -> {
                 columnWidth = COLUMN_WIDTH_18;

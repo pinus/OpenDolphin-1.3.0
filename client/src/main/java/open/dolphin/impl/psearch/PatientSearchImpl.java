@@ -87,7 +87,9 @@ public class PatientSearchImpl extends AbstractMainComponent {
 
         PNSBadgeTabbedPane tab = ((Dolphin) getContext()).getTabbedPane();
         JPanel panel = tab.getAccessoryPanel();
-        panel.add(keywordPanel, BorderLayout.EAST);
+        JPanel eastWrapper = new JPanel(new GridBagLayout());
+        eastWrapper.add(keywordPanel);
+        panel.add(eastWrapper, BorderLayout.EAST);
 
         // 別の MainComponent に tab が切り替わったらクリアする
         tab.addChangeListener(e -> {
