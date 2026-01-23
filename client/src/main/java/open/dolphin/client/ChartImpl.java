@@ -603,6 +603,7 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
             statusPanel.addSeparator();
             statusPanel.add("待ち時間 " + waitingTime);
         }
+        statusPanel.addSpace(12);
         statusPanel.setMargin(4);
 
         // ChartMediator を生成する
