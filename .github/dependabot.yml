@@ -3,7 +3,7 @@
 # Please see the documentation for all configuration options:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
-vversion: 2
+version: 2
 updates:
   # Gradle (build.gradle.kts / settings.gradle.kts / gradle.properties など)
   - package-ecosystem: "gradle"
@@ -20,3 +20,7 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
+    groups:
+      gradle-dependencies:
+        patterns:
+          - "*"
