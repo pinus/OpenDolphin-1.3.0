@@ -3,6 +3,7 @@ package open.dolphin.client;
 import open.dolphin.delegater.DolphinClientContext;
 import open.dolphin.delegater.UserDelegater;
 import open.dolphin.event.ProxyDocumentListener;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.HashUtil;
 import open.dolphin.helper.PNSTask;
 import open.dolphin.helper.WindowSupport;

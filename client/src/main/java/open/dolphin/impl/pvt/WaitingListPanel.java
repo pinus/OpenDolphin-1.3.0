@@ -3,6 +3,7 @@ package open.dolphin.impl.pvt;
 import open.dolphin.client.Dolphin;
 import open.dolphin.client.GUIConst;
 import open.dolphin.client.MainComponentPanel;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.ui.StatusPanel;
 
@@ -19,12 +20,12 @@ public class WaitingListPanel extends MainComponentPanel {
     // アイコン
     private static final ImageIcon KUTU_ICON = GUIConst.ICON_ARROW_CIRCULAR_ALT1_16;
     // Font
-    private static final Font NORMAL_FONT_12 = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
-    private static final Font SMALL_FONT_12 = new Font(Font.SANS_SERIF, Font.PLAIN, 9);
-    private static final Font NORMAL_FONT_18 = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
-    private static final Font SMALL_FONT_18 = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
-    private static final Font NORMAL_FONT_24 = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
-    private static final Font SMALL_FONT_24 = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
+    private static final Font NORMAL_FONT_12 = GUIFactory.getFont(12);
+    private static final Font SMALL_FONT_12 = GUIFactory.getFont(9);
+    private static final Font NORMAL_FONT_18 = GUIFactory.getFont(18);
+    private static final Font SMALL_FONT_18 = GUIFactory.getFont(14);
+    private static final Font NORMAL_FONT_24 = GUIFactory.getFont(24);
+    private static final Font SMALL_FONT_24 = GUIFactory.getFont(18);
     // テーブルの row height, column length
     private static final int ROW_HEIGHT_12 = 18;
     private static final int ROW_HEIGHT_18 = 27;

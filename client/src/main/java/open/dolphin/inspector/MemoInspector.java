@@ -5,6 +5,7 @@ import open.dolphin.client.CompositeArea;
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.event.ProxyAction;
 import open.dolphin.helper.ChartTask;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.ScriptExecutor;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.infomodel.PatientMemoModel;
@@ -14,8 +15,8 @@ import open.dolphin.ui.sheet.JSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.FocusManager;
 import javax.swing.*;
+import javax.swing.FocusManager;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -82,7 +83,7 @@ public class MemoInspector implements IInspector {
         memoArea.setName(CATEGORY.name());
         memoArea.setLineWrap(true);
         memoArea.setMargin(new java.awt.Insets(3, 3, 2, 2));
-        memoArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
+        memoArea.setFont(GUIFactory.getFont(11));
 
         // Tab でフォーカス移動
         InputMap im = memoArea.getInputMap();
@@ -195,7 +196,7 @@ public class MemoInspector implements IInspector {
             if (infoFolder.listFiles(FF_ALTDRUG).length > 0) {
                 memoTitle.append("代替報告・");
             }
-            if (memoTitle.length() > 0) {
+            if (!memoTitle.isEmpty()) {
                 // 最後の「・」を取る
                 memoTitle.deleteCharAt(memoTitle.length() - 1);
             } else {
@@ -205,7 +206,7 @@ public class MemoInspector implements IInspector {
             memoTitle.append("あり");
 
             titleColor = Color.blue;
-            titleFont = new Font(Font.SANS_SERIF, Font.BOLD, isWin() ? 10 : 12);
+            titleFont = GUIFactory.getBoldFont(isWin()? 10 : 12);
 
         } else {
             // フォルダがない

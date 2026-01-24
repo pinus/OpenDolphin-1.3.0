@@ -1,6 +1,7 @@
 package open.dolphin.ui;
 
 import open.dolphin.client.Dolphin;
+import open.dolphin.helper.GUIFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class PNSTabbedPane extends JPanel implements ChangeListener {
     /**
      * ボタンパネルのフォント
      */
-    private Font buttonPanelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 13);
+    private Font buttonPanelFont = GUIFactory.getFont(13);
     /**
      * 切り替えボタンを入れておくリスト
      */
@@ -806,7 +807,7 @@ public class PNSTabbedPane extends JPanel implements ChangeListener {
         }
     }
     //================== TEST =================
-    public static void main(String[] argv) {
+    static void main(String[] argv) {
         open.dolphin.client.ClientContext.setClientContextStub(new open.dolphin.client.ClientContextStub());
         //testPattern1();
         //testPattern2();

@@ -1,5 +1,6 @@
 package open.dolphin.client;
 
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.inspector.IInspector;
 import open.dolphin.ui.PNSScrollPane;
 
@@ -14,7 +15,7 @@ import java.awt.*;
  */
 public class KartePanelFactory {
     private static final int TIMESTAMP_PANEL_HEIGHT = 22; // 22で固定
-    private static final Font KARTE_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, Dolphin.forWin? 12 : 13);
+    private static final Font KARTE_FONT = GUIFactory.getFont(Dolphin.forMac? 13 : 12);
 
     private final KartePanel kartePanel;
     private JTextPane soaTextPane;

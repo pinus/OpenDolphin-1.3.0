@@ -1,5 +1,7 @@
 package open.dolphin.ui;
 
+import open.dolphin.helper.GUIFactory;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
@@ -14,10 +16,10 @@ public class IndentTableCellRenderer extends DefaultTableCellRenderer {
     // pixels to indent
     public static final int NARROW = 5;
     public static final int WIDE = 10;
-    public static final Font NORMAL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
-    public static final Font SMALL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 9);
-        private int indent;
-    private Font font;
+    public static final Font NORMAL_FONT = GUIFactory.getFont(12);
+    public static final Font SMALL_FONT = GUIFactory.getFont(9);
+    final private int indent;
+    final private Font font;
 
     public IndentTableCellRenderer() {
         this(WIDE);
@@ -38,10 +40,9 @@ public class IndentTableCellRenderer extends DefaultTableCellRenderer {
      *
      * @param text   インデントを付けるテキスト
      * @param indent インデント量
-     * @param color  色
      * @return インデントを付けたテキスト
      */
-    public static String addIndent(String text, int indent, Color color) {
+    public static String addIndent(String text, int indent) {
         if (indent >= 10) {
             return "　" + text;
         } else {
@@ -77,7 +78,7 @@ public class IndentTableCellRenderer extends DefaultTableCellRenderer {
         if (value == null) {
             this.setText("");
         } else {
-            this.setText(addIndent(value.toString(), indent, this.getForeground()));
+            this.setText(addIndent(value.toString(), indent));
         }
         this.setFont(font);
 
@@ -85,7 +86,7 @@ public class IndentTableCellRenderer extends DefaultTableCellRenderer {
     }
 
     /**
-     * Show holizontal grid (Retina 対応)
+     * Show horizontal grid (Retina 対応)
      *
      * @param g Graphics
      */

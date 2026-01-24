@@ -140,7 +140,6 @@ public class LaboTestImporter extends AbstractMainComponent {
         usp.setMaximumSize(pbSize);
         usp.setPreferredSize(pbSize);
 
-        //Font font = new Font("Dialog", Font.PLAIN, ClientContext.getInt("waitingList.state.font.size"));
         countLabel = new JLabel("");
         dateLabel = new JLabel("");
 

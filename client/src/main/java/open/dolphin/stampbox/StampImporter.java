@@ -2,10 +2,10 @@ package open.dolphin.stampbox;
 
 import open.dolphin.client.ClientContext;
 import open.dolphin.client.GUIConst;
-import open.dolphin.client.GUIFactory;
 import open.dolphin.delegater.StampDelegater;
-import open.dolphin.helper.PNSTriple;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.PNSTask;
+import open.dolphin.helper.PNSTriple;
 import open.dolphin.helper.WindowSupport;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.infomodel.PublishedTreeModel;

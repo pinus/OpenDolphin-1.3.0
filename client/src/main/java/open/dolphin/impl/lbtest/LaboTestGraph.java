@@ -1,5 +1,7 @@
 package open.dolphin.impl.lbtest;
 
+import open.dolphin.helper.GUIFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentListener;
@@ -72,13 +74,13 @@ public class LaboTestGraph extends JPanel implements ComponentListener {
     Color scaleLineColor = Color.lightGray;
     float scaleLineWidth = 1.0F;
     Color scaleColor = Color.black;
-    Font scaleFont = new Font("Dialig", Font.PLAIN, 12);
+    Font scaleFont = GUIFactory.getFont(12);
     float[] yScaleDashPattern = {2.0F, 2.0F};
     Color xTitleColor = Color.black;
-    Font xTitleFont = new Font("Dialig", Font.PLAIN, 12);
+    Font xTitleFont = GUIFactory.getFont(12);
     Color yTitleColor = Color.black;
-    Font yTitleFont = new Font("Dialig", Font.PLAIN, 12);
-    Font itemNameFont = new Font("Dialig", Font.PLAIN, 12);
+    Font yTitleFont = GUIFactory.getFont(12);
+    Font itemNameFont = GUIFactory.getFont(12);
     float valueLineWidth = 1.7F;
     Color upperLimitColor = new Color(255, 64, 183);
     Color normalAreaColor = new Color(127, 250, 107);
@@ -731,7 +733,7 @@ public class LaboTestGraph extends JPanel implements ComponentListener {
         double[] base = new double[]{1.0D, 2.0D, 5.0D, 10.0D};
 
         int keta = getFigureNumber(max - min);
-        double k = Math.pow(10.0D, (double) (keta - 2));
+        double k = Math.pow(10.0D, keta - 2);
 
         double nearestToTen = 0.0D;
         double val = 0.0D;

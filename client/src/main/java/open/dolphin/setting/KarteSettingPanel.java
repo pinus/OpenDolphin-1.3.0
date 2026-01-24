@@ -2,9 +2,8 @@ package open.dolphin.setting;
 
 import open.dolphin.client.ClientContext;
 import open.dolphin.client.GUIConst;
-import open.dolphin.client.GUIFactory;
-import open.dolphin.event.ProxyActionListener;
 import open.dolphin.event.ProxyDocumentListener;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.GridBagBuilder;
 import open.dolphin.helper.PNSPair;
 import open.dolphin.helper.StringTool;

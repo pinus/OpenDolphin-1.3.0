@@ -33,8 +33,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.prefs.Preferences;
 
@@ -992,11 +992,11 @@ public class WaitingListImpl extends AbstractMainComponent {
                         if (fontSize > 12) {
                             value = value + "　(" + pvt.getPatient().getKanaName() + ")";
                         }
-                        this.setText(IndentTableCellRenderer.addIndent((String) value, IndentTableCellRenderer.WIDE, this.getForeground()));
+                        this.setText(IndentTableCellRenderer.addIndent((String) value, IndentTableCellRenderer.WIDE));
                         this.setFont(view.getNormalFont());
                     }
                     case 1, 6 -> { // ID, 生年月日
-                        this.setText(IndentTableCellRenderer.addIndent((String) value, IndentTableCellRenderer.WIDE, this.getForeground()));
+                        this.setText(IndentTableCellRenderer.addIndent((String) value, IndentTableCellRenderer.WIDE));
                         this.setFont(view.getNormalFont());
                     }
                     case 5 -> { // 年齢
@@ -1009,7 +1009,7 @@ public class WaitingListImpl extends AbstractMainComponent {
                         this.setFont(view.getNormalFont());
                     }
                     case 7, 8 -> { // ドクター, メモ
-                        this.setText(IndentTableCellRenderer.addIndent((String) value, IndentTableCellRenderer.WIDE, this.getForeground()));
+                        this.setText(IndentTableCellRenderer.addIndent((String) value, IndentTableCellRenderer.WIDE));
                         this.setFont(view.getSmallFont());
                     }
                     default -> {

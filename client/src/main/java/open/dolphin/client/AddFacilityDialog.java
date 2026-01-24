@@ -1,6 +1,8 @@
 package open.dolphin.client;
 
+import jakarta.ws.rs.client.ClientBuilder;
 import open.dolphin.JsonConverter;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.HashUtil;
 import open.dolphin.helper.PNSTask;
 import open.dolphin.infomodel.UserModel;
@@ -15,7 +17,6 @@ import javax.naming.CommunicationException;
 import javax.naming.NamingException;
 import javax.security.auth.login.LoginException;
 import javax.swing.*;
-import jakarta.ws.rs.client.ClientBuilder;
 import java.awt.*;
 import java.awt.event.ComponentListener;
 import java.beans.PropertyChangeEvent;

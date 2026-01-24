@@ -7,6 +7,7 @@ import open.dolphin.delegater.OrcaDelegater;
 import open.dolphin.delegater.StampDelegater;
 import open.dolphin.dnd.SchemaHolderTransferHandler;
 import open.dolphin.dnd.StampListTransferHandler;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.ImageHelper;
 import open.dolphin.helper.PNSTask;
 import open.dolphin.helper.TextComponentUndoManager;
@@ -833,7 +834,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         JLabel msg2 = new JLabel("画像を縮小しカルテに展開しますか?");
 
         final JCheckBox cb = new JCheckBox("今後このメッセージを表示しない");
-        cb.setFont(new Font("Dialog", Font.PLAIN, 10));
+        cb.setFont(GUIFactory.getFont( 10));
         cb.addActionListener(e -> pref.putBoolean("showImageSizeMessage", !cb.isSelected()));
 
         JPanel p1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 3));

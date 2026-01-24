@@ -1,6 +1,7 @@
 package open.dolphin.client;
 
 import open.dolphin.dnd.KartePaneTransferHandler;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.infomodel.DocInfoModel;
 import open.dolphin.infomodel.DocumentModel;
 import open.dolphin.infomodel.IInfoModel;
@@ -29,8 +30,8 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
     // タイムスタンプのフォントサイズ
     private static final int TIMESTAMP_FONT_SIZE = 12;
     // タイムスタンプフォント
-    private static final Font TIMESTAMP_FONT = new Font("Dialog", Font.PLAIN, TIMESTAMP_FONT_SIZE);
-    private static final Font TIMESTAMP_FONT_BOLD = new Font("Dialog", Font.BOLD, TIMESTAMP_FONT_SIZE);
+    private static final Font TIMESTAMP_FONT = GUIFactory.getFont(TIMESTAMP_FONT_SIZE);
+    private static final Font TIMESTAMP_FONT_BOLD = GUIFactory.getBoldFont(TIMESTAMP_FONT_SIZE);
     // 仮保存中のドキュメントを表す文字
     private static final String UNDER_TMP_SAVE = " - 仮保存中";
 

@@ -1,5 +1,6 @@
-package open.dolphin.client;
+package open.dolphin.helper;
 
+import open.dolphin.client.Dolphin;
 import open.dolphin.ui.PNSBorderFactory;
 
 import javax.swing.*;
@@ -27,8 +28,12 @@ public class GUIFactory {
     private static final int TITLE_SPACE_RIGHT = 5;
     private static final Color DROP_OK_COLOR = new Color(0, 12, 156);
 
-    public static Font createSmallFont() {
-        return new Font("Dialog", Font.PLAIN, 10);
+    public static Font getFont(int size) {
+        return Dolphin.forMac? new Font(Font.SANS_SERIF, Font.PLAIN, size): new Font("Meiryo", Font.PLAIN, size);
+    }
+
+    public static Font getBoldFont(int size) {
+        return Dolphin.forMac? new Font(Font.SANS_SERIF, Font.BOLD, size): new Font("Meiryo", Font.BOLD, size);
     }
 
     public static JButton createOkButton() {

@@ -1,5 +1,7 @@
 package open.dolphin.laf;
 
+import open.dolphin.client.Dolphin;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.ui.PNSTreeCellEditor;
 
 import javax.swing.*;
@@ -32,7 +34,7 @@ public class MyTreeUI extends BasicTreeUI {
         UIManager.put("Tree.drawsFocusBorderAroundIcon", Boolean.FALSE);
         UIManager.put("Tree.drawDashedFocusIndicator", Boolean.FALSE);
         UIManager.put("Tree.repaintWholeRow", Boolean.TRUE);
-        UIManager.put("Tree.font", new Font(Font.SANS_SERIF, Font.PLAIN, UIHelper.isWin() ? 12 : 13));
+        UIManager.put("Tree.font", GUIFactory.getFont(Dolphin.forMac? 13 : 12));
 
         super.installDefaults();
     }
@@ -195,7 +197,7 @@ public class MyTreeUI extends BasicTreeUI {
         }
     }
 
-    public static void main(String[] arg) {
+    static void main(String[] arg) {
         UIManager.put("TreeUI", MyTreeUI.class.getName());
         UIManager.put("TextFieldUI", MyTextFieldUI.class.getName());
 

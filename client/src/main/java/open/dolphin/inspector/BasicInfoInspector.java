@@ -2,6 +2,7 @@ package open.dolphin.inspector;
 
 import open.dolphin.client.ChartImpl;
 import open.dolphin.client.Dolphin;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.StringTool;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.infomodel.PatientModel;
@@ -66,24 +67,24 @@ public class BasicInfoInspector implements IInspector {
         nameLabel = new JLabel("　");
         nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
         nameLabel.setForeground(FONT_COLOR);
-        nameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
+        nameLabel.setFont(GUIFactory.getFont(16));
         nameLabel.setOpaque(false);
 
         kanaLabel = new JLabel(" ");
         kanaLabel.setHorizontalAlignment(SwingConstants.LEFT);
         kanaLabel.setForeground(FONT_COLOR);
-        kanaLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
+        kanaLabel.setFont(GUIFactory.getFont(16));
         kanaLabel.setOpaque(false);
 
         ageLabel = new JLabel(" ");
-        ageLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+        ageLabel.setFont(GUIFactory.getFont(12));
         ageLabel.setForeground(FONT_COLOR);
         ageLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         ageLabel.setOpaque(false);
 
         birthdayLabel = new JLabel(" ");
         birthdayLabel.setForeground(FONT_COLOR);
-        birthdayLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+        birthdayLabel.setFont(GUIFactory.getFont(12));
         birthdayLabel.setHorizontalAlignment(SwingConstants.LEFT);
         birthdayLabel.setOpaque(false);
 
@@ -91,7 +92,7 @@ public class BasicInfoInspector implements IInspector {
         addressLabel.setHorizontalAlignment(SwingConstants.LEFT);
         addressLabel.setForeground(FONT_COLOR);
         addressLabel.setOpaque(false);
-        addressLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+        addressLabel.setFont(GUIFactory.getFont(10));
 
         // 名前，年齢を表示するパネル
         namePanel = new JPanel();

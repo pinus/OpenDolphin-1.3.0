@@ -2,6 +2,7 @@ package open.dolphin.ui;
 
 import open.dolphin.client.Dolphin;
 import open.dolphin.client.GUIConst;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.ImageHelper;
 
 import javax.swing.*;
@@ -27,7 +28,7 @@ public class JPasswordFieldWithLabel extends JPasswordField {
     private void init() {
         putClientProperty("Quaqua.TextField.style", "search");
         clearButton = ImageHelper.imageToBufferedImage(GUIConst.ICON_CROSS_16);
-        font = new Font(getFont().getFontName(), Font.PLAIN, 12);
+        font = GUIFactory.getFont(12);
 
         // Field の右端に X を出して，そこをクリックしたらテキストをクリアする.
         addMouseListener(new MouseAdapter() {

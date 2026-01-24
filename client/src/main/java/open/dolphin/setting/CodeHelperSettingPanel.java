@@ -2,9 +2,9 @@ package open.dolphin.setting;
 
 import open.dolphin.client.Dolphin;
 import open.dolphin.client.GUIConst;
-import open.dolphin.client.GUIFactory;
 import open.dolphin.codehelper.AbstractCodeHelper;
 import open.dolphin.event.ProxyDocumentListener;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.GridBagBuilder;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.project.ProjectStub;

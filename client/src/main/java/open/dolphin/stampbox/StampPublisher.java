@@ -3,13 +3,9 @@ package open.dolphin.stampbox;
 import open.dolphin.client.ClientContext;
 import open.dolphin.client.Dolphin;
 import open.dolphin.client.GUIConst;
-import open.dolphin.client.GUIFactory;
 import open.dolphin.delegater.StampDelegater;
 import open.dolphin.event.ProxyDocumentListener;
-import open.dolphin.helper.GridBagBuilder;
-import open.dolphin.helper.StampTreeUtils;
-import open.dolphin.helper.PNSTask;
-import open.dolphin.helper.WindowSupport;
+import open.dolphin.helper.*;
 import open.dolphin.infomodel.*;
 import open.dolphin.project.Project;
 import open.dolphin.ui.PNSOptionPane;
@@ -95,7 +91,7 @@ public class StampPublisher {
         // GUIコンポーネントを生成する
         infoLabel = new JLabel(GUIConst.ICON_INFORMATION_16);
         instLabel = new JLabel("");
-        instLabel.setFont(new Font("Dialog", Font.PLAIN, ClientContext.getInt("waitingList.state.font.size")));
+        instLabel.setFont(GUIFactory.getFont(ClientContext.getInt("waitingList.state.font.size")));
         publishedDate = new JLabel("");
 
         stampBoxName = GUIFactory.createTextField(15, null, null, null);

@@ -1,5 +1,7 @@
 package open.dolphin.impl.orcon;
 
+import open.dolphin.helper.GUIFactory;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -99,7 +101,7 @@ public class OrconPanel {
         orconPanel.add(buttonPanel);
 
         messageLabel = new JLabel("ORCA Controller");
-        messageLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18));
+        messageLabel.setFont(GUIFactory.getFont(18));
         layouter.setConstraints(messageLabel, 0,3, GridBagConstraints.REMAINDER, GridBagConstraints.REMAINDER, 1, 1);
         orconPanel.add(messageLabel);
     }

@@ -1,5 +1,6 @@
 package open.dolphin.calendar;
 
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.infomodel.SimpleDate;
 import open.dolphin.ui.PNSBorderFactory;
 import open.dolphin.ui.PNSTitledBorder;
@@ -33,9 +34,9 @@ public class CalendarTable extends JTable {
     private static final Color SUNDAY_FOREGROUND = new Color(255, 0, 130);
     private static final Color SATURDAY_FOREGROUND = new Color(0, 0, 255);
     private static final Color WEEKDAY_FOREGROUND = new Color(20, 20, 70);
-    private static final Font TITLE_FONT = new Font("Meiryo", Font.BOLD, 72);
-    private static final Font CALENDAR_FONT = new Font(Font.DIALOG, Font.PLAIN, 13);
-    private static final Font CALENDAR_FONT_SMALL = new Font(Font.DIALOG, Font.PLAIN, 10);
+    private static final Font TITLE_FONT = GUIFactory.getFont(72);
+    private static final Font CALENDAR_FONT = GUIFactory.getFont(13);
+    private static final Font CALENDAR_FONT_SMALL = GUIFactory.getFont(10);
 
     private CalendarTableModel tableModel;
 
@@ -62,7 +63,7 @@ public class CalendarTable extends JTable {
         initComponents(gc);
     }
 
-    public static void main(String[] arg) {
+    static void main(String[] arg) {
         open.dolphin.client.ClientContext.setClientContextStub(new open.dolphin.client.ClientContextStub());
 
         JFrame f = new JFrame();
@@ -202,7 +203,7 @@ public class CalendarTable extends JTable {
         if ((y == tableModel.getYear()) && (m == tableModel.getMonth())) {
             title += " (今月)";
             color = Color.BLUE;
-            font = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+            font = GUIFactory.getBoldFont(12);
         }
 
         PNSTitledBorder border = (PNSTitledBorder) calendarPanel.getBorder();

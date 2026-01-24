@@ -8,4 +8,6 @@ DATE=$(eval date "+%Y%m%d%H%M")
 
 CONVEYOR $3 $4 $5 $6 $7 -Kbuild.date=${DATE} make $2
 
-tar czf ./output/$1-${DATE}.tgz -C ./output $1.app
+if [ "$2" = "mac-app" ]; then
+  tar czf ./output/$1-${DATE}.tgz -C ./output $1.app
+fi

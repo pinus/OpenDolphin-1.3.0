@@ -1,6 +1,7 @@
 package open.dolphin.inspector;
 
 import open.dolphin.client.Dolphin;
+import open.dolphin.helper.GUIFactory;
 
 import javax.swing.border.AbstractBorder;
 import java.awt.*;
@@ -12,7 +13,7 @@ import java.awt.*;
  */
 public class InspectorBorder extends AbstractBorder {
 
-    private static final Font DEFAULT_TITLE_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
+    private static final Font DEFAULT_TITLE_FONT = GUIFactory.getFont(11);
     private static final Color DEFAULT_TITLE_COLOR = Color.BLACK;
 
     private static final Insets BORDER_INSETS = new Insets(3, 10, 3, 10);

@@ -1,5 +1,6 @@
 package open.dolphin.client;
 
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.infomodel.DepartmentModel;
 import open.dolphin.infomodel.LicenseModel;
 import org.slf4j.Logger;
@@ -32,7 +33,9 @@ public final class ClientContextStub {
     private final ResourceBundle resBundle;
     private final Logger logger;
     private final String documentFolder;
-    private boolean isMac, isWin, isLinux;
+    private final boolean isMac;
+    private final boolean isWin;
+    private final boolean isLinux;
 
     /**
      * ClientContextStub オブジェクトを生成する.
@@ -281,7 +284,7 @@ public final class ClientContextStub {
             if (isLinux()) {
                 size = 13;
             }
-            Font font = new Font("SansSerif", Font.PLAIN, size);
+            Font font = GUIFactory.getFont(size);
             UIManager.put("Label.font", font);
             UIManager.put("Button.font", font);
             UIManager.put("ToggleButton.font", font);

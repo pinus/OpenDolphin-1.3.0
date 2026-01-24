@@ -2,12 +2,12 @@ package open.dolphin.inspector;
 
 import open.dolphin.client.ChartImpl;
 import open.dolphin.client.Dolphin;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.project.Project;
 import open.dolphin.ui.HorizontalPanel;
 import open.dolphin.ui.PNSBadgeTabbedPane;
 
 import javax.swing.*;
-import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class PatientInspector {
         // タブパネル
         tabbedPane = new PNSBadgeTabbedPane();
         if (Dolphin.forWin) {
-            tabbedPane.setButtonPanelFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+            tabbedPane.setButtonPanelFont(GUIFactory.getFont(10));
         }
         tabbedPane.setBorder(new InspectorBorder(null));
         tabbedPane.setButtonPanelBackground(IInspector.BACKGROUND);

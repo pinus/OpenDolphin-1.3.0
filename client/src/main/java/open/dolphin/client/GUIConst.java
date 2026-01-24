@@ -1,5 +1,7 @@
 package open.dolphin.client;
 
+import open.dolphin.helper.GUIFactory;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -123,7 +125,7 @@ public class GUIConst {
     // タイトルバー関連
     public static final Color TITLE_BAR_ACTIVE_COLOR = new Color(84,84,84);
     public static final Color TITLE_BAR_INACTIVE_COLOR = new Color(173,173,173);
-    public static final Font TITLE_BAR_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+    public static final Font TITLE_BAR_FONT = GUIFactory.getBoldFont(12);
 
     //
     // アイコンはここで集中管理

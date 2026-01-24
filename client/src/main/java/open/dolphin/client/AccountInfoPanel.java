@@ -2,6 +2,7 @@ package open.dolphin.client;
 
 import open.dolphin.event.ProxyDocumentListener;
 import open.dolphin.event.ValidListener;
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.helper.GridBagBuilder;
 import open.dolphin.infomodel.*;
 
@@ -19,7 +20,7 @@ import java.util.Date;
  * @author pns
  */
 public class AccountInfoPanel extends JPanel {
-    
+
     // FACILITY_USERにしておく. FACILITY_OIDはデフォを使う (masuda-sensei)
     //private static final String MEMBER_TYPE = "ASP_TESTER";
     private static final String MEMBER_TYPE = "FACILITY_USER";

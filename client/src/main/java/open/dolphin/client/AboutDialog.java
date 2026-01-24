@@ -1,5 +1,6 @@
 package open.dolphin.client;
 
+import open.dolphin.helper.GUIFactory;
 import open.dolphin.ui.MoreInfoPanel;
 import open.dolphin.ui.PNSButton;
 
@@ -74,8 +75,8 @@ public class AboutDialog extends JDialog {
         String copyright = "<html>" + String.join("<br>", ClientContext.getStringArray("copyrightString")) + "</html>";
 
         JPanel textPanel = new JPanel(new BorderLayout());
-        textPanel.add(getTextLabel(version, new Font(Font.DIALOG, Font.BOLD, 14)), BorderLayout.NORTH);
-        textPanel.add(getTextLabel(copyright, new Font(Font.DIALOG, Font.PLAIN, 12)), BorderLayout.CENTER);
+        textPanel.add(getTextLabel(version, GUIFactory.getBoldFont(14)), BorderLayout.NORTH);
+        textPanel.add(getTextLabel(copyright, GUIFactory.getFont(12)), BorderLayout.CENTER);
 
         // 閉じるボタン作成
         JButton closeButton = new PNSButton("閉じる");
@@ -119,8 +120,7 @@ public class AboutDialog extends JDialog {
                     "Fugue Icons 2.4.2 Copyright (C) Yusuke Kamiyamane, " +
                     "Aesthetica Icons 1.12 (http://dryicons.com), " +
                     "Icons from Tango Desktop Project, " +
-                    "DefaultIcon ver 2.0 Copyright (c) 2010-2011 Apostolos Paschalidis interactivemania" +
-                    "", 5, 20);
+                    "DefaultIcon ver 2.0 Copyright (c) 2010-2011 Apostolos Paschalidis interactivemania", 5, 20);
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         return new JScrollPane(area,
