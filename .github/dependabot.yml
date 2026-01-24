@@ -7,7 +7,7 @@ version: 2
 updates:
   # Gradle (build.gradle.kts / settings.gradle.kts / gradle.properties など)
   - package-ecosystem: "gradle"
-    directory: "/"
+    directory: "/client"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -15,12 +15,6 @@ updates:
       timezone: "Asia/Tokyo"
     open-pull-requests-limit: 10
     rebase-strategy: "auto"
-    labels:
-      - "dependencies"
     commit-message:
       prefix: "deps"
       include: "scope"
-    groups:
-      gradle-dependencies:
-        patterns:
-          - "*"
