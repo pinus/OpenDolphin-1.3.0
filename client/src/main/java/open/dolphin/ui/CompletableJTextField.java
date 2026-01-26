@@ -441,7 +441,7 @@ public class CompletableJTextField extends JTextField
 
     }
 
-    public static void main(String[] argv) {
+    static void main(String[] argv) {
         CompletableJTextField completableField = new CompletableJTextField(30);
 
         // 履歴を保存するための pref を作る
