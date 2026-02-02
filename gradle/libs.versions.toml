@@ -5,7 +5,7 @@ resteasy = "6.2.14.Final"
 intellij = "26.0.2-1"
 
 ## server ##
-jackson = "2.18.4"
+jackson = "2.21"
 hibernate-search = "7.2.4.Final"
 commons-lang3 = "3.18.0"
 postgres = "42.7.8"
