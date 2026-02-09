@@ -18,3 +18,11 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
+    ignre:
+      - dependency-name: "org.hibernate.orm:*"
+      - dependency-name: "org.glassfish.tyrus.bundles:*"
+      - dependency-name: "com.fasterxml.jackson.*"
+      - depencency-name: "org.apache.commons:commons-lang3"
+      - depencdncy-name: "org.hibernate.search:*"
+      - dependency-name: "jakarta.platform:*"
+      - dependency-name: "org.jboss.resteasy:*"

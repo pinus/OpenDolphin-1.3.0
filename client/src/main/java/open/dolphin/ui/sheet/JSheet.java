@@ -488,7 +488,9 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
      * アニメーションを終了する.
      */
     private void stopAnimation() {
-        animationTimer.stop();
+        if (animationTimer != null) {
+            animationTimer.stop();
+        }
         animating = false;
     }
 
@@ -533,7 +535,7 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
                     finishShowingSheet();
                 } else {
                     animationTimer.removeActionListener(this);
-                    animationTimer = null;
+                    //animationTimer = null;
                     content.removeAll();
                     super.setVisible(false);
                     sourceDialog.dispose();

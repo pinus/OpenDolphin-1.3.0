@@ -12,7 +12,7 @@ postgres = "42.7.8"
 jdom2 = "2.0.6.1"
 
 ## client ##
-tyrus = "2.2.1"
+tyrus = "2.2.2"
 google-client = "2.8.1"
 google-oauth = "1.39.0"
 google-calendar = "v3-rev20220715-2.0.0"
