@@ -1,6 +1,6 @@
 [versions]
 jakarta = "10.0.0"
-hibernate-orm = "6.6.31.Final"
+hibernate-orm = "7.2.4.Final"
 resteasy = "6.2.14.Final"
 intellij = "26.0.2-1"
 
