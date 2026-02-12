@@ -604,7 +604,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
      * @param stamp ModuleModel
      */
     public void flowStamp(ModuleModel stamp) {
-        if (stamp != null) {
+        if (stamp != null && stamp.getModel() != null) {
             // 外用剤の bundleNumber を補正する
             StampModifier.adjustNumber(stamp);
             StampHolder h = new StampHolder(this, stamp);
