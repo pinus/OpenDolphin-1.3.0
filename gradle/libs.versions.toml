@@ -2,7 +2,7 @@
 jakarta = "10.0.0"
 hibernate-orm = "6.6.31.Final"
 resteasy = "6.2.14.Final"
-intellij = "26.0.2-1"
+intellij = "26.1.0"
 
 ## server ##
 jackson = "2.18.4"
@@ -16,12 +16,12 @@ tyrus = "2.2.2"
 google-client = "2.8.1"
 google-oauth = "1.39.0"
 google-calendar = "v3-rev20220715-2.0.0"
-logback = "1.5.28"
+logback = "1.5.32"
 j2html = "1.6.0"
 angus-mail = "2.0.5"
 flatlaf = "3.7"
 commons-io = "2.21.0"
-selenium = "4.40.0"
+selenium = "4.41.0"
 webdriver-manager = "6.3.3"
 thumbnailator = "0.4.21"
 

@@ -18,7 +18,7 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
-    ignre:
+    ignore:
       - dependency-name: "org.hibernate.orm:*"
       - dependency-name: "org.glassfish.tyrus.bundles:*"
       - dependency-name: "com.fasterxml.jackson.*"
