@@ -19,7 +19,7 @@ updates:
       prefix: "deps"
       include: "scope"
     ignore:
-      - dependency-name: "org.hibernate.orm:*"
+      - dependency-name: "org.hibernate.orm:hibernate-core"
       - dependency-name: "org.glassfish.tyrus.bundles:*"
       - dependency-name: "com.fasterxml.jackson.*"
       - depencency-name: "org.apache.commons:commons-lang3"
