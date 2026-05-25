@@ -150,8 +150,13 @@ public class OrconMacro {
         logger.info("外来管理加算削除");
         // list of "入力コード" column
         List<WebElement> elements = driver.findElements(By.xpath("/html/body/div[2]/div/div/div[2]/div[6]/div/div[19]/table/tbody/tr/td[2]/input"));
+        if (elements.isEmpty()) {
+            logger.warn("外来管理加算削除: 入力コード欄が見つかりません");
+            return;
+        }
+
         WebElement target = null;
-        for (int r=0; r<10; r++) {
+        for (int r = 0; r < elements.size(); r++) {
             // 112011010 外来管理加算コード検索
             if ("112011010".equals(elements.get(r).getAttribute("value"))) {
                 target = elements.get(r);
