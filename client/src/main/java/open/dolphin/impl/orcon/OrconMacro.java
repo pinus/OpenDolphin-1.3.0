@@ -149,6 +149,7 @@ public class OrconMacro {
     public void k02GairaiKanriDelete() {
         logger.info("外来管理加算削除");
         // list of "入力コード" column
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[2]/div/div/div[2]/div[6]/div/div[19]/table/tbody/tr/td[2]/input")));
         List<WebElement> elements = driver.findElements(By.xpath("/html/body/div[2]/div/div/div[2]/div[6]/div/div[19]/table/tbody/tr/td[2]/input"));
         if (elements.isEmpty()) {
             logger.warn("外来管理加算削除: 入力コード欄が見つかりません");
