@@ -21,7 +21,7 @@ j2html = "1.6.0"
 angus-mail = "2.0.5"
 flatlaf = "3.7.1"
 commons-io = "2.22.0"
-selenium = "4.44.0"
+selenium = "4.45.0"
 webdriver-manager = "6.3.4"
 thumbnailator = "0.4.21"
 
