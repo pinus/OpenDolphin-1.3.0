@@ -15,7 +15,7 @@ println("targetPlatform: $targetPlatform")
 plugins {
     application
     kotlin("jvm") version "2.4.0"
-    id("com.gradleup.shadow") version "9.4.3"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 application {
