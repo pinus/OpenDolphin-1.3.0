@@ -299,16 +299,22 @@ public class KarteRenderer_2 {
         debug("Number = " + number);
         debug("soaPane = " + isSoaPane);
 
+        int index = Integer.parseInt(number);
+
         try {
             if (name != null && name.equals(STAMP_HOLDER)) {
-                int index = Integer.parseInt(number);
-                ModuleModel stamp = isSoaPane
-                        ? soaModules.get(index)
-                        : pModules.get(index);
+                var modules = isSoaPane ? soaModules : pModules;
+
+                // number may exceed the size of modules
+                if (index < 0 || index >= modules.size()) {
+                    logger.info("index {} exceeds the size of modules", index);
+                    return;
+                }
+
+                ModuleModel stamp = modules.get(index);
                 thePane.flowStamp(stamp);
 
             } else if (name != null && name.equals(SCHEMA_HOLDER)) {
-                int index = Integer.parseInt(number);
                 thePane.flowSchema(model.getSchema(index));
             }
         } catch (NumberFormatException e) {
