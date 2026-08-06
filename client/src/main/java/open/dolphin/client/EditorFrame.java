@@ -44,6 +44,8 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
     private ChartMediator mediator;
     // ChartToolBar
     private ChartToolBar chartToolBar;
+    // 保存中かどうか
+    private boolean isSaving = false;
 
     /**
      * EditorFrame オブジェクトを生成する.
@@ -410,6 +412,7 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
             @Override
             public Component getDefaultComponent(Container aContainer) {
                 // 最初にフォーカスを取る component
+                if (isSaving) { return aContainer; }
                 return editor.getSOAPane().getTextPane();
             }
 
@@ -513,7 +516,7 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
     public void windowClosing(WindowEvent e) {
         // window のクローズボタンを押したときの対応
         logger.info("windowClosing");
-        closeFrame();
+        close();
     }
 
     @Override
@@ -550,24 +553,22 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
     }
 
     /**
-     * クローズする.
-     * キャンセル，破棄の処理は editor でまとめてすることにした.
+     * メニューの「閉じる」で呼ばれる.
      */
-    private void closeFrame() {
+    @Override
+    public void close() {
+        if (isSaving) {
+            logger.info("ignoring second closing request");
+            return;
+        }
+        isSaving = true;
         if (mode == EditorMode.EDITOR && editor.isDirty()) {
             // save が成功すると editor から stop() が呼ばれる. 失敗すると呼ばれない.
             editor.save();
         } else {
             stop();
         }
-    }
-
-    /**
-     * メニューの「閉じる」で呼ばれる.
-     */
-    @Override
-    public void close() {
-        closeFrame();
+        isSaving = false;
     }
 
     // このクラスの２つのモード（状態）でメニューの制御に使用する

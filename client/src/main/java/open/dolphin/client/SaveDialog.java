@@ -20,13 +20,12 @@ public class SaveDialog {
     public static final int TMP_SAVE = 1;
     public static final int DISPOSE = 2;
     public static final int CANCEL = 3;
-    private static final String[] PRINT_COUNT = {"0", "1", "2", "3", "4", "5"};
+    //private static final String[] PRINT_COUNT = {"0", "1", "2", "3", "4", "5"};
     private static final String[] TITLE_LIST = {"経過記録", "処方", "処置", "検査", "画像", "指導"};
-    private static final String DIALOG_TITLE = "ドキュメント保存";
+    //private static final String DIALOG_TITLE = "ドキュメント保存";
     private final Window parent;
     // 戻り値のSaveParams
     private final SaveParams value = new SaveParams();
-    private JOptionPane pane;
     private JSheet dialog;
     private JTextField titleField;
     private JComboBox<String> titleCombo;
@@ -35,8 +34,6 @@ public class SaveDialog {
     private JCheckBox sendClaim;
     private JButton okButton;
     private JButton tmpButton;
-    private JButton disposeButton;
-    private JButton cancelButton;
 
     public SaveDialog(Window parent) {
         this.parent = parent;
@@ -94,15 +91,15 @@ public class SaveDialog {
         tmpButton.setEnabled(false);
         tmpButton.setToolTipText("<html>&#8984;T</html>");
 
-        disposeButton = new PNSButton(new ProxyAction("破 棄", this::doDispose));
-        disposeButton.setToolTipText("<html>&#8984;ESC</html>");
+        JButton disposeButton = new PNSButton(new ProxyAction("破 棄", this::doDispose));
+        disposeButton.setToolTipText("<html>&#8984;D</html>");
 
-        cancelButton = new PNSButton(new ProxyAction("キャンセル", this::doCancel));
+        JButton cancelButton = new PNSButton(new ProxyAction("キャンセル", this::doCancel));
         cancelButton.setToolTipText("ESC");
 
         // JOptionPane
-        pane = new JOptionPane(content, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
-                new JButton[]{ okButton, tmpButton, disposeButton, cancelButton }, okButton);
+        JOptionPane pane = new JOptionPane(content, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
+                new JButton[]{okButton, tmpButton, disposeButton, cancelButton}, okButton);
 
         dialog = JSheet.createDialog(pane, parent);
         dialog.addSheetListener(se -> {
@@ -125,7 +122,7 @@ public class SaveDialog {
         am.put("tmpSave", new ProxyAction(tmpButton::doClick));
 
         // Cmd-ESC で破棄
-        im.put(KeyStroke.getKeyStroke("meta ESCAPE"), "dispose");
+        im.put(KeyStroke.getKeyStroke("meta D"), "dispose");
         am.put("dispose", new ProxyAction(disposeButton::doClick));
     }
 
@@ -141,7 +138,7 @@ public class SaveDialog {
 
         // Titleを表示する
         String val = params.getTitle();
-        if (val != null && (!val.equals("") && (!val.equals("経過記録")))) {
+        if (val != null && (!val.isEmpty() && (!val.equals("経過記録")))) {
             titleCombo.insertItemAt(val, 0);
         }
         titleCombo.setSelectedIndex(0);
@@ -188,7 +185,7 @@ public class SaveDialog {
      * タイトルフィールドの有効性をチェックする.
      */
     public void checkTitle() {
-        boolean enabled = !titleField.getText().trim().equals("");
+        boolean enabled = !titleField.getText().trim().isEmpty();
         okButton.setEnabled(enabled);
         tmpButton.setEnabled(enabled);
     }
@@ -294,7 +291,7 @@ public class SaveDialog {
         dialog.dispose();
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
 
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

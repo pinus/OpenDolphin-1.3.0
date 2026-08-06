@@ -1,6 +1,5 @@
 package open.dolphin.ui.sheet;
 
-import open.dolphin.ui.PNSFrame;
 import open.dolphin.ui.PNSOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,6 +256,7 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
             glassPane = w.getGlassPane();
         }
         ((JComponent) glassPane).putClientProperty("blockglass.show.ticker", false);
+        //setAlwaysOnTop(true);
     }
 
     /**
@@ -551,7 +551,7 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
     public void mouseClicked(MouseEvent e) {}
 
     @Override
-    public void mousePressed(MouseEvent e) { toFront();}
+    public void mousePressed(MouseEvent e) { toFront(); }
 
     @Override
     public void mouseReleased(MouseEvent e) { toFront(); }
@@ -705,7 +705,7 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
     }
 
     public static void main(String[] arg) {
-        PNSFrame frame = new PNSFrame();
+        JFrame frame = new JFrame();
         frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

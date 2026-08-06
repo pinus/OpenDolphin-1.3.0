@@ -745,22 +745,22 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         // image があるかどうか
         boolean flag = document.getSchema() != null;
         docInfo.setHasImage(flag);
-        logger.debug("hasImage = " + flag);
+        logger.debug("hasImage = {}", flag);
 
         // RP があるかどうか
         flag = document.getModule(ENTITY_MED_ORDER) != null;
         docInfo.setHasRp(flag);
-        logger.debug("hasRp = " + flag);
+        logger.debug("hasRp = {}", flag);
 
         // 処置があるかどうか
         flag = document.getModule(ENTITY_TREATMENT) != null;
         docInfo.setHasTreatment(flag);
-        logger.debug("hasTreatment = " + flag);
+        logger.debug("hasTreatment = {}", flag);
 
         // LaboTest があるかどうか
         flag = document.getModule(ENTITY_LABO_TEST) != null;
         docInfo.setHasLaboTest(flag);
-        logger.debug("hasLaboTest = " + flag);
+        logger.debug("hasLaboTest = {}", flag);
 
         //
         // EJB3.0 Model の関係を構築する
@@ -829,10 +829,10 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
             mInfo.setStampNumber(number++);
 
             int size = bean.getBeanBytes().length / 1024;
-            logger.debug("stamp size(KB) = " + size);
+            logger.debug("stamp size(KB) = {}", size);
             totalSize += size;
         }
-        logger.debug("stamp total size(KB) = " + totalSize);
+        logger.debug("stamp total size(KB) = {}", totalSize);
 
         // 画像との関係を設定する
         number = 0;
