@@ -155,6 +155,7 @@ public class OrcaController extends AbstractMainComponent {
             imageBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
         }
         WindowHolder.allCharts().forEach(c -> c.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL));
+        WindowHolder.allEditorFrames().forEach(c -> c.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL));
         SwingUtilities.invokeLater(() -> getContext().getFrame().toFront());
     }
 

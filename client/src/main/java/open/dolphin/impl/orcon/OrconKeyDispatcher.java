@@ -13,6 +13,10 @@ import java.util.stream.Stream;
  * @author pns
  */
 public class OrconKeyDispatcher implements KeyEventDispatcher {
+    private final static String[] SHORT_CUTS =
+            { "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
+                    "ctrl shift ENTER", "ctrl K", "ctrl B", "ctrl 0", "ctrl 1", "ctrl 2", "ctrl 3", "ctrl V", "alt ENTER", "alt meta A", "alt BACK_SPACE" };
+
     private final OrcaController context;
     private final OrconMacro orconMacro;
     private final Logger logger = LoggerFactory.getLogger(OrconKeyDispatcher.class);
@@ -114,10 +118,8 @@ public class OrconKeyDispatcher implements KeyEventDispatcher {
             if (meta) { return false; }
 
         } else { // Mode.STEALTH
-            // ショートカット、ファンクションキーだけ通す
-            if (Stream.of("ctrl shift ENTER", "ctrl K", "ctrl B", "ctrl 0", "ctrl 1", "ctrl 2", "ctrl 3", "ctrl V", "alt ENTER",
-                "alt meta A", "alt BACK_SPACE", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
-                .noneMatch(chord -> is(keyCode, chord))) {
+            // ショートカット (含ファンクションキー) だけ通す
+            if (Stream.of(SHORT_CUTS).noneMatch(chord -> is(keyCode, chord))) {
                 return false;
             }
         }
