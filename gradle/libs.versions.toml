@@ -1,14 +1,17 @@
 [versions]
 jakarta = "10.0.0"
-hibernate-orm = "6.6.31.Final"
-resteasy = "6.2.14.Final"
+hibernate-orm = "7.4.5.Final"
+resteasy = "7.0.3.Final"
 intellij = "26.1.0"
 
 ## server ##
-jackson = "2.18.4"
-hibernate-search = "7.2.4.Final"
-commons-lang3 = "3.18.0"
-postgres = "42.7.8"
+jackson-core = "2.22.2"
+jackson-databind = "2.22.2"
+jackson-annotations = "2.22"
+jackson-hibernate7 = "2.22.2"
+hibernate-search = "8.4.0.Final"
+commons-lang3 = "3.20.0"
+postgres = "42.7.13"
 jdom2 = "2.0.6.1"
 
 ## client ##
@@ -35,10 +38,10 @@ intellij-annotations = { module = "org.jetbrains:annotations", version.ref = "in
 ## server ##
 hibernate-search = { module = "org.hibernate.search:hibernate-search-mapper-orm", version.ref = "hibernate-search" }
 hibernate-search-elasticsearch = { module = "org.hibernate.search:hibernate-search-backend-elasticsearch", version.ref = "hibernate-search" }
-jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
-jackson-annotation = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
-jackson-hibernate6 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6", version.ref = "jackson" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson-core" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson-databind" }
+jackson-annotation = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson-annotations" }
+jackson-hibernate6 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-hibernate7", version.ref = "jackson-hibernate7" }
 commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 jdom2 = { module = "org.jdom:jdom2", version.ref = "jdom2" }

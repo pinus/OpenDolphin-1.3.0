@@ -1,8 +1,7 @@
 package open.dolphin;
 
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
-
+import com.fasterxml.jackson.datatype.hibernate7.Hibernate7Module;
 import jakarta.ejb.Singleton;
 import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.Provider;
@@ -17,11 +16,11 @@ import open.dolphin.util.JsonUtils;
 @Singleton
 public class JsonConverter implements ContextResolver<ObjectMapper> {
     private ObjectMapper mapper;
-    private Hibernate6Module hbm;
+    private Hibernate7Module hbm;
 
     public JsonConverter() {
         mapper = new ObjectMapper();
-        hbm = new Hibernate6Module();
+        hbm = new Hibernate7Module();
         initModule();
         System.out.println("[open.dolphin.JsonConverter] ObjectMapper configured.");
     }
@@ -30,8 +29,8 @@ public class JsonConverter implements ContextResolver<ObjectMapper> {
         JsonUtils.initialilze(mapper);
 
         // works in Hibernate 6
-        hbm.configure(Hibernate6Module.Feature.FORCE_LAZY_LOADING, false);
-        hbm.configure(Hibernate6Module.Feature.USE_TRANSIENT_ANNOTATION, false);
+        hbm.configure(Hibernate7Module.Feature.FORCE_LAZY_LOADING, false);
+        hbm.configure(Hibernate7Module.Feature.USE_TRANSIENT_ANNOTATION, false);
         mapper.registerModule(hbm);
     }
 

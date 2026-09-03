@@ -8,6 +8,7 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.id.db_structure_naming_strategy" value="single" />
+            <property name="hibernate.id.sequence.increment_size_mismatch_strategy" value="FIX"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
 
             <!-- hibernate search -->
