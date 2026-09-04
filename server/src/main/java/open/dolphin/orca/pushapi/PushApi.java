@@ -28,6 +28,7 @@ public class PushApi {
     private final OrcaHostInfo hostInfo;
     private final PushApiEndpoint endpoint;
     private Session session;
+    private WebSocketContainer container;
 
     private final Logger logger;
 
@@ -55,8 +56,9 @@ public class PushApi {
         command.setReqId(reqId);
 
         URI uri = hostInfo.getPushApiUri();
-
-        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        if (container == null) {
+            container = ContainerProvider.getWebSocketContainer();
+        }
 
         try {
             session = container.connectToServer(endpoint, uri);
@@ -94,7 +96,14 @@ public class PushApi {
     /// ResponseListener を登録する.
     ///
     /// @param l ResponseListener
-    public void addResponseListener(ResponseListener l) {
+    public void addResponseListener(PushApiEndpoint.ResponseListener l) {
         endpoint.addResponseListener(l);
+    }
+
+    /// CloseListener を登録する.
+    ///
+    /// @param l CloseListener
+    public void addCloseListener(PushApiEndpoint.CloseListener l) {
+        endpoint.addCloseListener(l);
     }
 }

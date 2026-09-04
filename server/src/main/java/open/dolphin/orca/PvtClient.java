@@ -1,5 +1,8 @@
 package open.dolphin.orca;
 
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
+import jakarta.websocket.CloseReason;
 import open.dolphin.dto.PatientVisitSpec;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.infomodel.InfoModel;
@@ -33,13 +36,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-/**
- * PvtClient.
- * ORCA PushApi で受付情報を受け取り，PvtBuilder で PatientVisitModel を作って PvtService に渡す.
- *
- * @author pns
- */
+/// PvtClient.
+/// ORCA PushApi で受付情報を受け取り，PvtBuilder で PatientVisitModel を作って PvtService に渡す.
+///
+/// @author pns
 @Singleton
 @Startup
 @DependsOn("OrcaHostInfoStartup")
@@ -51,14 +53,16 @@ public class PvtClient {
     private final PvtBuilder pvtBuilder;
     @Inject
     private PvtService pvtService;
-
     @Inject
     private PatientService patientService;
+    @Resource
+    private ManagedScheduledExecutorService executor;
 
     public PvtClient() {
         pvtBuilder = new PvtBuilder();
         pushApi = PushApi.getInstance();
         pushApi.addResponseListener(this::onResponse);
+        pushApi.addCloseListener(this::onClose);
         logger.info("PvtClient created");
     }
 
@@ -150,11 +154,14 @@ public class PvtClient {
         }
     }
 
-    /**
-     * 今日の pvt リストを返す.
-     *
-     * @return List of today's pvt
-     */
+    public void onClose(CloseReason reason ) {
+        // 再接続
+        executor.schedule(this::subscribe, 3, TimeUnit.SECONDS);
+    }
+
+    /// 今日の pvt リストを返す.
+    ///
+    /// @return List of today's pvt
     private List<PatientVisitModel> getPvtListToday() {
         PatientVisitSpec spec = new PatientVisitSpec();
         spec.setDate(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
@@ -162,9 +169,7 @@ public class PvtClient {
         return pvtService.getPvtList(spec);
     }
 
-    /**
-     * 内部から PvtService を呼ぶためのダミーヘッダ
-     */
+    /// 内部から PvtService を呼ぶためのダミーヘッダ
     private static class DummyHeader implements HttpHeaders {
         private static final DummyHeader dummyHeader = new DummyHeader();
         private static String header;

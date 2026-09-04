@@ -6,18 +6,15 @@ import org.jboss.logging.Logger;
 
 import jakarta.websocket.*;
 
-/**
- * WebSocket の Endpoint (Tyrus).
- *
- * @author pns
- */
+/// WebSocket の Endpoint (Tyrus).
+///
+/// @author pns
 @ClientEndpoint(configurator = PushApiEndopointConfigurator.class)
 public class PushApiEndpoint {
 
-    /**
-     * 受け取った message を伝える listener.
-     */
+    /// 受け取った message を伝える listener.
     private ResponseListener responseListener;
+    private CloseListener closeListener;
 
     private final Logger logger = Logger.getLogger(PushApiEndpoint.class);
 
@@ -31,6 +28,7 @@ public class PushApiEndpoint {
 
     @OnMessage
     public void onMessage(String str) {
+        logger.info("onMessage response = " + str);
         Response response = JsonUtils.fromJson(str, Response.class);
         responseListener.onResponse(response);
     }
@@ -38,6 +36,7 @@ public class PushApiEndpoint {
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
         logger.info("closeReason = " + closeReason.getReasonPhrase());
+        closeListener.onClose(closeReason);
     }
 
     @OnError
@@ -45,12 +44,22 @@ public class PushApiEndpoint {
         thr.printStackTrace(System.err);
     }
 
-    /**
-     * ResponseListener を登録する.
-     *
-     * @param listener ResponseListener
-     */
+    /// ResponseListener を登録する.
+    ///
+    /// @param listener ResponseListener
     public void addResponseListener(ResponseListener listener) {
         responseListener = listener;
+    }
+
+    public void addCloseListener(CloseListener listener) {
+        closeListener = listener;
+    }
+
+    public interface ResponseListener {
+        void onResponse(Response response);
+    }
+
+    public interface CloseListener {
+        void onClose(CloseReason closeReason);
     }
 }
