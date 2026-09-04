@@ -16,16 +16,12 @@ import jakarta.websocket.WebSocketContainer;
 import java.io.IOException;
 import java.net.URI;
 
-/**
- * PushAPI.
- * <ol>
- * <li>jma-receipt-pusher パッケージのインストールが必要
- * <li>WebSocket接続先は、 ws://localhost:9400/ws
- * <li>Header に "X-GINBEE-TENANT-ID: 1" を設定する
- * </ol>
- *
- * @author pns
- */
+/// PushAPI.
+///
+///   1. WebSocket接続先は、 ws://localhost:8000/ws
+///   2. Header に "X-GINBEE-TENANT-ID: 1" を設定する
+///
+/// @author pns
 public class PushApi {
     private static final PushApi PUSH_API = new PushApi();
 
@@ -42,23 +38,18 @@ public class PushApi {
         logger.info("PusApi created");
     }
 
-    /**
-     * PushApi のインスタンス.
-     *
-     * @return PushApi
-     */
+    /// PushApi のインスタンス.
+    ///
+    /// @return PushApi
     public static PushApi getInstance() {
         return PUSH_API;
     }
 
-    /**
-     * Event を購読.
-     *
-     * @param event 購読する Event
-     */
+    /// Event を購読.
+    ///
+    /// @param event 購読する Event
     public void subscribe(SubscriptionEvent event) {
-
-        String reqId = RandomStringUtils.randomAlphabetic(10);
+        String reqId = RandomStringUtils.insecure().nextAlphabetic(10);
 
         Subscribe command = new Subscribe(event);
         command.setReqId(reqId);
@@ -76,13 +67,10 @@ public class PushApi {
         }
     }
 
-    /**
-     * 購読を停止する.
-     *
-     * @param res 購読の時に返ってきた response
-     */
+    /// 購読を停止する.
+    ///
+    /// @param res 購読の時に返ってきた response
     public void unsubscribe(Response res) {
-
         Unsubscribe command = new Unsubscribe();
         command.setReqId(res.getReqId());
         command.setSubId(res.getSubId());
@@ -90,11 +78,9 @@ public class PushApi {
         send(command);
     }
 
-    /**
-     * WebSocket に command を送る.
-     *
-     * @param command コマンド
-     */
+    /// WebSocket に command を送る.
+    ///
+    /// @param command コマンド
     private void send(Command command) {
         try {
             String text = JsonUtils.toJson(command);
@@ -105,11 +91,9 @@ public class PushApi {
         }
     }
 
-    /**
-     * ResponseListener を登録する.
-     *
-     * @param l ResponseListener
-     */
+    /// ResponseListener を登録する.
+    ///
+    /// @param l ResponseListener
     public void addResponseListener(ResponseListener l) {
         endpoint.addResponseListener(l);
     }
