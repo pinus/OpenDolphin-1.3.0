@@ -13,11 +13,9 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.util.*;
 
-/**
- * 検索タスクの実務をするクラス
- *
- * @author pns
- */
+/// 検索タスクの実務をするクラス
+///
+/// @author pns
 class FindTask extends PNSTask<Collection<PatientModel>> {
     private final PatientSearchPanel view;
     private final ObjectReflectTableModel<PatientModel> tableModel;
@@ -25,14 +23,12 @@ class FindTask extends PNSTask<Collection<PatientModel>> {
     private final Logger logger = LoggerFactory.getLogger(FindTask.class);
     private List<PatientModel> result;
 
-    /**
-     * メモ検索 or 全文検索のコンストラクタ
-     *
-     * @param view PatientSearchPanel
-     * @param message message
-     * @param note note
-     * @param spec patient search spec
-     */
+    /// メモ検索 or 全文検索のコンストラクタ
+    ///
+    /// @param view PatientSearchPanel
+    /// @param message message
+    /// @param note note
+    /// @param spec patient search spec
     @SuppressWarnings("unchecked")
     public FindTask(PatientSearchPanel view, Object message, String note, PatientSearchSpec spec) {
         super(SwingUtilities.getWindowAncestor(view), message, note);
@@ -71,7 +67,9 @@ class FindTask extends PNSTask<Collection<PatientModel>> {
         if (pm.isEmpty() &&
             (spec.getType() == SEARCH.KANA || spec.getType() == SEARCH.ROMAN || spec.getType() == SEARCH.NAME)) {
             spec.setType(PatientSearchSpec.SEARCH.FULLTEXT);
-            spec.setSearchText(spec.getName());
+            // レスタミンコーワクリームを検索するのに「レスタミン」でも検索できるようにする
+            spec.setType(SEARCH.REGEXP);
+            spec.setSearchText(".*" + spec.getName() + ".*");
             pm = pdl.getPatients(spec);
         }
 
@@ -109,9 +107,7 @@ class FindTask extends PNSTask<Collection<PatientModel>> {
         }
     }
 
-    /**
-     * table に result をセットする.
-     */
+    /// table に result をセットする.
     protected void setResult() {
         tableModel.setObjectList(result);
         // 件数表示

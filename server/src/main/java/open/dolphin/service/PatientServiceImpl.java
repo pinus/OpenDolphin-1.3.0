@@ -11,21 +11,17 @@ import jakarta.ejb.Stateless;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * PatientServiceImpl.
- *
- * @author pns
- */
+/// PatientServiceImpl.
+///
+/// @author pns
 @Stateless
 public class PatientServiceImpl extends DolphinService implements PatientService {
         private final Logger logger = Logger.getLogger(PatientService.class);
 
-    /**
-     * 患者オブジェクトを取得する.
-     *
-     * @param spec PatientSearchSpec 検索仕様
-     * @return 患者オブジェクトの Collection
-     */
+    /// 患者オブジェクトを取得する.
+    ///
+    /// @param spec PatientSearchSpec 検索仕様
+    /// @return 患者オブジェクトの Collection
     @Override
     public List<PatientModel> getPatientList(PatientSearchSpec spec) {
 
@@ -147,9 +143,9 @@ public class PatientServiceImpl extends DolphinService implements PatientService
                             root.add(f.matchAll());
                             switch (spec.getType()) {
                                 case QUERY ->
-                                    root.add(f.simpleQueryString().field("modules.fullText").matching(searchText));
-                                case REGEXP -> root.add(f.regexp().field("modules.fullText").matching(searchText));
-                                default -> root.add(f.phrase().field("modules.fullText").matching(searchText));
+                                    root.add(f.simpleQueryString().field("modules").matching(searchText));
+                                case REGEXP -> root.add(f.regexp().field("modules").matching(searchText));
+                                default -> root.add(f.phrase().field("modules").matching(searchText));
                             }
                         }
                     ).fetchHits(1000);
@@ -180,12 +176,10 @@ public class PatientServiceImpl extends DolphinService implements PatientService
         return ret;
     }
 
-    /**
-     * HealthInsurance の beanBytes を PVTHealthInsurance に戻して返す.
-     *
-     * @param patientPk PatientModel の pk
-     * @return PVTHealthInsuranceModel の List
-     */
+    /// HealthInsurance の beanBytes を PVTHealthInsurance に戻して返す.
+    ///
+    /// @param patientPk PatientModel の pk
+    /// @return PVTHealthInsuranceModel の List
     @Override
     public List<PVTHealthInsuranceModel> getHealthInsuranceList(Long patientPk) {
         final String sql = "select h from HealthInsuranceModel h where h.patient.id = :pk";
@@ -195,12 +189,10 @@ public class PatientServiceImpl extends DolphinService implements PatientService
         return ModelUtils.decodeHealthInsurance(insurances);
     }
 
-    /**
-     * 患者ID("000001")を指定して患者オブジェクトを返す.
-     *
-     * @param patientId 施設内患者ID
-     * @return 該当するPatientModel
-     */
+    /// 患者ID("000001")を指定して患者オブジェクトを返す.
+    ///
+    /// @param patientId 施設内患者ID
+    /// @return 該当するPatientModel
     @Override
     public PatientModel getPatient(String patientId) {
 
@@ -222,12 +214,10 @@ public class PatientServiceImpl extends DolphinService implements PatientService
         return bean;
     }
 
-    /**
-     * 患者を登録する.
-     *
-     * @param patient PatientModel
-     * @return PatientModel の primary key
-     */
+    /// 患者を登録する.
+    ///
+    /// @param patient PatientModel
+    /// @return PatientModel の primary key
     @Override
     public Long addPatient(PatientModel patient) {
         String facilityId = getCallersFacilityId();
@@ -236,12 +226,10 @@ public class PatientServiceImpl extends DolphinService implements PatientService
         return patient.getId();
     }
 
-    /**
-     * 患者情報を更新する.
-     *
-     * @param patient 更新する患者
-     * @return 更新数 1
-     */
+    /// 患者情報を更新する.
+    ///
+    /// @param patient 更新する患者
+    /// @return 更新数 1
     @Override
     public int update(PatientModel patient) {
         em.merge(patient);

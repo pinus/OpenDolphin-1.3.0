@@ -18,24 +18,20 @@ import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
-/**
- * いろいろやってみる service.
- *
- * @author pns
- */
+/// いろいろやってみる service.
+///
+/// @author pns
 @Stateless
 public class PnsServiceImpl extends DolphinService implements PnsService {
-        private static final String CALENDAR_DATA = "calendar.data";
+    private static final String CALENDAR_DATA = "calendar.data";
 
     private final Preferences prefs = Preferences.userNodeForPackage(PnsServiceImpl.class);
     private final Logger logger = Logger.getLogger(PnsServiceImpl.class);
 
-    /**
-     * patient_id から，今日のカルテ内容の module のリストを返す.　カルテがなければ null.
-     *
-     * @param patientId PatientModel の pk
-     * @return List of ModuleModel
-     */
+    /// patient\_id から，今日のカルテ内容の module のリストを返す.　カルテがなければ null.
+    ///
+    /// @param patientId PatientModel の pk
+    /// @return List of ModuleModel
     @Override
     public List<ModuleModel> peekKarte(Long patientId) {
         try {
@@ -46,15 +42,15 @@ public class PnsServiceImpl extends DolphinService implements PnsService {
                     .setParameter("patientId", patientId).getSingleResult();
 
             List<DocumentModel> docList = em.createQuery("from DocumentModel d where d.karte.id = :karteId and (d.status ='F' or d.status='T') and d.started >= :fromDate", DocumentModel.class)
-                .setParameter("karteId", karteId)
-                .setParameter("fromDate", today.getTime()).getResultList();
+                    .setParameter("karteId", karteId)
+                    .setParameter("fromDate", today.getTime()).getResultList();
 
             if (docList.isEmpty()) {
                 return null;
 
             } else {
                 // beanBytes を変換して新しいモデルにして返す
-                return docList.get(0).getModules().stream().map(src -> {
+                return docList.getFirst().getModules().stream().map(src -> {
                     ModuleModel dist = new ModuleModel();
                     dist.setDocument(src.getDocument());
                     dist.setModuleInfo(src.getModuleInfo());
@@ -69,38 +65,32 @@ public class PnsServiceImpl extends DolphinService implements PnsService {
         return null;
     }
 
-    /**
-     * Preferences に保存したカレンダー情報をクライアントに知らせる.
-     *
-     * @return Calendar data array
-     */
+    /// Preferences に保存したカレンダー情報をクライアントに知らせる.
+    ///
+    /// @return Calendar data array
     @Override
     public String[][] getCalendarData() {
         String json = prefs.get(CALENDAR_DATA, null);
         return StringUtils.isEmpty(json)
-            ? null
-            : JsonUtils.fromJson(json, String[][].class);
+                ? null
+                : JsonUtils.fromJson(json, String[][].class);
     }
 
-    /**
-     * Calendar data を Preferences に保存する.
-     *
-     * @param data Calendar data array
-     */
+    /// Calendar data を Preferences に保存する.
+    ///
+    /// @param data Calendar data array
     public void saveCalendarData(String[][] data) {
         String json = JsonUtils.toJson(data);
         prefs.put(CALENDAR_DATA, json);
         logger.info("calendar data saved");
     }
 
-    /**
-     * hibernate search のインデックスを作る.
-     * トランザクションタイムアウト延長が必要. (default = 300)
-     * <pre>
-     * $ jboss-cli.sh --connect
-     * [pns@localhost:9990] /subsystem=transactions:write-attribute(name=default-timeout,value=14400)
-     * </pre>
-     */
+    /// hibernate search のインデックスを作る.
+    /// トランザクションタイムアウト延長が必要. (default = 300)
+    /// ```shell
+    /// $ jboss-cli.sh --connect
+    /// [pns@localhost:9990] /subsystem=transactions:write-attribute(name=default-timeout,value=14400)
+    /// ```
     @Override
     public void makeInitialIndex() {
         final SearchSession searchSession = Search.session(em);
@@ -109,7 +99,8 @@ public class PnsServiceImpl extends DolphinService implements PnsService {
         logger.info("processor number = " + core);
 
         MassIndexer massIndexer = searchSession.massIndexer();
-        massIndexer.type(DocumentModel.class).reindexOnly("e.status = :status").param("status", IInfoModel.STATUS_FINAL);
+        massIndexer.type(DocumentModel.class).reindexOnly("e.status in (:statusList)")
+                .param("statusList", java.util.List.of(IInfoModel.STATUS_FINAL, IInfoModel.STATUS_TMP));
         massIndexer.purgeAllOnStart(true).transactionTimeout(14400).threadsToLoadObjects(core);
 
         try {
@@ -117,5 +108,6 @@ public class PnsServiceImpl extends DolphinService implements PnsService {
         } catch (InterruptedException e) {
             e.printStackTrace(System.err);
         }
+        logger.info("initial index created");
     }
 }

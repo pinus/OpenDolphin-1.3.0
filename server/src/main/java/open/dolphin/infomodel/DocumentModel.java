@@ -1,20 +1,21 @@
 package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.RoutingBinderRef;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * DocumentModel.
- *
- * @author Minagawa, Kazushi
- */
-@Indexed(index = "document")      // hibernate search
+/// DocumentModel.
+///
+/// @author Minagawa, Kazushi
+@Indexed(index = "document", routingBinder = @RoutingBinderRef(type = DocumentRoutingBinder.class))
+@BatchSize(size = 50)
 @Entity
 @Table(name = "d_document")
 public class DocumentModel extends KarteEntryBean<DocumentModel> {
@@ -22,8 +23,9 @@ public class DocumentModel extends KarteEntryBean<DocumentModel> {
     @Embedded
     private DocInfoModel docInfo;
 
-    @IndexedEmbedded        // hibernate search
+    @FullTextField(analyzer = "japanese", valueBridge = @ValueBridgeRef(type = ModuleModelValueBridge.class))
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
+    @BatchSize(size = 20)   // Fetch size指定 for performance improvements
     @OneToMany(mappedBy = "document", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Collection<ModuleModel> modules;
 
@@ -35,9 +37,7 @@ public class DocumentModel extends KarteEntryBean<DocumentModel> {
         docInfo.setDocType(DOCTYPE_KARTE);
     }
 
-    /**
-     * DocumentModel から DocInfoModel に情報をコピーする.
-     */
+    /// DocumentModel から DocInfoModel に情報をコピーする.
     public void toDetach() {
         docInfo.setDocPk(getId());
         docInfo.setParentPk(getLinkId());
@@ -46,9 +46,7 @@ public class DocumentModel extends KarteEntryBean<DocumentModel> {
         docInfo.setStatus(getStatus());
     }
 
-    /**
-     * DocInfoModel から DocumentModel に情報をコピーする.
-     */
+    /// DocInfoModel から DocumentModel に情報をコピーする.
     public void toPersist() {
         setLinkId(docInfo.getParentPk());
         setLinkRelation(docInfo.getParentIdRelation());
@@ -57,47 +55,37 @@ public class DocumentModel extends KarteEntryBean<DocumentModel> {
         setStatus(docInfo.getStatus());
     }
 
-    /**
-     * 文書情報を返す.
-     *
-     * @return 文書情報 DocInfoModel
-     */
+    /// 文書情報を返す.
+    ///
+    /// @return 文書情報 DocInfoModel
     public DocInfoModel getDocInfo() {
         return docInfo;
     }
 
-    /**
-     * 文書情報を設定する.
-     *
-     * @param docInfo 文書情報 DocInfoModel
-     */
+    /// 文書情報を設定する.
+    ///
+    /// @param docInfo 文書情報 DocInfoModel
     public void setDocInfo(DocInfoModel docInfo) {
         this.docInfo = docInfo;
     }
 
-    /**
-     * SchemaModel の Collection を返す.
-     *
-     * @return Collection of SchemaModel
-     */
+    /// SchemaModel の Collection を返す.
+    ///
+    /// @return Collection of SchemaModel
     public Collection<SchemaModel> getSchema() {
         return schema;
     }
 
-    /**
-     * SchemaModel の Collection を設定する.
-     *
-     * @param images Collection of SchemaModel
-     */
+    /// SchemaModel の Collection を設定する.
+    ///
+    /// @param images Collection of SchemaModel
     public void setSchema(Collection<SchemaModel> images) {
         this.schema = images;
     }
 
-    /**
-     * SchemaModel を追加する.
-     *
-     * @param model SchemaModel
-     */
+    /// SchemaModel を追加する.
+    ///
+    /// @param model SchemaModel
     public void addSchema(SchemaModel model) {
         if (this.schema == null) {
             this.schema = new ArrayList<>();
@@ -105,22 +93,18 @@ public class DocumentModel extends KarteEntryBean<DocumentModel> {
         this.schema.add(model);
     }
 
-    /**
-     * SchemaModel の Collection をクリアする.
-     */
+    /// SchemaModel の Collection をクリアする.
     public void clearSchema() {
         if (schema != null) {
             schema.clear();
         }
     }
 
-    /**
-     * index 番目の SchemaModel を取り出す.
-     * Collection の実体は ArrayList
-     *
-     * @param index 取り出す index
-     * @return 取り出された SchemaModel. ない場合は null.
-     */
+    /// index 番目の SchemaModel を取り出す.
+    /// Collection の実体は ArrayList
+    ///
+    /// @param index 取り出す index
+    /// @return 取り出された SchemaModel. ない場合は null.
     public SchemaModel getSchema(int index) {
         if (schema != null) {
             int cnt = 0;
@@ -134,29 +118,23 @@ public class DocumentModel extends KarteEntryBean<DocumentModel> {
         return null;
     }
 
-    /**
-     * ModuleModel の Collection を返す.
-     *
-     * @return Collection of ModuleModel
-     */
+    /// ModuleModel の Collection を返す.
+    ///
+    /// @return Collection of ModuleModel
     public Collection<ModuleModel> getModules() {
         return modules;
     }
 
-    /**
-     * ModuleModel の Collection を設定する.
-     *
-     * @param modules Collection of ModuleModel
-     */
+    /// ModuleModel の Collection を設定する.
+    ///
+    /// @param modules Collection of ModuleModel
     public void setModules(Collection<ModuleModel> modules) {
         this.modules = modules;
     }
 
-    /**
-     * ModuleModel を追加する.
-     *
-     * @param addModule ModuleModel
-     */
+    /// ModuleModel を追加する.
+    ///
+    /// @param addModule ModuleModel
     public void addModule(ModuleModel addModule) {
         if (modules == null) {
             modules = new ArrayList<>();
@@ -164,21 +142,17 @@ public class DocumentModel extends KarteEntryBean<DocumentModel> {
         modules.add(addModule);
     }
 
-    /**
-     * ModuleModel の Collection をクリアする.
-     */
+    /// ModuleModel の Collection をクリアする.
     public void clearModules() {
         if (modules != null) {
             modules.clear();
         }
     }
 
-    /**
-     * 引数のエンティティを持つ ModuleModel を返す.
-     *
-     * @param entityName エンティティの名前
-     * @return 該当するモジュールモデル. ない場合は null.
-     */
+    /// 引数のエンティティを持つ ModuleModel を返す.
+    ///
+    /// @param entityName エンティティの名前
+    /// @return 該当するモジュールモデル. ない場合は null.
     public ModuleModel getModule(String entityName) {
 
         if (modules != null) {
@@ -191,12 +165,10 @@ public class DocumentModel extends KarteEntryBean<DocumentModel> {
         return null;
     }
 
-    /**
-     * 引数のエンティティ名を持つ ModuleInfoBean を返す.
-     *
-     * @param entityName エンティティの名前
-     * @return モジュール情報 ModuleInfoBean. なければ null.
-     */
+    /// 引数のエンティティ名を持つ ModuleInfoBean を返す.
+    ///
+    /// @param entityName エンティティの名前
+    /// @return モジュール情報 ModuleInfoBean. なければ null.
     public ModuleInfoBean[] getModuleInfo(String entityName) {
 
         if (modules != null) {
@@ -204,7 +176,7 @@ public class DocumentModel extends KarteEntryBean<DocumentModel> {
             List<ModuleInfoBean> list = modules.stream()
                     .map(ModuleModel::getModuleInfo)
                     .filter(moduleInfo -> moduleInfo.getEntity().equals(entityName))
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (!list.isEmpty()) {
                 return list.toArray(new ModuleInfoBean[0]);
