@@ -230,7 +230,7 @@ public class BasicInfoInspector implements IInspector {
         String nengoBirthday = Gengo.isoDateToFullGengo(birthday);
         birthdayLabel.setText(nengoBirthday + "生");
 
-        String age = ModelUtils.getAge(birthday);
+        String age = ModelUtils.toAge(birthday);
         ageLabel.setText(String.format("%s 歳", age));
 
         SimpleAddressModel address = patient.getAddress();

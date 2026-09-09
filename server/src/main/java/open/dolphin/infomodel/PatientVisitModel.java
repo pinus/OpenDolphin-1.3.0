@@ -1,9 +1,9 @@
 package open.dolphin.infomodel;
 
+import jakarta.persistence.*;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import jakarta.persistence.*;
 import java.util.StringTokenizer;
 
 /**
@@ -257,7 +257,7 @@ public class PatientVisitModel extends InfoModel {
     }
 
     public String getPatientAgeBirthday() {
-        return ModelUtils.getAgeBirthday(getPatient().getBirthday());
+        return ModelUtils.toAgeBirthday(getPatient().getBirthday());
     }
 
     public String getPatientBirthday() {
@@ -265,7 +265,7 @@ public class PatientVisitModel extends InfoModel {
     }
 
     public String getPatientAge() {
-        return ModelUtils.getAge(getPatient().getBirthday());
+        return ModelUtils.toAge(getPatient().getBirthday());
     }
 
     public String getInsuranceUid() {

@@ -11,27 +11,28 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * ModelUtils.
- *
- * @author Minagawa, Kazushi
- * @author pns
- */
+/// ModelUtils.
+///
+/// @author Minagawa, Kazushi
+/// @author pns
 public class ModelUtils {
     
-    /**
-     * MML 形式から日付だけ取り出す.
-     *
-     * @param mmlDate MML 型式の日付 (2008-02-01T12:23:34)
-     * @return 日付 (2008-02-01)
-     */
+    /// MML 形式から日付だけ取り出す.
+    ///
+    /// @param mmlDate MML 型式の日付 (2008-02-01T12:23:34)
+    /// @return 日付 (2008-02-01)
     public static String trimTime(String mmlDate) {
-        if (mmlDate == null) {
-            return null;
-        }
+        if (mmlDate == null) { return null; }
 
         int index = mmlDate.indexOf('T');
         if (index > -1) {
@@ -41,16 +42,12 @@ public class ModelUtils {
         }
     }
 
-    /**
-     * MML 形式から時：分だけ取り出す.
-     *
-     * @param mmlDate MML 型式の日付 (2008-02-01T12:23:34)
-     * @return 時：分 (12:23)
-     */
+    /// MML 形式から時：分だけ取り出す.
+    ///
+    /// @param mmlDate MML 型式の日付 (2008-02-01T12:23:34)
+    /// @return 時：分 (12:23)
     public static String trimDate(String mmlDate) {
-        if (mmlDate == null) {
-            return null;
-        }
+        if (mmlDate == null) { return null; }
 
         int index = mmlDate.indexOf('T');
         if (index > -1) {
@@ -60,24 +57,19 @@ public class ModelUtils {
         }
     }
 
-    /**
-     * mml 形式の生年月日から年齢付きの形式を作る.
-     *
-     * @param mmlBirthday 1975-01-01
-     * @return 32.10 歳 (S50-01-01)
-     */
-    public static String getAgeBirthday(String mmlBirthday) {
-        String age = getAge(mmlBirthday);
-        if (age == null) return null;
+    /// MML 形式の生年月日から年齢付きの形式を作る.
+    ///
+    /// @param mmlBirthday 1975-01-01
+    /// @return 32.10 歳 (S50-01-01)
+    public static String toAgeBirthday(String mmlBirthday) {
+        String age = toAge(mmlBirthday);
         return String.format("%s %s (%s)", age, IInfoModel.AGE, Gengo.isoDateToGengo(mmlBirthday));
     }
 
-    /**
-     * ORCA 形式を年号形式に.
-     *
-     * @param orcaBirthday 4220726
-     * @return h22-07-26
-     */
+    /// ORCA 形式を年号形式に.
+    ///
+    /// @param orcaBirthday 4220726
+    /// @return h22-07-26
     public static String orcaDateToGengo(String orcaBirthday) {
         //元号
         String nengo = Gengo.gengoNumberToAlphabet(orcaBirthday.substring(0, 1));
@@ -89,78 +81,23 @@ public class ModelUtils {
         return nengo.toLowerCase() + y + "-" + m + "-" + d;
     }
 
-    /**
-     * 年齢を作る.
-     *
-     * @param mmlBirthday 1975-01-01
-     * @return 32.10
-     */
-    public static String getAge(String mmlBirthday) {
-
-        GregorianCalendar gc1 = getCalendar(mmlBirthday);
-        if (gc1 == null) {
-            return null;
-        }
-
-        GregorianCalendar gc2 = new GregorianCalendar(); // Today
-        int years = 0;
-
-        gc1.clear(Calendar.MILLISECOND);
-        gc1.clear(Calendar.SECOND);
-        gc1.clear(Calendar.MINUTE);
-        gc1.clear(Calendar.HOUR_OF_DAY);
-
-        gc2.clear(Calendar.MILLISECOND);
-        gc2.clear(Calendar.SECOND);
-        gc2.clear(Calendar.MINUTE);
-        gc2.clear(Calendar.HOUR_OF_DAY);
-
-        while (gc1.before(gc2)) {
-            gc1.add(Calendar.YEAR, 1);
-            years++;
-        }
-        years--;
-
-        int month = 12;
-
-        while (gc1.after(gc2)) {
-            gc1.add(Calendar.MONTH, -1);
-            month--;
-        }
-
-        return String.format("%d.%d", years, month);
+    /// 年齢を作る.
+    ///
+    /// @param mmlBirthday 1975-01-01
+    /// @return 32.10
+    public static String toAge(String mmlBirthday) {
+        LocalDate birthDate = LocalDate.parse(mmlBirthday);
+        LocalDate today = LocalDate.now();
+        Period period = Period.between(birthDate, today);
+        int years = period.getYears();     // 年
+        int months = period.getMonths();   // 月（0〜11）
+        return String.format("%d.%d", years, months);
     }
 
-    /**
-     * mmlDate 形式から GregorianCalendar を作る.
-     *
-     * @param mmlDate 1975-01-01
-     * @return GregorianCalendar
-     */
-    public static GregorianCalendar getCalendar(String mmlDate) {
-
-        Date date;
-        if (mmlDate.contains("T")) {
-            date = getDateTimeAsObject(mmlDate);
-        } else {
-            date = getDateAsObject(mmlDate);
-        }
-
-        if (date == null) {
-            return null;
-        }
-
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.setTimeInMillis(date.getTime());
-        return gc;
-    }
-
-    /**
-     * 時間なしの mmlDate 形式から Date を作る.
-     *
-     * @param mmlDate 1975-01-01
-     * @return parsed Date
-     */
+    /// 時間なしの mmlDate 形式から Date を作る.
+    ///
+    /// @param mmlDate 1975-01-01
+    /// @return parsed Date
     public static Date getDateAsObject(String mmlDate) {
         if (mmlDate != null) {
             try {
@@ -174,12 +111,18 @@ public class ModelUtils {
         return null;
     }
 
-    /**
-     * 時間付きの mmlDate 形式から Date を作る.
-     *
-     * @param mmlDate 1975-01-01T12:23:34
-     * @return parsed Date
-     */
+    /// 時間なしの mmlDate 形式から LocalDate を作る.
+    ///
+    /// @param mmlDate 1975-01-01
+    /// @return parsed LocalDate
+    public static LocalDate toLocalDate(String mmlDate) {
+        return LocalDate.parse(mmlDate);
+    }
+
+    /// 時間付きの mmlDate 形式から Date を作る.
+    ///
+    /// @param mmlDate 1975-01-01T12:23:34
+    /// @return parsed Date
     public static Date getDateTimeAsObject(String mmlDate) {
         if (mmlDate != null) {
             try {
@@ -193,45 +136,70 @@ public class ModelUtils {
         return null;
     }
 
-    /**
-     * Date から時間なしの mmlDate 形式を作る.
-     *
-     * @param date Date
-     * @return 1975-01-01
-     */
+    /// 時間付きの mmlDate 形式から LocalDateTime を作る.
+    ///
+    /// @param mmlDate 1975-01-01T12:23:34
+    /// @return parsed LocalDateTime
+    public static LocalDateTime toLocalDateTime(String mmlDate) {
+        return LocalDateTime.parse(mmlDate);
+    }
+
+    /// Date から時間なしの mmlDate 形式を作る.
+    ///
+    /// @param date Date
+    /// @return 1975-01-01
     public static String getDateAsString(Date date) {
         return getDateAsFormatString(date, IInfoModel.DATE_WITHOUT_TIME);
     }
 
-    /**
-     * Date から時間付きの mmlDate 形式を作る.
-     *
-     * @param date Date
-     * @return 1975-01-01T12:23:34
-     */
+    /// LocalDate から時間なしの mmlDate 形式を作る.
+    ///
+    /// @param date LocalDate
+    /// @return 1975-01-01
+    public static String toMmlDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
+    /// Date から時間付きの mmlDate 形式を作る.
+    ///
+    /// @param date Date
+    /// @return 1975-01-01T12:23:34
     public static String getDateTimeAsString(Date date) {
         return getDateAsFormatString(date, IInfoModel.ISO_8601_DATE_FORMAT);
     }
 
-    /**
-     * Date から format で指定した形式の日付文字列を作る.
-     *
-     * @param date   Date
-     * @param format SimpleDateFormat string
-     * @return formatted string
-     */
+    /// LocalDateTime から時間付きの mmlDate 形式を作る.
+    ///
+    /// @param date LocalDateTime
+    /// @return 1975-01-01T12:23:34
+    public static String toMmlDate(LocalDateTime date) {
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+    }
+
+    /// Date から format で指定した形式の日付文字列を作る.
+    ///
+    /// @param date   Date
+    /// @param format SimpleDateFormat string
+    /// @return formatted string
     public static String getDateAsFormatString(Date date, String format) {
         if (date == null) return null;
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.format(date);
     }
 
-    /**
-     * ORCA日付（20120401）を MMLフォーマット（2012-04-01）に変換.
-     *
-     * @param orcaDateString ORCA日付
-     * @return MML日付
-     */
+    /// LocalDateTime から format で指定した形式の日付文字列を作る.
+    ///
+    /// @param date   Date
+    /// @param format Unicode CLDR（Common Locale Data Repository
+    /// @return formatted string
+    public static String toFormattedString(LocalDateTime date, String format) {
+        return date.format(DateTimeFormatter.ofPattern(format));
+    }
+
+    /// ORCA日付（20120401）を MMLフォーマット（2012-04-01）に変換.
+    ///
+    /// @param orcaDateString ORCA日付
+    /// @return MML日付
     public static String toDolphinDateString(String orcaDateString) {
         if (orcaDateString == null || !orcaDateString.matches("[0-9]+")) {
             return null;
@@ -239,22 +207,18 @@ public class ModelUtils {
         return String.join("-", orcaDateString.substring(0, 4), orcaDateString.substring(4, 6), orcaDateString.substring(6, 8));
     }
 
-    /**
-     * ISO_DATE -> 元号変換の簡易呼び出し.
-     *
-     * @param isoDate ISO_DATE
-     * @return gengo date
-     */
+    /// ISO-DATE -> 元号変換の簡易呼び出し.
+    ///
+    /// @param isoDate ISO-DATE
+    /// @return gengo date
     public static String toNengo(String isoDate) {
         return Gengo.isoDateToGengo(isoDate);
     }
 
-    /**
-     * male -> 男　変換.
-     *
-     * @param gender male/female
-     * @return 男/女
-     */
+    /// male -> 男　変換.
+    ///
+    /// @param gender male/female
+    /// @return 男/女
     public static String getGenderDesc(String gender) {
         if (gender != null) {
             switch (gender.toLowerCase()) {
@@ -267,69 +231,36 @@ public class ModelUtils {
         return IInfoModel.UNKNOWN;
     }
 
-    /**
-     * エリアス付きの病名文字列を "," で分離する.
-     *
-     * @param diagnosis 病名, エリアス
-     * @return [0] 病名, [1] エリアス
-     */
+    /// エリアス付きの病名文字列を "," で分離する.
+    ///
+    /// @param diagnosis 病名, エリアス
+    /// @return [0] 病名, [1] エリアス
     public static String[] splitDiagnosis(String diagnosis) {
         return (diagnosis == null) ? null : diagnosis.split("\\s*,\\s*");
     }
 
-    /**
-     * エリアス付きの病名から病名を取り出す.
-     *
-     * @param hasAlias エリアス付き病名
-     * @return 病名. エリアスがない場合はそのまま返す.
-     */
+    /// エリアス付きの病名から病名を取り出す.
+    ///
+    /// @param hasAlias エリアス付き病名
+    /// @return 病名. エリアスがない場合はそのまま返す.
     public static String getDiagnosisName(String hasAlias) {
         String[] splits = splitDiagnosis(hasAlias);
         return (splits != null && splits.length == 2 && splits[0] != null) ? splits[0] : hasAlias;
     }
 
-    /**
-     * エリアス付き病名からエリアスを取り出す.
-     *
-     * @param hasAlias エリアス付き病名
-     * @return エリアス. ない場合は null を返す.
-     */
+    /// エリアス付き病名からエリアスを取り出す.
+    ///
+    /// @param hasAlias エリアス付き病名
+    /// @return エリアス. ない場合は null を返す.
     public static String getDiagnosisAlias(String hasAlias) {
         String[] splits = splitDiagnosis(hasAlias);
         return (splits != null && splits.length == 2 && splits[1] != null) ? splits[1] : null;
     }
 
-    /**
-     * PVTDelegater で使う date を作成する（WaitingListImpl から移動).
-     * date[0] = today, date[1] = AppodateFrom, date[2] = AppodateTo
-     *
-     * @param date Date
-     * @return [0] 今日, [1] 2ヶ月前, [2] あれっ??
-     */
-    public static String[] getSearchDateAsString(Date date) {
-
-        String[] ret = new String[3];
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        ret[0] = sdf.format(date);
-
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.setTime(date);
-
-        gc.add(Calendar.DAY_OF_MONTH, -2);
-        ret[1] = sdf.format(gc.getTime());
-
-        gc.add(Calendar.DAY_OF_MONTH, 2);
-        ret[2] = sdf.format(gc.getTime());
-
-        return ret;
-    }
-
-    /**
-     * ORCA転帰を Dolphin転帰に変換.
-     *
-     * @param orcaOutcome ORCA転帰 (DAO=1,2,3,8 or API=F,D,C,S)
-     * @return Dolphin転帰
-     */
+    /// ORCA転帰を Dolphin転帰に変換.
+    ///
+    /// @param orcaOutcome ORCA転帰 (DAO=1,2,3,8 or API=F,D,C,S)
+    /// @return Dolphin転帰
     public static DiagnosisOutcomeModel toDolphinOutcome(String orcaOutcome) {
         if (Objects.nonNull(orcaOutcome)) {
             switch (orcaOutcome) {
@@ -351,12 +282,10 @@ public class ModelUtils {
         return DiagnosisOutcome.NONE.model();
     }
 
-    /**
-     * Dolphin転帰を ORCA転帰に変換.
-     *
-     * @param outcome DiagnosisOutcomeModel
-     * @return ORCA転帰
-     */
+    /// Dolphin転帰を ORCA転帰に変換.
+    ///
+    /// @param outcome DiagnosisOutcomeModel
+    /// @return ORCA転帰
     public static String toOrcaOutcome(DiagnosisOutcomeModel outcome) {
         if (Objects.nonNull(outcome) && Objects.nonNull(outcome.getOutcome())) {
             if (outcome.getOutcome().equals(DiagnosisOutcome.PAUSE.name())) {
@@ -369,12 +298,10 @@ public class ModelUtils {
         return "";
     }
 
-    /**
-     * Object を beanBytes にエンコードする.
-     *
-     * @param bean エンコード対象の Object
-     * @return エンコードされた byte array
-     */
+    /// Object を beanBytes にエンコードする.
+    ///
+    /// @param bean エンコード対象の Object
+    /// @return エンコードされた byte array
     public static byte[] xmlEncode(Object bean) {
         ByteArrayOutputStream bo = new ByteArrayOutputStream();
         try (XMLEncoder e = new XMLEncoder(new BufferedOutputStream(bo))) {
@@ -383,30 +310,21 @@ public class ModelUtils {
         return bo.toByteArray();
     }
 
-    /**
-     * beanBytes をデコードする.
-     *
-     * @param bytes byte array
-     * @return デコードされた Object
-     */
+    /// beanBytes をデコードする.
+    ///
+    /// @param bytes byte array
+    /// @return デコードされた Object
     public static Object xmlDecode(byte[] bytes) {
-
-        Object o;
         try (XMLDecoder d = new XMLDecoder(
-                new BufferedInputStream(
-                        new ByteArrayInputStream(bytes)))) {
-            o = d.readObject();
+                new BufferedInputStream(new ByteArrayInputStream(bytes)))) {
+            return d.readObject();
         }
-
-        return o;
     }
 
-    /**
-     * xml から&lt;text&gt;テキスト&lt;/text&gt;のテキストを取り出す.
-     *
-     * @param xml xmlテキスト
-     * @return 取り出したテキスト
-     */
+    /// xml から<text>テキスト</text>のテキストを取り出す.
+    ///
+    /// @param xml xmlテキスト
+    /// @return 取り出したテキスト
     public static String extractText(String xml) {
         StringBuilder buf = new StringBuilder();
         String[] head = xml.split("<text>");
@@ -420,14 +338,11 @@ public class ModelUtils {
         return buf.toString();
     }
 
-    /**
-     * バイナリの健康保険データをオブジェクトにデコードする.
-     *
-     * @param insurances List of HealthInsuranceModel with BeanBytes
-     * @return List of PVTHealthInsuranceModel decoded from BeanBytes
-     */
+    /// バイナリの健康保険データをオブジェクトにデコードする.
+    ///
+    /// @param insurances List of HealthInsuranceModel with BeanBytes
+    /// @return List of PVTHealthInsuranceModel decoded from BeanBytes
     public static List<PVTHealthInsuranceModel> decodeHealthInsurance(List<HealthInsuranceModel> insurances) {
-
         if (insurances != null) {
             return insurances.stream().map(ins ->
                     (PVTHealthInsuranceModel) xmlDecode(ins.getBeanBytes())).collect(Collectors.toList());
@@ -436,41 +351,35 @@ public class ModelUtils {
         }
     }
 
-    /**
-     * treeBytes を treeXml に変換して返す.
-     *
-     * @param treeBytes byte array
-     * @return tree XML
-     */
+    /// treeBytes を treeXml に変換して返す.
+    ///
+    /// @param treeBytes byte array
+    /// @return tree XML
     public static String toTreeXml(byte[] treeBytes) {
         return new String(treeBytes, StandardCharsets.UTF_8);
     }
 
-    /**
-     * treeXml を treeBytes に変換して返す.
-     *
-     * @param treeXml treeXml
-     * @return byte array
-     */
+    /// treeXml を treeBytes に変換して返す.
+    ///
+    /// @param treeXml treeXml
+    /// @return byte array
     public static byte[] toTreeBytes(String treeXml) {
         return treeXml.getBytes(StandardCharsets.UTF_8);
     }
 
-    /**
-     * Convert claim insurance code to orca insurance code.
-     * https://www.orca.med.or.jp/receipt/tec/claim.html
-     * <table>
-     * <tr><th>保険の種類</th><th>労災</th><th>自費</th><th>治験</th><th>治験</th><th>公害</th><th>国保</th><th>後期高齢者</th><th>後期特療費</th><th>協会けんぽ</th><th>公費単独</th></tr>
-     * <tr><th>Claim</th><td>Rx</td><td>Zx</td><td>Ax</td><td>Bx</td><td>K5</td><td>00</td><td>39</td><td>40</td><td>09</td><td>XX</td></tr>
-     * <tr><th>API</th><td>97x</td><td>980</td><td>90x</td><td>91x</td><td>975</td><td>060</td><td>039</td><td>040</td><td>009</td><td>980</td></tr>
-     * </table>
-     * xは該当の保険番号マスタの保険番号の３桁目
-     *
-     * @param code Claim Insurance Code R1,R3,Zx,...
-     * @return Orca Insurance Code 971,973,901,...
-     */
+    /// Convert claim insurance code to orca insurance code.
+    /// (https://www.orca.med.or.jp/receipt/tec/claim.html)
+    /// <table>
+    /// <tbody><tr><th>保険の種類</th><th>労災</th><th>自費</th><th>治験</th><th>治験</th><th>公害</th><th>国保</th><th>後期高齢者</th><th>後期特療費</th><th>協会けんぽ</th><th>公費単独</th></tr>
+    /// <tr><th>Claim</th><td>Rx</td><td>Zx</td><td>Ax</td><td>Bx</td><td>K5</td><td>00</td><td>39</td><td>40</td><td>09</td><td>XX</td></tr>
+    /// <tr><th>API</th><td>97x</td><td>980</td><td>90x</td><td>91x</td><td>975</td><td>060</td><td>039</td><td>040</td><td>009</td><td>980</td></tr>
+    /// </tbody></table>
+    ///
+    /// xは該当の保険番号マスタの保険番号の３桁目
+    ///
+    /// @param code Claim Insurance Code R1,R3,Zx,...
+    /// @return Orca Insurance Code 971,973,901,...
     public static String claimInsuranceCodeToOrcaInsuranceCode(String code) {
-
         if (Objects.nonNull(code) && code.length() == 2) {
             if (code.startsWith("R")) {
                 // 労災
@@ -501,13 +410,11 @@ public class ModelUtils {
         return code;
     }
 
-    /**
-     * RegisteredDiagnosisModel の病名コードを，Orca Api 用に変換する.
-     * eg) "1013.7061017" → { "ZZZ1013", "7061017" }
-     *
-     * @param claimByomei Dolphin 型式の病名
-     * @return ORCA single 型式病名
-     */
+    /// RegisteredDiagnosisModel の病名コードを，Orca Api 用に変換する.
+    /// eg) "1013.7061017" → { "ZZZ1013", "7061017" }
+    ///
+    /// @param claimByomei Dolphin 型式の病名
+    /// @return ORCA single 型式病名
     public static String[] toOrcaDiseaseSingle(String claimByomei) {
         String[] singles = claimByomei.split("\\.");
         for (int i = 0; i < singles.length; i++) {
@@ -518,14 +425,11 @@ public class ModelUtils {
         return singles;
     }
 
-    /**
-     * スタンプを複製して返す. bundle もコピーされる. ただし ClaimItem は空.
-     *
-     * @param src source stamp
-     * @return cloned stamp
-     */
+    /// スタンプを複製して返す. bundle もコピーされる. ただし ClaimItem は空.
+    ///
+    /// @param src source stamp
+    /// @return cloned stamp
     public static ModuleModel clone(ModuleModel src) {
-
         ModuleInfoBean srcModuleInfo = src.getModuleInfo();
         BundleMed srcBundle = (BundleMed) src.getModel();
 
@@ -543,12 +447,10 @@ public class ModelUtils {
         return dist;
     }
 
-    /**
-     * BundleMed を複製して返す. ただし ClaimItem は空.
-     *
-     * @param src source BundleMed
-     * @return cloned BundleMed
-     */
+    /// BundleMed を複製して返す. ただし ClaimItem は空.
+    ///
+    /// @param src source BundleMed
+    /// @return cloned BundleMed
     public static BundleMed clone(BundleMed src) {
         BundleMed dist = new BundleMed();
         dist.setAdmin(src.getAdmin());
@@ -564,12 +466,10 @@ public class ModelUtils {
         return dist;
     }
 
-    /**
-     * ClaimItem を複製して返す.
-     *
-     * @param src ClaimItem
-     * @return cloned ClaimItem
-     */
+    /// ClaimItem を複製して返す.
+    ///
+    /// @param src ClaimItem
+    /// @return cloned ClaimItem
     public static ClaimItem clone(ClaimItem src) {
         ClaimItem dist = new ClaimItem();
         dist.setClassCode(src.getClassCode());
@@ -583,12 +483,10 @@ public class ModelUtils {
         return dist;
     }
 
-    /**
-     * ClaimItem[] を複製して返す.
-     *
-     * @param src source array of ClaimItem
-     * @return array of ClaimItem
-     */
+    /// ClaimItem[] を複製して返す.
+    ///
+    /// @param src source array of ClaimItem
+    /// @return array of ClaimItem
     public static ClaimItem[] clone(ClaimItem[] src) {
         ClaimItem[] dist = new ClaimItem[src.length];
         for (int i=0; i<src.length; i++) {
@@ -597,12 +495,10 @@ public class ModelUtils {
         return dist;
     }
 
-    /**
-     * スタンプを複製して返す. Bundle, ClaimItem も複製する.
-     *
-     * @param src source stamp
-     * @return cloned stamp
-     */
+    /// スタンプを複製して返す. Bundle, ClaimItem も複製する.
+    ///
+    /// @param src source stamp
+    /// @return cloned stamp
     public static ModuleModel deepClone(ModuleModel src) {
         BundleMed srcBundle = (BundleMed) src.getModel();
         ClaimItem[] srcItems = srcBundle.getClaimItem();
@@ -613,12 +509,10 @@ public class ModelUtils {
         return dist;
     }
 
-    /**
-     * SchemaModel を複製して返す.
-     *
-     * @param src source SchemaModel
-     * @return cloned SchemaModel
-     */
+    /// SchemaModel を複製して返す.
+    ///
+    /// @param src source SchemaModel
+    /// @return cloned SchemaModel
     public static SchemaModel clone(SchemaModel src) {
         SchemaModel dist = new SchemaModel();
         dist.setExtRef(src.getExtRef());
@@ -630,15 +524,15 @@ public class ModelUtils {
         return dist;
     }
 
-    public static void main(String[] argv) {
-        System.out.println(orcaDateToGengo("3300101"));
-        System.out.println(orcaDateToGengo("4300430"));
-        System.out.println(orcaDateToGengo("5010501"));
-        System.out.println(claimInsuranceCodeToOrcaInsuranceCode("00"));
-        System.out.println(claimInsuranceCodeToOrcaInsuranceCode("09"));
-        System.out.println(claimInsuranceCodeToOrcaInsuranceCode("39"));
-        System.out.println(claimInsuranceCodeToOrcaInsuranceCode("XX"));
-        System.out.println(claimInsuranceCodeToOrcaInsuranceCode("Z0"));
-        System.out.println(claimInsuranceCodeToOrcaInsuranceCode("060"));
+    static void main(String[] argv) {
+        IO.println(orcaDateToGengo("3300101"));
+        IO.println(orcaDateToGengo("4300430"));
+        IO.println(orcaDateToGengo("5010501"));
+        IO.println(claimInsuranceCodeToOrcaInsuranceCode("00"));
+        IO.println(claimInsuranceCodeToOrcaInsuranceCode("09"));
+        IO.println(claimInsuranceCodeToOrcaInsuranceCode("39"));
+        IO.println(claimInsuranceCodeToOrcaInsuranceCode("XX"));
+        IO.println(claimInsuranceCodeToOrcaInsuranceCode("Z0"));
+        IO.println(claimInsuranceCodeToOrcaInsuranceCode("060"));
     }
 }

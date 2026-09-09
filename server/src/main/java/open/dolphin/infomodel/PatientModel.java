@@ -1,10 +1,9 @@
 package open.dolphin.infomodel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import jakarta.persistence.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 import java.util.ArrayList;
@@ -262,7 +261,7 @@ public class PatientModel extends InfoModel {
     }
 
     public String getAgeBirthday() {
-        return ModelUtils.getAgeBirthday(birthday);
+        return ModelUtils.toAgeBirthday(birthday);
     }
 
     public String getNationality() {
