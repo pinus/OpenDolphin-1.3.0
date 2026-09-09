@@ -1,8 +1,19 @@
 package open.dolphin.orca;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
+import jakarta.annotation.security.RunAs;
+import jakarta.ejb.DependsOn;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
+import jakarta.inject.Inject;
 import jakarta.websocket.CloseReason;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import open.dolphin.dto.PatientVisitSpec;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.infomodel.InfoModel;
@@ -19,17 +30,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.util.Encode;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.annotation.security.RunAs;
-import jakarta.ejb.DependsOn;
-import jakarta.ejb.Singleton;
-import jakarta.ejb.Startup;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Cookie;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -57,6 +58,8 @@ public class PvtClient {
     private PatientService patientService;
     @Resource
     private ManagedScheduledExecutorService executor;
+    private volatile Instant lastSubscriptionResponseTime;
+    private static final int MAX_ATTEMPTS = 10;
 
     public PvtClient() {
         pvtBuilder = new PvtBuilder();
@@ -68,7 +71,27 @@ public class PvtClient {
 
     @PostConstruct
     public void subscribe() {
+        executeSubscribeWithRetry(1);
+    }
+
+    private void executeSubscribeWithRetry(int attempt) {
+        Instant requestTime = Instant.now();
         pushApi.subscribe(SubscriptionEvent.ALL);
+
+        // 3秒後にチェックを実行する単発タスクをスケジュール
+        executor.schedule(() -> {
+            // 条件を満たしていれば正常終了（何もせず抜ける）
+            if (lastSubscriptionResponseTime != null && lastSubscriptionResponseTime.isAfter(requestTime)) {
+                return;
+            }
+
+            // 上限に達していなければ、カウントを増やして再度リトライを実行
+            if (attempt < MAX_ATTEMPTS) {
+                executeSubscribeWithRetry(attempt + 1);
+            } else {
+                logger.info("Subscription failed after maximum attempts");
+            }
+        }, 5, TimeUnit.SECONDS);
     }
 
     @PreDestroy
@@ -81,6 +104,7 @@ public class PvtClient {
 
         switch (command) {
             case "subscribed" -> {
+                lastSubscriptionResponseTime = Instant.now();
                 subscriptionRes = res;
                 logger.info(String.format("command = %s\nreq.id = %s\nsub.id = %s\n\n", command, res.getReqId(), res.getSubId()));
             }
@@ -156,7 +180,7 @@ public class PvtClient {
 
     public void onClose(CloseReason reason ) {
         // 再接続
-        executor.schedule(this::subscribe, 3, TimeUnit.SECONDS);
+        subscribe();
     }
 
     /// 今日の pvt リストを返す.
