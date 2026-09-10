@@ -13,7 +13,9 @@ import open.dolphin.infomodel.PatientModel;
 import open.dolphin.infomodel.PatientVisitModel;
 import open.dolphin.ui.*;
 import open.dolphin.ui.sheet.JSheet;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.Gengo;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import open.dolphin.dto.PatientSearchSpec.SEARCH;
 import org.slf4j.Logger;
@@ -422,7 +424,7 @@ public class PatientSearchImpl extends AbstractMainComponent {
         }
 
         PatientVisitModel[] pvts = new PatientVisitModel[patients.length];
-        String pvtDate = ModelUtils.getDateTimeAsString(new Date());
+        String pvtDate = MMLDate.getDateTimeAsString(new Date());
         String dept = constarctDept();
 
         for (int i = 0; i < patients.length; i++) {
@@ -490,7 +492,7 @@ public class PatientSearchImpl extends AbstractMainComponent {
 
         } else if (isOrcaDate(text)) {
             spec.setType(SEARCH.BIRTHDAY);
-            spec.setBirthday(Gengo.toSeireki(ModelUtils.orcaDateToGengo(text)));
+            spec.setBirthday(Gengo.toSeireki(DateUtils.orcaDateToGengo(text)));
 
         } else if (isDate(text)) {
             spec.setType(SEARCH.DATE);

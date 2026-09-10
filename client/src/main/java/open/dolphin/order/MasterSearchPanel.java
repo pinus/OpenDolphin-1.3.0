@@ -10,6 +10,7 @@ import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.orca.ClaimConst;
 import open.dolphin.order.stampeditor.StampEditor;
 import open.dolphin.ui.*;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
 import javax.swing.FocusManager;
@@ -466,7 +467,7 @@ public class MasterSearchPanel extends JPanel {
 
             // 日付の表示形式
             if (column == START_COL || column == END_COL) {
-                text = ModelUtils.toDolphinDateString(text);
+                text = MMLDate.toDolphinDateString(text);
                 if (text == null) {
                     text = "-";
                 }

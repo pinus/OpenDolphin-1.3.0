@@ -14,6 +14,7 @@ import open.dolphin.project.Project;
 import open.dolphin.ui.IndentTableCellRenderer;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.ui.UndoableObjectReflectTableModel;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -271,7 +272,7 @@ public class PhysicalInspector implements IInspector, TableModelListener {
             PhysicalModel model = tableModel.getObject(e.getFirstRow());
 
             // GUI の同定日をTimeStampに変更する
-            Date confirmed = ModelUtils.getDateTimeAsObject(model.getIdentifiedDate() + "T00:00:00");
+            Date confirmed = MMLDate.getDateTimeAsObject(model.getIdentifiedDate() + "T00:00:00");
             Date recorded = new Date();
 
             // 身長体重の両方が含まれていると, 身長 → 体重の順に分けてデータベース保存される.

@@ -4,6 +4,7 @@ import open.dolphin.delegater.LaboDelegater;
 import open.dolphin.helper.GUIDGenerator;
 import open.dolphin.infomodel.*;
 import open.dolphin.project.Project;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -303,7 +304,7 @@ public class LaboModuleBuilder {
                 laboModule.setDocId(moduleUUID);
 
                 // 確定日，適合開始日，記録日を設定する
-                Date confirmed = ModelUtils.getDateTimeAsObject(confirmDate);
+                Date confirmed = MMLDate.getDateTimeAsObject(confirmDate);
                 laboModule.setConfirmed(confirmed);
                 laboModule.setStarted(confirmed);
                 laboModule.setRecorded(new Date());

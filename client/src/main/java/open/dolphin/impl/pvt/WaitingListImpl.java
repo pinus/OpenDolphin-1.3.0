@@ -21,6 +21,7 @@ import open.dolphin.ui.PNSBadgeTabbedPane;
 import open.dolphin.ui.PNSOptionPane;
 import open.dolphin.ui.sheet.JSheet;
 import open.dolphin.util.Gengo;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
@@ -361,7 +362,7 @@ public class WaitingListImpl extends AbstractMainComponent {
                 continuousCount++;
 
                 if (!found) {
-                    long pvtTime = ModelUtils.getDateTimeAsObject(pvt.getPvtDate()).getTime();
+                    long pvtTime = MMLDate.getDateTimeAsObject(pvt.getPvtDate()).getTime();
                     long nowTime = new Date().getTime();
                     if (pvtTime < nowTime) { // サーバ・クライアント時間がミリ秒単位でずれて反転することがある
                         waitingTime = DurationFormatUtils.formatPeriod(pvtTime, nowTime, "HH:mm");

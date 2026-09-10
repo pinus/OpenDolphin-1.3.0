@@ -8,6 +8,7 @@ import open.dolphin.orca.ClaimConst;
 import open.dolphin.orca.orcadao.OrcaDao;
 import open.dolphin.orca.orcadao.OrcaDbConnection;
 import open.dolphin.orca.orcadao.bean.*;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
@@ -625,11 +626,11 @@ public class OrcaServiceDao {
                 // 病名
                 rd.setDiagnosis(rs.getString(2)); // byomei
                 // 開始日
-                rd.setStartDate(ModelUtils.toDolphinDateString(rs.getString(3))); // sryymd
+                rd.setStartDate(MMLDate.toDolphinDateString(rs.getString(3))); // sryymd
                 // 転帰
                 rd.setDiagnosisOutcomeModel(ModelUtils.toDolphinOutcome(rs.getString(4))); //tenkikbn
                 // 転帰日
-                rd.setEndDate(ModelUtils.toDolphinDateString(rs.getString(5))); // tenkiymd
+                rd.setEndDate(MMLDate.toDolphinDateString(rs.getString(5))); // tenkiymd
                 // ORCA 病名識別
                 rd.setStatus("ORCA");
 

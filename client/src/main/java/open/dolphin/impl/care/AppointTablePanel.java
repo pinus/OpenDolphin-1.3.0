@@ -5,6 +5,7 @@ import open.dolphin.project.Project;
 import open.dolphin.ui.ObjectReflectTableModel;
 import open.dolphin.ui.PNSCellEditor;
 import open.dolphin.ui.PNSScrollPane;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
@@ -146,7 +147,7 @@ public class AppointTablePanel extends JPanel {
             }
 
             return switch(col) {
-                case 0 -> ModelUtils.getDateAsString(entry.getDate()); // 日付
+                case 0 -> MMLDate.getDateAsString(entry.getDate()); // 日付
                 case 1 -> entry.getName(); // 内容
                 case 2 -> entry.getMemo(); // メモ
                 default -> null;
@@ -289,7 +290,7 @@ public class AppointTablePanel extends JPanel {
                 appoDateGc.setTime(appoDate); // GregorianCalendar 型式
 
                 String appo = MMLDate.getDate(appoDateGc); // yyyy-mm-dd 型式
-                String today = MMLDate.getDate(); // yyyy-mm-dd 型式
+                String today = DateUtils.todayToIsoDate(); // yyyy-mm-dd 型式
 
                 if (appo.equals(today)) {
                     Color c = parent.getAppointColor(entry.getName());

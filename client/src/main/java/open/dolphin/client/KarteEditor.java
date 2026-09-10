@@ -12,6 +12,7 @@ import open.dolphin.ui.Focuser;
 import open.dolphin.ui.PNSFrame;
 import open.dolphin.ui.PNSOptionPane;
 import open.dolphin.util.DateUtils;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -305,7 +306,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         String timeStamp = MODIFY_MARK + now;
 
         if (modify) {
-            String firstConfirm = ModelUtils.getDateAsFormatString(getDocument().getDocInfo().getFirstConfirmDate(), IInfoModel.KARTE_DATE_FORMAT);
+            String firstConfirm = MMLDate.getDateAsFormatString(getDocument().getDocInfo().getFirstConfirmDate(), IInfoModel.KARTE_DATE_FORMAT);
             timeStamp += ORIGINAL_MARK + firstConfirm;
         }
 

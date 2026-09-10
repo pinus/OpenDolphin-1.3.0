@@ -14,6 +14,7 @@ import open.dolphin.infomodel.ModuleModel;
 import open.dolphin.infomodel.SimpleDate;
 import open.dolphin.project.Project;
 import open.dolphin.ui.PNSBorderFactory;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
@@ -400,13 +401,13 @@ public final class CareMapDocument extends AbstractChartDocument {
         // カレンダ別に検索する
         Date[] fromDate = new Date[3];
         for (int i = 0; i < 3; i++) {
-            fromDate[i] = ModelUtils.getDateTimeAsObject(calendarMap.get(i - 1).getFirstDate() + "T00:00:00");
+            fromDate[i] = MMLDate.getDateTimeAsObject(calendarMap.get(i - 1).getFirstDate() + "T00:00:00");
         }
         spec.setFromDate(fromDate);
 
         Date[] toDate = new Date[3];
         for (int i = 0; i < 3; i++) {
-            toDate[i] = ModelUtils.getDateTimeAsObject(calendarMap.get(i - 1).getLastDate() + "T23:59:59");
+            toDate[i] = MMLDate.getDateTimeAsObject(calendarMap.get(i - 1).getLastDate() + "T23:59:59");
         }
         spec.setToDate(toDate);
 
@@ -451,13 +452,13 @@ public final class CareMapDocument extends AbstractChartDocument {
         // カレンダ別に検索する
         Date[] fromDate = new Date[3];
         for (int i = 0; i < 3; i++) {
-            fromDate[i] = ModelUtils.getDateTimeAsObject(calendarMap.get(i - 1).getFirstDate() + "T00:00:00");
+            fromDate[i] = MMLDate.getDateTimeAsObject(calendarMap.get(i - 1).getFirstDate() + "T00:00:00");
         }
         spec.setFromDate(fromDate);
 
         Date[] toDate = new Date[3];
         for (int i = 0; i < 3; i++) {
-            toDate[i] = ModelUtils.getDateTimeAsObject(calendarMap.get(i - 1).getLastDate() + "T23:59:59");
+            toDate[i] = MMLDate.getDateTimeAsObject(calendarMap.get(i - 1).getLastDate() + "T23:59:59");
         }
         spec.setToDate(toDate);
         spec.setIconSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));

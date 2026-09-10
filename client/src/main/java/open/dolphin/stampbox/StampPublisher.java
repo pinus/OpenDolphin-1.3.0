@@ -9,6 +9,7 @@ import open.dolphin.helper.*;
 import open.dolphin.infomodel.*;
 import open.dolphin.project.Project;
 import open.dolphin.ui.PNSOptionPane;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -209,7 +210,7 @@ public class StampPublisher {
         // GUIコンポーネントに初期値を入力する
         switch (publishState) {
             case NONE, SAVED_NONE -> {
-                String dateStr = ModelUtils.getDateAsString(new Date());
+                String dateStr = MMLDate.getDateAsString(new Date());
                 String url = facility.getUrl();
                 instLabel.setText("このスタンプは公開されていません。");
                 partyName.setText(facility.getFacilityName());
@@ -245,9 +246,9 @@ public class StampPublisher {
                 partyName.setText(stampTree.getPartyName());
                 contact.setText(stampTree.getUrl());
                 description.setText(stampTree.getDescription());
-                String timeStamp = ModelUtils.getDateAsString(stampTree.getPublishedDate()) +
+                String timeStamp = MMLDate.getDateAsString(stampTree.getPublishedDate()) +
                     "  最終更新日( " +
-                    ModelUtils.getDateAsString(stampTree.getLastUpdated()) +
+                        MMLDate.getDateAsString(stampTree.getLastUpdated()) +
                     " )";
                 publishedDate.setText(timeStamp);
                 publish.setText("更新する");
@@ -279,9 +280,9 @@ public class StampPublisher {
                     }
                 }
 
-                String timeStamp = ModelUtils.getDateAsString(stampTree.getPublishedDate()) +
+                String timeStamp = MMLDate.getDateAsString(stampTree.getPublishedDate()) +
                     "  最終更新日( " +
-                    ModelUtils.getDateAsString(stampTree.getLastUpdated()) +
+                        MMLDate.getDateAsString(stampTree.getLastUpdated()) +
                     " )";
                 publishedDate.setText(timeStamp);
                 publish.setText("更新する");

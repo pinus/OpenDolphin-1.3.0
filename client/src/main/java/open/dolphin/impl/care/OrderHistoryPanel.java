@@ -9,6 +9,7 @@ import open.dolphin.project.Project;
 import open.dolphin.ui.IndentTableCellRenderer;
 import open.dolphin.ui.ObjectReflectTableModel;
 import open.dolphin.ui.PNSScrollPane;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
@@ -50,7 +51,7 @@ public final class OrderHistoryPanel extends JPanel {
             public Object getValueAt(int row, int col) {
                 ModuleModel module = getObject(row);
                 return switch (col) {
-                    case 0 -> ModelUtils.getDateAsString(module.getConfirmed());
+                    case 0 -> MMLDate.getDateAsString(module.getConfirmed());
                     case 1 -> module.getModuleInfo().getStampName();
                     default -> null;
                 };

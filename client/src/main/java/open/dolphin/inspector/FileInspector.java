@@ -198,7 +198,7 @@ public class FileInspector implements IInspector {
 
             String fileName = ((File) value).getName();
             setText(" " + fileName);
-            //this.setText(" " + fileName + " " + ModelUtils.getDateAsString(new java.util.Date(((File)value).lastModified())));
+            //this.setText(" " + fileName + " " + MMLDate.getDateAsString(new java.util.Date(((File)value).lastModified())));
             return this;
         }
     }

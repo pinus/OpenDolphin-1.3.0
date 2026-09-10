@@ -14,6 +14,7 @@ import open.dolphin.inspector.*;
 import open.dolphin.project.Project;
 import open.dolphin.ui.*;
 import open.dolphin.ui.sheet.JSheet;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
@@ -592,7 +593,7 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         statusPanel.addSeparator();
         statusPanel.add(rdPrifix + " " + created);
 
-        Date pvtDate = ModelUtils.getDateTimeAsObject(pvt.getPvtDate());
+        Date pvtDate = MMLDate.getDateTimeAsObject(pvt.getPvtDate());
         if (pvtDate != null && pvt.getState() == KarteState.CLOSE_NONE) { // window open 前に呼ばれる
             String waitingTime = "00:00";
             long pvtTime = pvtDate.getTime();

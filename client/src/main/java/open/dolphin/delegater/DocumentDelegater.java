@@ -5,6 +5,7 @@ import open.dolphin.dto.*;
 import open.dolphin.helper.ImageHelper;
 import open.dolphin.infomodel.*;
 import open.dolphin.service.KarteService;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
@@ -179,7 +180,7 @@ public class DocumentDelegater extends BusinessDelegater<KarteService> {
         ImageEntry entry = new ImageEntry();
 
         entry.setId(schema.getId());
-        entry.setConfirmDate(ModelUtils.getDateTimeAsString(schema.getConfirmed()));  // First?
+        entry.setConfirmDate(MMLDate.getDateTimeAsString(schema.getConfirmed()));  // First?
         entry.setContentType(schema.getExtRef().getContentType());
         entry.setTitle(schema.getExtRef().getTitle());
         entry.setMedicalRole(schema.getExtRef().getMedicalRole());

@@ -1,6 +1,8 @@
 package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
+import open.dolphin.util.DateUtils;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -167,11 +169,11 @@ public class PatientVisitModel extends InfoModel {
     }
 
     public String getPvtDateTrimTime() {
-        return ModelUtils.trimTime(pvtDate);
+        return DateUtils.trimTime(pvtDate);
     }
 
     public String getPvtDateTrimDate() {
-        return ModelUtils.trimDate(pvtDate);
+        return DateUtils.trimDate(pvtDate);
     }
 
     public String getAppointment() {
@@ -257,7 +259,7 @@ public class PatientVisitModel extends InfoModel {
     }
 
     public String getPatientAgeBirthday() {
-        return ModelUtils.toAgeBirthday(getPatient().getBirthday());
+        return DateUtils.toAgeBirthday(getPatient().getBirthday());
     }
 
     public String getPatientBirthday() {
@@ -265,7 +267,7 @@ public class PatientVisitModel extends InfoModel {
     }
 
     public String getPatientAge() {
-        return ModelUtils.toAge(getPatient().getBirthday());
+        return DateUtils.toAge(getPatient().getBirthday());
     }
 
     public String getInsuranceUid() {

@@ -270,7 +270,7 @@ public final class SimpleCalendarPanel extends JPanel {
         }
 
         list.forEach(module -> {
-            String mmlDate = ModelUtils.getDateAsString(module.getConfirmed());
+            String mmlDate = MMLDate.getDateAsString(module.getConfirmed());
             SimpleDate date = SimpleDate.mmlDateToSimpleDate(mmlDate);
 
             date.setEventCode(event);
@@ -319,7 +319,7 @@ public final class SimpleCalendarPanel extends JPanel {
         list.forEach(appoint -> {
             appoint.setState(AppointmentModel.TT_HAS);
             String mmlToday = SimpleDate.simpleDateToMmldate(today);
-            String mmlAppointDate = ModelUtils.getDateAsString(appoint.getDate());
+            String mmlAppointDate = MMLDate.getDateAsString(appoint.getDate());
 
             // 今日以降のものだけ登録
             if (mmlAppointDate.compareTo(mmlToday) >= 0) {
@@ -389,7 +389,7 @@ public final class SimpleCalendarPanel extends JPanel {
 
         if (appoint == null) {
             appoint = new AppointmentModel();
-            appoint.setDate(ModelUtils.getDateAsObject(mmlDate));
+            appoint.setDate(MMLDate.getDateAsObject(mmlDate));
             map.put(mmlDate, appoint);
         }
 

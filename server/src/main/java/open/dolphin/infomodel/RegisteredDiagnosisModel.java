@@ -1,6 +1,6 @@
 package open.dolphin.infomodel;
 
-import open.dolphin.util.ModelUtils;
+import open.dolphin.util.MMLDate;
 
 import jakarta.persistence.*;
 
@@ -118,7 +118,7 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
 
     public String getStartDate() {
         if (getStarted() != null) {
-            return ModelUtils.getDateAsString(getStarted());
+            return MMLDate.getDateAsString(getStarted());
         }
         return null;
     }
@@ -130,13 +130,13 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
                 startDate += "T00:00:00";
             }
             //System.out.println(startDate);
-            setStarted(ModelUtils.getDateTimeAsObject(startDate));
+            setStarted(MMLDate.getDateTimeAsObject(startDate));
         }
     }
 
     public String getEndDate() {
         if (getEnded() != null) {
-            return ModelUtils.getDateAsString(getEnded());
+            return MMLDate.getDateAsString(getEnded());
         }
         return null;
     }
@@ -147,7 +147,7 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
             if (index < 0) {
                 endDate += "T00:00:00";
             }
-            setEnded(ModelUtils.getDateTimeAsObject(endDate));
+            setEnded(MMLDate.getDateTimeAsObject(endDate));
         } else {
             setEnded(null);
         }

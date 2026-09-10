@@ -2,6 +2,7 @@ package open.dolphin.infomodel;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -221,19 +222,19 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
     }
 
     public String getFirstConfirmDate() {
-        return ModelUtils.getDateTimeAsString(getFirstConfirmed());
+        return MMLDate.getDateTimeAsString(getFirstConfirmed());
     }
 
     public void setFirstConfirmDate(String timeStamp) {
-        setFirstConfirmed(ModelUtils.getDateTimeAsObject(timeStamp));
+        setFirstConfirmed(MMLDate.getDateTimeAsObject(timeStamp));
     }
 
     public String getConfirmDate() {
-        return ModelUtils.getDateTimeAsString(getConfirmed());
+        return MMLDate.getDateTimeAsString(getConfirmed());
     }
 
     public void setConfirmDate(String timeStamp) {
-        setConfirmed(ModelUtils.getDateTimeAsObject(timeStamp));
+        setConfirmed(MMLDate.getDateTimeAsObject(timeStamp));
     }
 
 

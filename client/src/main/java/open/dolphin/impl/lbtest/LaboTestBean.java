@@ -9,6 +9,7 @@ import open.dolphin.infomodel.LaboModuleValue;
 import open.dolphin.infomodel.LaboSpecimenValue;
 import open.dolphin.project.Project;
 import open.dolphin.ui.StatusPanel;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 
 import javax.swing.*;
@@ -264,7 +265,7 @@ public class LaboTestBean extends AbstractChartDocument {
         final LaboSearchSpec spec = new LaboSearchSpec();
         spec.setKarteId(getContext().getKarte().getId());
         spec.setFromDate(fromDate);
-        spec.setToDate(MMLDate.getDate());
+        spec.setToDate(DateUtils.todayToIsoDate());
         ldl = new LaboDelegater();
 
         ChartTask<Void> task = new ChartTask<>(getContext()) {

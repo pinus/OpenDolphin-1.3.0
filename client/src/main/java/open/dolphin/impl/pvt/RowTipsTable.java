@@ -3,6 +3,7 @@ package open.dolphin.impl.pvt;
 import open.dolphin.infomodel.KarteState;
 import open.dolphin.infomodel.PatientVisitModel;
 import open.dolphin.ui.ObjectReflectTableModel;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
@@ -57,7 +58,7 @@ public class RowTipsTable extends JTable {
                 break;
 
             default:
-                Date pvtDate = ModelUtils.getDateTimeAsObject(pvt.getPvtDate());
+                Date pvtDate = MMLDate.getDateTimeAsObject(pvt.getPvtDate());
                 int pvtState = pvt.getState();
                 if (pvtDate != null && (pvtState == KarteState.CLOSE_NONE || pvtState == KarteState.OPEN_NONE)) {
                     text = pvt.getPatient().getKanaName();

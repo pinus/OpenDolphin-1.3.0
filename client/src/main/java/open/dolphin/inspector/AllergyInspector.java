@@ -14,6 +14,7 @@ import open.dolphin.project.Project;
 import open.dolphin.ui.IndentTableCellRenderer;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.ui.UndoableObjectReflectTableModel;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -268,7 +269,7 @@ public class AllergyInspector implements IInspector, TableModelListener {
             AllergyModel model = tableModel.getObject(e.getFirstRow());
 
             // GUI の同定日をTimeStampに変更する
-            Date date = ModelUtils.getDateTimeAsObject(model.getIdentifiedDate() + "T00:00:00");
+            Date date = MMLDate.getDateTimeAsObject(model.getIdentifiedDate() + "T00:00:00");
 
             List<ObservationModel> observations = new ArrayList<>(1);
             ObservationModel observation = new ObservationModel();

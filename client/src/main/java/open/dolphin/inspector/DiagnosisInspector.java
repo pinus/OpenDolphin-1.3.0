@@ -7,6 +7,7 @@ import open.dolphin.helper.MenuActionManager.MenuAction;
 import open.dolphin.infomodel.RegisteredDiagnosisModel;
 import open.dolphin.ui.PNSBorder;
 import open.dolphin.ui.PNSScrollPane;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
@@ -78,9 +79,9 @@ public class DiagnosisInspector implements IInspector {
                     RegisteredDiagnosisModel rd = listModel.getElementAt(index);
                     String startDate = rd.getStartDate();
                     String endDate = rd.getEndDate();
-                    text = "開始日 " + ModelUtils.toNengo(startDate);
+                    text = "開始日 " + MMLDate.toNengo(startDate);
                     if (endDate != null) {
-                        text += String.format(" (終了日 %s)", ModelUtils.toNengo(endDate));
+                        text += String.format(" (終了日 %s)", MMLDate.toNengo(endDate));
                     }
                 }
                 return text;

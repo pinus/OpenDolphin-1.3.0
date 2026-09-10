@@ -1,5 +1,6 @@
 package open.dolphin.infomodel;
 
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
 import jakarta.persistence.Column;
@@ -169,7 +170,7 @@ public class DocInfoModel extends InfoModel implements Comparable<DocInfoModel> 
     }
 
     public String getFirstConfirmDateTrimTime() {
-        return ModelUtils.getDateAsString(getFirstConfirmDate());
+        return MMLDate.getDateAsString(getFirstConfirmDate());
     }
 
     public Date getConfirmDate() {
@@ -181,7 +182,7 @@ public class DocInfoModel extends InfoModel implements Comparable<DocInfoModel> 
     }
 
     public String getConfirmDateTrimTime() {
-        return ModelUtils.getDateAsString(getConfirmDate());
+        return MMLDate.getDateAsString(getConfirmDate());
     }
 
     public String getDepartment() {

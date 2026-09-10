@@ -5,6 +5,7 @@ import open.dolphin.dto.PatientVisitSpec;
 import open.dolphin.dto.PvtStateSpec;
 import open.dolphin.infomodel.*;
 import open.dolphin.util.JsonUtils;
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.jboss.logging.Logger;
 
@@ -219,7 +220,7 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
         }
         int index = date.indexOf('%');
 
-        Date theDate = ModelUtils.getDateAsObject(date.substring(0, index));
+        Date theDate = MMLDate.getDateAsObject(date.substring(0, index));
         int firstResult = spec.getSkipCount();
         String fid = getCallersFacilityId();
 

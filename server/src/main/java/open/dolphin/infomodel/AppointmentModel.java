@@ -1,5 +1,6 @@
 package open.dolphin.infomodel;
 
+import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
 import jakarta.persistence.*;
@@ -100,6 +101,6 @@ public class AppointmentModel extends KarteEntryBean<AppointmentModel> {
 
     @Override
     public String toString() {
-        return ModelUtils.getDateAsString(getDate());
+        return MMLDate.getDateAsString(getDate());
     }
 }
