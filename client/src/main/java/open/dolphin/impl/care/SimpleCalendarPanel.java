@@ -6,13 +6,12 @@ import open.dolphin.calendar.CalendarTable;
 import open.dolphin.calendar.CalendarTableModel;
 import open.dolphin.client.Chart;
 import open.dolphin.client.ImageEntry;
+import open.dolphin.dnd.DolphinTransferHandler;
 import open.dolphin.event.ProxyAction;
 import open.dolphin.infomodel.AppointmentModel;
 import open.dolphin.infomodel.ModuleModel;
 import open.dolphin.infomodel.SimpleDate;
-import open.dolphin.dnd.DolphinTransferHandler;
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,8 +21,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.*;
+import java.util.List;
 
 /**
  * SimpleCalendarPanel.
@@ -35,7 +36,7 @@ public final class SimpleCalendarPanel extends JPanel {
         // MmlDate 型式の日付をキー，AppointmentModel を value とする HashMap
     private final HashMap<String, AppointmentModel> map = new HashMap<>();
     private SimpleDate today;
-    private int relativeMonth;
+    private final int relativeMonth;
     private CalendarTable table;
     private CalendarTableModel tableModel;
     private Chart context;
@@ -169,11 +170,7 @@ public final class SimpleCalendarPanel extends JPanel {
      * @return
      */
     public String getFirstDate() {
-        int year = tableModel.getYear();
-        int month = tableModel.getMonth();
-        GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
-
-        return MMLDate.getDate(firstDay);
+        return String.format("%04d-%02d-%02d", tableModel.getYear(), tableModel.getMonth(), 1);
     }
 
     /**
@@ -182,13 +179,8 @@ public final class SimpleCalendarPanel extends JPanel {
      * @return
      */
     public String getLastDate() {
-        int year = tableModel.getYear();
-        int month = tableModel.getMonth();
-        GregorianCalendar gc = new GregorianCalendar(year, month, 1);
-        int days = gc.getActualMaximum(Calendar.DAY_OF_MONTH);
-        gc.add(Calendar.DAY_OF_MONTH, days - 1);
-
-        return MMLDate.getDate(gc);
+        LocalDate lastDay = YearMonth.of(tableModel.getYear(), tableModel.getMonth()).atEndOfMonth();
+        return String.format("%04d-%02d-%02d", lastDay.getYear(), lastDay.getMonthValue(), lastDay.getDayOfMonth());
     }
 
     /**

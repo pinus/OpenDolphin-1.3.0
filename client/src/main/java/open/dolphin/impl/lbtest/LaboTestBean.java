@@ -10,7 +10,6 @@ import open.dolphin.infomodel.LaboSpecimenValue;
 import open.dolphin.project.Project;
 import open.dolphin.ui.StatusPanel;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -18,8 +17,11 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.print.PageFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.*;
+import java.util.Vector;
 import java.util.prefs.Preferences;
 
 /**
@@ -41,7 +43,7 @@ public class LaboTestBean extends AbstractChartDocument {
     private AllLaboTest allLaboTest;
     private StatusPanel statusPanel;
     // 抽出期間名リスト
-    private NameValuePair[] periodObject = ClientContext.getNameValuePair("docHistory.combo.period");
+    private final NameValuePair[] periodObject = ClientContext.getNameValuePair("docHistory.combo.period");
     private JComboBox extractionCombo;
     private JTextField countField;
     //private javax.swing.Timer searchTimer;
@@ -53,11 +55,11 @@ public class LaboTestBean extends AbstractChartDocument {
     private int dividerWidth;
     private int dividerLoc;
     // 標本及び検査値の表示カラー
-    private Color specimenColor = ClientContext.getColor("labotest.color.specimen");
-    private Color lowColor = ClientContext.getColor("labotest.color.low");
-    private Color normalColor = ClientContext.getColor("labotest.color.normal");
-    private Color highColor = ClientContext.getColor("labotest.color.high");
-    private Preferences myPrefs = Preferences.userNodeForPackage(this.getClass());
+    private final Color specimenColor = ClientContext.getColor("labotest.color.specimen");
+    private final Color lowColor = ClientContext.getColor("labotest.color.low");
+    private final Color normalColor = ClientContext.getColor("labotest.color.normal");
+    private final Color highColor = ClientContext.getColor("labotest.color.high");
+    private final Preferences myPrefs = Preferences.userNodeForPackage(this.getClass());
 
     public LaboTestBean() {
         setTitle(TITLE);
@@ -231,9 +233,8 @@ public class LaboTestBean extends AbstractChartDocument {
         NameValuePair pair = (NameValuePair) extractionCombo.getSelectedItem();
         String value = pair.getValue();
         int addValue = Integer.parseInt(value);
-        GregorianCalendar today = new GregorianCalendar();
-        today.add(GregorianCalendar.MONTH, addValue);
-        searchLaboTest(MMLDate.getDate(today));
+        LocalDate futureDate = LocalDate.now().plusMonths(addValue);
+        searchLaboTest(DateUtils.toIsoDateFromLocalDate(futureDate));
     }
 
     @Override
@@ -405,9 +406,8 @@ public class LaboTestBean extends AbstractChartDocument {
 
                 Object o = table.getValueAt(selectedRows[i], j);
 
-                if (o instanceof SimpleLaboTestItem) {
+                if (o instanceof SimpleLaboTestItem item) {
 
-                    SimpleLaboTestItem item = (SimpleLaboTestItem) o;
                     String value = item.getItemValue();
 
                     if (value != null) {
@@ -487,9 +487,8 @@ public class LaboTestBean extends AbstractChartDocument {
                 NameValuePair pair = (NameValuePair) extractionCombo.getSelectedItem();
                 String value = pair.getValue();
                 int addValue = Integer.parseInt(value);
-                GregorianCalendar today = new GregorianCalendar();
-                today.add(GregorianCalendar.MONTH, addValue);
-                searchLaboTest(MMLDate.getDate(today));
+                LocalDate futureDate = LocalDate.now().plusMonths(addValue);
+                searchLaboTest(DateUtils.toIsoDateFromLocalDate(futureDate));
             }
         });
         JPanel comboPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -568,9 +567,9 @@ public class LaboTestBean extends AbstractChartDocument {
     class ImageTableCellRenderer extends JLabel implements TableCellRenderer {
 
                 private Color penCol = Color.black;
-        private String upperValueText = ClientContext.getString("labotest.value.upperText");
-        private String standardValueText = ClientContext.getString("labotest.value.standardText");
-        private String lowerValueText = ClientContext.getString("labotest.value.lowerText");
+        private final String upperValueText = ClientContext.getString("labotest.value.upperText");
+        private final String standardValueText = ClientContext.getString("labotest.value.standardText");
+        private final String lowerValueText = ClientContext.getString("labotest.value.lowerText");
 
         public ImageTableCellRenderer() {
             setOpaque(true);
@@ -605,9 +604,8 @@ public class LaboTestBean extends AbstractChartDocument {
                     setText((String) value);
                     setToolTipText("");
 
-                } else if (value instanceof open.dolphin.impl.lbtest.SimpleLaboTestItem) {
+                } else if (value instanceof SimpleLaboTestItem testItem) {
 
-                    SimpleLaboTestItem testItem = (SimpleLaboTestItem) value;
                     // 検査値表示用カラーを得る
                     String out = testItem.getOut();
                     if (out == null) {
@@ -653,8 +651,7 @@ public class LaboTestBean extends AbstractChartDocument {
                         setToolTipText(buf.toString());
                     }
 
-                } else if (value instanceof open.dolphin.impl.lbtest.SimpleLaboSpecimen) {
-                    SimpleLaboSpecimen specimen = (SimpleLaboSpecimen) value;
+                } else if (value instanceof SimpleLaboSpecimen specimen) {
                     setBackground(specimenColor);    // 標本表示カラー
                     setForeground(Color.black);
                     setForeground(Color.black);

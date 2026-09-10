@@ -7,15 +7,14 @@ import open.dolphin.ui.PNSCellEditor;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -97,8 +96,8 @@ public class AppointTablePanel extends JPanel {
      */
     public void updateAppoint(AppointmentModel appoint) {
         tableModel.updateAppoint(appoint);
-
-        String mmlDate = MMLDate.getDate(appoint.getDate());
+        LocalDate localDate = MMLDate.toLocalDateFromDate(appoint.getDate()); // transition bridge
+        String mmlDate = DateUtils.toIsoDateFromLocalDate(localDate);
         findAppoint(mmlDate);
     }
 
@@ -286,10 +285,8 @@ public class AppointTablePanel extends JPanel {
 
             if (entry != null) {
                 Date appoDate = entry.getDate(); // Date 型式
-                GregorianCalendar appoDateGc = new GregorianCalendar();
-                appoDateGc.setTime(appoDate); // GregorianCalendar 型式
-
-                String appo = MMLDate.getDate(appoDateGc); // yyyy-mm-dd 型式
+                LocalDate localDate = MMLDate.toLocalDateFromDate(appoDate); // transition bridge
+                String appo = DateUtils.toIsoDateFromLocalDate(localDate);
                 String today = DateUtils.todayToIsoDate(); // yyyy-mm-dd 型式
 
                 if (appo.equals(today)) {

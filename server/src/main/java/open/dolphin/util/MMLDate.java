@@ -4,8 +4,10 @@ import open.dolphin.infomodel.IInfoModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /// Utility class to handle MML Date format.
 ///
@@ -14,6 +16,19 @@ import java.util.GregorianCalendar;
 public final class MMLDate {
 
     private MMLDate() {
+    }
+
+    // transition bridge
+    public static LocalDate toLocalDateFromDate(Date date) {
+        LocalDate localDate = date.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate();
+        return localDate;
+    }
+    // transition bridge
+    public static LocalDateTime toLocalDateTimeFromDate(Date date) {
+        LocalDateTime localDateTime = date.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return localDateTime;
     }
 
     /// 時間なしの mmlDate 形式から Date を作る.
@@ -76,33 +91,4 @@ public final class MMLDate {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.format(date);
     }
-
-    /// GregorianCalendar の日付を SimpleDateFormat の pattern 形式で文字列にして返す.
-    ///
-    /// @param gc
-    /// @param pattern
-    /// @return
-    public static String getDateTime(GregorianCalendar gc, String pattern) {
-        SimpleDateFormat f = new SimpleDateFormat(pattern);
-        return f.format(gc.getTime());
-    }
-
-    /// GregorianCalendar の日付を，時間なしの mmlDate 形式 (yyyy-MM-dd) で返す.
-    ///
-    /// @param gc
-    /// @return
-    public static String getDate(GregorianCalendar gc) {
-        return getDateTime(gc, "yyyy-MM-dd");
-    }
-
-    /// Date 型式の日付を，時間なしの mmlDate 形式 (yyyy-MM-dd) で返す.
-    ///
-    /// @param date
-    /// @return
-    public static String getDate(Date date) {
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.setTime(date);
-        return getDate(gc);
-    }
-
 }
