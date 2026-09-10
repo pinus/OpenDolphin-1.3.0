@@ -1,8 +1,7 @@
 package open.dolphin.client;
 
 import open.dolphin.infomodel.RegisteredDiagnosisModel;
-import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
+import open.dolphin.util.DateUtils;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -51,9 +50,9 @@ public class DiagnosisDocumentTable extends JTable {
         if (rd != null) {
             String startDate = rd.getStartDate();
             String endDate = rd.getEndDate();
-            text = "開始日 " + MMLDate.toNengo(startDate);
+            text = "開始日 " + DateUtils.toGengoDateFromIsoDate(startDate);
             if (endDate != null) {
-                text += String.format(" (終了日 %s)", MMLDate.toNengo(endDate));
+                text += String.format(" (終了日 %s)", DateUtils.toGengoDateFromIsoDate(endDate));
             }
         }
         return text;

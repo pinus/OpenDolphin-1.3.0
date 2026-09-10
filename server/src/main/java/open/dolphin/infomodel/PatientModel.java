@@ -3,7 +3,6 @@ package open.dolphin.infomodel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -121,7 +120,7 @@ public class PatientModel extends InfoModel {
     }
 
     public String getNengoFormattedLastVisit() {
-        String date = MMLDate.toNengo(DateUtils.trimTime(lastVisit));
+        String date = DateUtils.toGengoDateFromIsoDate(DateUtils.trimTime(lastVisit));
         String time = DateUtils.trimDate(lastVisit).substring(0, 5);
         return String.format("%s　%s", date, time);
     }
@@ -263,7 +262,7 @@ public class PatientModel extends InfoModel {
     }
 
     public String getAgeBirthday() {
-        return DateUtils.toAgeBirthday(birthday);
+        return DateUtils.toAgeBirthdayFromIsoBirthday(birthday);
     }
 
     public String getNationality() {

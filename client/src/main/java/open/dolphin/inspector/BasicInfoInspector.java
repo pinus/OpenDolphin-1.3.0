@@ -9,8 +9,6 @@ import open.dolphin.infomodel.PatientModel;
 import open.dolphin.infomodel.SimpleAddressModel;
 import open.dolphin.util.DateUtils;
 import open.dolphin.util.Gengo;
-import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
@@ -232,7 +230,7 @@ public class BasicInfoInspector implements IInspector {
         String nengoBirthday = Gengo.isoDateToFullGengo(birthday);
         birthdayLabel.setText(nengoBirthday + "生");
 
-        String age = DateUtils.toAge(birthday);
+        String age = DateUtils.toAgeFromIsoBirthday(birthday);
         ageLabel.setText(String.format("%s 歳", age));
 
         SimpleAddressModel address = patient.getAddress();

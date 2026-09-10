@@ -77,25 +77,6 @@ public final class MMLDate {
         return sdf.format(date);
     }
 
-    /// ORCA日付（20120401）を MMLフォーマット（2012-04-01）に変換.
-    ///
-    /// @param orcaDateString ORCA日付
-    /// @return MML日付
-    public static String toDolphinDateString(String orcaDateString) {
-        if (orcaDateString == null || !orcaDateString.matches("[0-9]+")) {
-            return null;
-        }
-        return String.join("-", orcaDateString.substring(0, 4), orcaDateString.substring(4, 6), orcaDateString.substring(6, 8));
-    }
-
-    /// ISO-DATE -> 元号変換の簡易呼び出し.
-    ///
-    /// @param isoDate ISO-DATE
-    /// @return gengo date
-    public static String toNengo(String isoDate) {
-        return Gengo.isoDateToGengo(isoDate);
-    }
-
     /// GregorianCalendar の日付を SimpleDateFormat の pattern 形式で文字列にして返す.
     ///
     /// @param gc

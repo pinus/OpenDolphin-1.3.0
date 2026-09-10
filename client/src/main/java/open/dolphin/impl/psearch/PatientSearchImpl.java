@@ -16,7 +16,6 @@ import open.dolphin.ui.sheet.JSheet;
 import open.dolphin.util.DateUtils;
 import open.dolphin.util.Gengo;
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 import open.dolphin.dto.PatientSearchSpec.SEARCH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -492,7 +491,7 @@ public class PatientSearchImpl extends AbstractMainComponent {
 
         } else if (isOrcaDate(text)) {
             spec.setType(SEARCH.BIRTHDAY);
-            spec.setBirthday(Gengo.toSeireki(DateUtils.orcaDateToGengo(text)));
+            spec.setBirthday(Gengo.toSeireki(DateUtils.toGengoDateFromOrcaGengoDate(text)));
 
         } else if (isDate(text)) {
             spec.setType(SEARCH.DATE);

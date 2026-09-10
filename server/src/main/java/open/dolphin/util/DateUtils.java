@@ -10,6 +10,9 @@ import java.time.format.DateTimeFormatter;
 /// - isoDate: yyyy-MM-dd
 /// - isoTime: HH:mm:ss
 /// - isoDateTime: yyyy-MM-dd'T'HH:mm:ss
+/// - gengoDate: Gyy-MM-dd
+/// - orcaDate: yyyyMMdd
+/// - orcaGengoDate: GyyMMdd
 ///
 /// @author pns
 public class DateUtils {
@@ -25,7 +28,7 @@ public class DateUtils {
     ///
     /// @param isoDateTime ISO-DATE (1975-01-01) or ISO-DATE-TIME (1975-01-01T12:23:34)
     /// @return parsed LocalDateTime
-    public static LocalDateTime toLocalDateTime(String isoDateTime) {
+    public static LocalDateTime toLocalDateTimeFromIsoDateTime(String isoDateTime) {
         String target = isoDateTime.contains("T") ? isoDateTime : isoDateTime + "T00:00:00";
         return LocalDateTime.parse(target, ISO_DATE_TIME_FORMATTER);
     }
@@ -34,7 +37,7 @@ public class DateUtils {
     ///
     /// @param isoDate ISO-DATE (1975-01-01) or ISO-DATE-TIME (1975-01-01T12:23:34)
     /// @return parsed LocalDate
-    public static LocalDate toLocalDate(String isoDate) {
+    public static LocalDate toLocalDateFromIsoDate(String isoDate) {
         String target = isoDate.contains("T") ? isoDate.substring(0, 10) : isoDate;
         return LocalDate.parse(target, DateTimeFormatter.ofPattern(ISO_DATE));
     }
@@ -43,7 +46,7 @@ public class DateUtils {
     ///
     /// @param localDate LocalDate
     /// @return 1975-01-01
-    public static String toIsoDate(LocalDate localDate) {
+    public static String toIsoDateFromLocalDate(LocalDate localDate) {
         return localDate.format(DateTimeFormatter.ofPattern(ISO_DATE));
     }
 
@@ -51,7 +54,7 @@ public class DateUtils {
     ///
     /// @param localDateTime LocalDateTime
     /// @return 1975-01-01
-    public static String toIsoDate(LocalDateTime localDateTime) {
+    public static String toIsoDateFromLocalDateTime(LocalDateTime localDateTime) {
         return localDateTime.format(DateTimeFormatter.ofPattern(ISO_DATE));
     }
 
@@ -59,7 +62,7 @@ public class DateUtils {
     ///
     /// @param localDateTime LocalDateTime
     /// @return 1975-01-01T12:23:34
-    public static String toIsoDateTime(LocalDateTime localDateTime) {
+    public static String toIsoDateTimeFromLocalDateTime(LocalDateTime localDateTime) {
         return localDateTime.format(DateTimeFormatter.ofPattern(ISO_DATE_TIME));
     }
 
@@ -138,7 +141,7 @@ public class DateUtils {
     ///
     /// @param isoBirthday 1975-01-01
     /// @return 32.10
-    public static String toAge(String isoBirthday) {
+    public static String toAgeFromIsoBirthday(String isoBirthday) {
         LocalDate birthDate = LocalDate.parse(isoBirthday);
         LocalDate today = LocalDate.now();
         Period period = Period.between(birthDate, today);
@@ -151,48 +154,66 @@ public class DateUtils {
     ///
     /// @param isoBirthday 1975-01-01
     /// @return 32.10 歳 (S50-01-01)
-    public static String toAgeBirthday(String isoBirthday) {
-        String age = toAge(isoBirthday);
+    public static String toAgeBirthdayFromIsoBirthday(String isoBirthday) {
+        String age = toAgeFromIsoBirthday(isoBirthday);
         return String.format("%s %s (%s)", age, IInfoModel.AGE, Gengo.isoDateToGengo(isoBirthday));
     }
 
-    /// ORCA 形式 GYYMMDD を年号形式に.
+    /// orcaDate（20120401）を ISO-DATE（2012-04-01）に変換.
     ///
-    /// @param orcaBirthday 4220726
-    /// @return h22-07-26
-    public static String orcaDateToGengo(String orcaBirthday) {
-        //元号
-        String nengo = Gengo.gengoNumberToAlphabet(orcaBirthday.substring(0, 1));
-        //年
-        String y = orcaBirthday.substring(1, 3);
-        String m = orcaBirthday.substring(3, 5);
-        String d = orcaBirthday.substring(5, 7);
+    /// @param orcaDate ORCA日付
+    /// @return ISO-DATE
+    public static String toIsoDateFromOrcaDate(String orcaDate) {
+        return orcaDate == null || !orcaDate.matches("[0-9]+")
+                ? null
+                : String.join("-", orcaDate.substring(0, 4), orcaDate.substring(4, 6), orcaDate.substring(6, 8));
+    }
 
-        return nengo.toLowerCase() + y + "-" + m + "-" + d;
+    /// orcaGengoDate (GYYMMDD) を元号形式 (gengoDate) に.
+    ///
+    /// @param orcaGengoDate 4220726
+    /// @return gengoDate h22-07-26
+    public static String toGengoDateFromOrcaGengoDate(String orcaGengoDate) {
+        //元号
+        String gengo = Gengo.gengoNumberToAlphabet(orcaGengoDate.substring(0, 1));
+        //年
+        String y = orcaGengoDate.substring(1, 3);
+        String m = orcaGengoDate.substring(3, 5);
+        String d = orcaGengoDate.substring(5, 7);
+
+        return gengo.toLowerCase() + y + "-" + m + "-" + d;
+    }
+
+    /// ISO-DATE を元号形式 (gengoDate) に.
+    ///
+    /// @param isoDate ISO-DATE
+    /// @return gengoDate h22-07-26
+    public static String toGengoDateFromIsoDate(String isoDate) {
+        return Gengo.isoDateToGengo(isoDate);
     }
 
     /// Date の開始日の LocalDate.
     ///
     /// @return minimal date
     public static LocalDate getMinLocalDate() {
-        return toLocalDate(MIN_DATE);
+        return toLocalDateFromIsoDate(MIN_DATE);
     }
 
     /// Date の開始日の LocalDateTime.
     ///
     /// @return minimal date
     public static LocalDateTime getMinLocalDateTime() {
-        return toLocalDateTime(MIN_DATE);
+        return toLocalDateTimeFromIsoDateTime(MIN_DATE);
     }
 
     public static void main(String[] arg) {
-        IO.println(orcaDateToGengo("3300101"));
-        IO.println(orcaDateToGengo("4300430"));
-        IO.println(orcaDateToGengo("5010501"));
-        IO.println(toLocalDateTime("1975-01-01"));
-        IO.println(toLocalDateTime("1975-01-01T12:23:34"));
-        IO.println(toIsoDate(LocalDateTime.now()));
-        IO.println(toIsoDateTime(LocalDateTime.now()));
+        IO.println(toGengoDateFromOrcaGengoDate("3300101"));
+        IO.println(toGengoDateFromOrcaGengoDate("4300430"));
+        IO.println(toGengoDateFromOrcaGengoDate("5010501"));
+        IO.println(toLocalDateTimeFromIsoDateTime("1975-01-01"));
+        IO.println(toLocalDateTimeFromIsoDateTime("1975-01-01T12:23:34"));
+        IO.println(toIsoDateFromLocalDateTime(LocalDateTime.now()));
+        IO.println(toIsoDateTimeFromLocalDateTime(LocalDateTime.now()));
         IO.println(todayToIsoDate());
         IO.println(todayToIsoTime());
         IO.println(todayToIsoDateTime());
