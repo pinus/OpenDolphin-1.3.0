@@ -4,6 +4,9 @@ import open.dolphin.util.MMLDate;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 /**
  * 診断履歴クラス.
  *
@@ -118,7 +121,8 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
 
     public String getStartDate() {
         if (getStarted() != null) {
-            return MMLDate.getDateAsString(getStarted());
+            LocalDate localDate = MMLDate.toLocalDateFromDate(getStarted()); // bridge
+            return localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
         }
         return null;
     }
@@ -136,7 +140,8 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
 
     public String getEndDate() {
         if (getEnded() != null) {
-            return MMLDate.getDateAsString(getEnded());
+            LocalDate localDate = MMLDate.toLocalDateFromDate(getEnded()); // bridge
+            return localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
         }
         return null;
     }

@@ -14,12 +14,13 @@ import open.dolphin.infomodel.ModuleModel;
 import open.dolphin.infomodel.SimpleDate;
 import open.dolphin.project.Project;
 import open.dolphin.ui.PNSBorderFactory;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.*;
 
@@ -399,15 +400,23 @@ public final class CareMapDocument extends AbstractChartDocument {
         spec.setStatus("F");
 
         // カレンダ別に検索する
+        LocalDateTime[] fromDateTime = new LocalDateTime[3];
+        for (int i = 0; i < 3; i++) {
+            fromDateTime[i] = LocalDateTime.parse(calendarMap.get(i-1).getFirstDate() + "T00:00:00"); // bridge
+        }
         Date[] fromDate = new Date[3];
         for (int i = 0; i < 3; i++) {
-            fromDate[i] = MMLDate.getDateTimeAsObject(calendarMap.get(i - 1).getFirstDate() + "T00:00:00");
+            fromDate[i] = MMLDate.toDateFromLocalDateTime(fromDateTime[i]);
         }
         spec.setFromDate(fromDate);
 
+        LocalDateTime[] toDateTime = new LocalDateTime[3];
+        for (int i = 0; i < 3; i++) {
+            toDateTime[i] = LocalDateTime.parse(calendarMap.get(i-1).getLastDate() + "T23:59:59"); // bridge
+        }
         Date[] toDate = new Date[3];
         for (int i = 0; i < 3; i++) {
-            toDate[i] = MMLDate.getDateTimeAsObject(calendarMap.get(i - 1).getLastDate() + "T23:59:59");
+            toDate[i] = MMLDate.toDateFromLocalDateTime(toDateTime[i]);
         }
         spec.setToDate(toDate);
 
@@ -450,15 +459,23 @@ public final class CareMapDocument extends AbstractChartDocument {
         spec.setStatus("F");
 
         // カレンダ別に検索する
+        LocalDateTime[] fromDateTime = new LocalDateTime[3];
+        for (int i = 0; i < 3; i++) {
+            fromDateTime[i] = LocalDateTime.parse(calendarMap.get(i-1).getFirstDate() + "T00:00:00"); // bridge
+        }
         Date[] fromDate = new Date[3];
         for (int i = 0; i < 3; i++) {
-            fromDate[i] = MMLDate.getDateTimeAsObject(calendarMap.get(i - 1).getFirstDate() + "T00:00:00");
+            fromDate[i] = MMLDate.toDateFromLocalDateTime(fromDateTime[i]);
         }
         spec.setFromDate(fromDate);
 
+        LocalDateTime[] toDateTime = new LocalDateTime[3];
+        for (int i = 0; i < 3; i++) {
+            toDateTime[i] = LocalDateTime.parse(calendarMap.get(i-1).getLastDate() + "T23:59:59"); // bridge
+        }
         Date[] toDate = new Date[3];
         for (int i = 0; i < 3; i++) {
-            toDate[i] = MMLDate.getDateTimeAsObject(calendarMap.get(i - 1).getLastDate() + "T23:59:59");
+            toDate[i] = MMLDate.toDateFromLocalDateTime(toDateTime[i]);
         }
         spec.setToDate(toDate);
         spec.setIconSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));

@@ -1,11 +1,14 @@
 package open.dolphin.infomodel;
 
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -170,7 +173,8 @@ public class DocInfoModel extends InfoModel implements Comparable<DocInfoModel> 
     }
 
     public String getFirstConfirmDateTrimTime() {
-        return MMLDate.getDateAsString(getFirstConfirmDate());
+        LocalDate localDate = MMLDate.toLocalDateFromDate(getFirstConfirmDate()); // bridge
+        return localDate.format(DateUtils.ISO_DATE_FORMATTER);
     }
 
     public Date getConfirmDate() {
@@ -182,7 +186,8 @@ public class DocInfoModel extends InfoModel implements Comparable<DocInfoModel> 
     }
 
     public String getConfirmDateTrimTime() {
-        return MMLDate.getDateAsString(getConfirmDate());
+        LocalDate localDate = MMLDate.toLocalDateFromDate(getConfirmDate()); // bridge
+        return localDate.format(DateUtils.ISO_DATE_FORMATTER);
     }
 
     public String getDepartment() {

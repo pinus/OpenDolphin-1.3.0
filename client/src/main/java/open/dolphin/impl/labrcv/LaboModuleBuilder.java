@@ -5,7 +5,7 @@ import open.dolphin.helper.GUIDGenerator;
 import open.dolphin.infomodel.*;
 import open.dolphin.project.Project;
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
+import open.dolphin.util.DateUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -304,7 +305,8 @@ public class LaboModuleBuilder {
                 laboModule.setDocId(moduleUUID);
 
                 // 確定日，適合開始日，記録日を設定する
-                Date confirmed = MMLDate.getDateTimeAsObject(confirmDate);
+                LocalDateTime localDateTime = DateUtils.toLocalDateTimeFromIsoDateTime(confirmDate); // bridge
+                Date confirmed = MMLDate.toDateFromLocalDateTime(localDateTime);
                 laboModule.setConfirmed(confirmed);
                 laboModule.setStarted(confirmed);
                 laboModule.setRecorded(new Date());

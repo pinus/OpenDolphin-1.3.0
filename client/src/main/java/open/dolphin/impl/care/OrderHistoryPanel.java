@@ -9,12 +9,14 @@ import open.dolphin.project.Project;
 import open.dolphin.ui.IndentTableCellRenderer;
 import open.dolphin.ui.ObjectReflectTableModel;
 import open.dolphin.ui.PNSScrollPane;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +52,9 @@ public final class OrderHistoryPanel extends JPanel {
             @Override
             public Object getValueAt(int row, int col) {
                 ModuleModel module = getObject(row);
+                LocalDate localDate = MMLDate.toLocalDateFromDate(module.getConfirmed()); // bridge
                 return switch (col) {
-                    case 0 -> MMLDate.getDateAsString(module.getConfirmed());
+                    case 0 -> localDate.format(DateUtils.ISO_DATE_FORMATTER);
                     case 1 -> module.getModuleInfo().getStampName();
                     default -> null;
                 };

@@ -14,8 +14,7 @@ import open.dolphin.inspector.*;
 import open.dolphin.project.Project;
 import open.dolphin.ui.*;
 import open.dolphin.ui.sheet.JSheet;
-import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
+import open.dolphin.util.DateUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,8 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.*;
 import java.util.prefs.Preferences;
@@ -593,13 +594,12 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         statusPanel.addSeparator();
         statusPanel.add(rdPrifix + " " + created);
 
-        Date pvtDate = MMLDate.getDateTimeAsObject(pvt.getPvtDate());
-        if (pvtDate != null && pvt.getState() == KarteState.CLOSE_NONE) { // window open 前に呼ばれる
+        LocalDateTime pvtDateTime = DateUtils.toLocalDateTimeFromIsoDateTime(pvt.getPvtDate());
+        if (pvt.getState() == KarteState.CLOSE_NONE) {
             String waitingTime = "00:00";
-            long pvtTime = pvtDate.getTime();
-            long nowTime = new Date().getTime();
-            if (pvtTime < nowTime) { // サーバ・クライアント時間がずれて反転することがある
-                waitingTime = DurationFormatUtils.formatPeriod(pvtTime, nowTime, "HH:mm");
+            if (pvtDateTime.isBefore(LocalDateTime.now())) { // サーバ・クライアント時間がずれて反転することがある
+                long duration = pvtDateTime.until(LocalDateTime.now(), ChronoUnit.MILLIS);
+                waitingTime = DurationFormatUtils.formatDuration(duration, "HH:mm");
             }
             statusPanel.addSeparator();
             statusPanel.add("待ち時間 " + waitingTime);

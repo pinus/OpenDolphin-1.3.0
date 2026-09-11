@@ -1,8 +1,11 @@
 package open.dolphin.infomodel;
 
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -100,6 +103,7 @@ public class AppointmentModel extends KarteEntryBean<AppointmentModel> {
 
     @Override
     public String toString() {
-        return MMLDate.getDateAsString(getDate());
+        LocalDate localDate = MMLDate.toLocalDateFromDate(getDate()); // bridge
+        return localDate.format(DateUtils.ISO_DATE_FORMATTER);
     }
 }

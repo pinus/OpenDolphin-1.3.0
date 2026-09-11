@@ -144,9 +144,9 @@ public class AppointTablePanel extends JPanel {
             if (entry == null) {
                 return null;
             }
-
+            LocalDate localDate = MMLDate.toLocalDateFromDate(entry.getDate()); // bridge
             return switch(col) {
-                case 0 -> MMLDate.getDateAsString(entry.getDate()); // 日付
+                case 0 -> localDate.format(DateUtils.ISO_DATE_FORMATTER); // 日付
                 case 1 -> entry.getName(); // 内容
                 case 2 -> entry.getMemo(); // メモ
                 default -> null;

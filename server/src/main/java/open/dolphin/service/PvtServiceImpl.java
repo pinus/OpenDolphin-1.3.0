@@ -216,8 +216,7 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
     public List<PatientVisitModel> getPvtList(PatientVisitSpec spec) {
         //System.out.println("getPvt start at " + new Date());
 
-        String date = spec.getDate();
-        logger.info("getPvtList: date=" + date);
+        String date = spec.getDate(); // 2026-09-11
         if (!date.endsWith("%")) { date += "%"; }
         int index = date.indexOf('%');
 

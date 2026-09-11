@@ -1,5 +1,6 @@
 package open.dolphin.stampbox;
 
+import jakarta.ejb.Local;
 import open.dolphin.client.ClientContext;
 import open.dolphin.client.Dolphin;
 import open.dolphin.client.GUIConst;
@@ -9,6 +10,7 @@ import open.dolphin.helper.*;
 import open.dolphin.infomodel.*;
 import open.dolphin.project.Project;
 import open.dolphin.ui.PNSOptionPane;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
@@ -210,7 +213,7 @@ public class StampPublisher {
         // GUIコンポーネントに初期値を入力する
         switch (publishState) {
             case NONE, SAVED_NONE -> {
-                String dateStr = MMLDate.getDateAsString(new Date());
+                String dateStr = LocalDate.now().format(DateUtils.ISO_DATE_FORMATTER);
                 String url = facility.getUrl();
                 instLabel.setText("このスタンプは公開されていません。");
                 partyName.setText(facility.getFacilityName());
@@ -246,10 +249,10 @@ public class StampPublisher {
                 partyName.setText(stampTree.getPartyName());
                 contact.setText(stampTree.getUrl());
                 description.setText(stampTree.getDescription());
-                String timeStamp = MMLDate.getDateAsString(stampTree.getPublishedDate()) +
-                    "  最終更新日( " +
-                        MMLDate.getDateAsString(stampTree.getLastUpdated()) +
-                    " )";
+                LocalDate publishedLocalDate = MMLDate.toLocalDateFromDate(stampTree.getPublishedDate()); // bridge
+                LocalDate lastUpdatedLocalDate = MMLDate.toLocalDateFromDate(stampTree.getLastUpdated()); // bridge
+                String timeStamp = publishedLocalDate.format(DateUtils.ISO_DATE_FORMATTER) +
+                    "  最終更新日( " + lastUpdatedLocalDate.format(DateUtils.ISO_DATE_FORMATTER) + " )";
                 publishedDate.setText(timeStamp);
                 publish.setText("更新する");
                 publish.setEnabled(true);
@@ -280,10 +283,10 @@ public class StampPublisher {
                     }
                 }
 
-                String timeStamp = MMLDate.getDateAsString(stampTree.getPublishedDate()) +
-                    "  最終更新日( " +
-                        MMLDate.getDateAsString(stampTree.getLastUpdated()) +
-                    " )";
+                LocalDate publishedLocalDate = MMLDate.toLocalDateFromDate(stampTree.getPublishedDate()); // bridge
+                LocalDate lastUpdatedLocalDate = MMLDate.toLocalDateFromDate(stampTree.getLastUpdated()); // bridge
+                String timeStamp = publishedLocalDate.format(DateUtils.ISO_DATE_FORMATTER) +
+                        "  最終更新日( " + lastUpdatedLocalDate.format(DateUtils.ISO_DATE_FORMATTER) + " )";
                 publishedDate.setText(timeStamp);
                 publish.setText("更新する");
                 publish.setEnabled(true);

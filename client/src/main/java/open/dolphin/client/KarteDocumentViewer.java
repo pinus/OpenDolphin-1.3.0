@@ -12,6 +12,7 @@ import open.dolphin.ui.Focuser;
 import open.dolphin.ui.PNSOptionPane;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.ui.sheet.JSheet;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -85,7 +87,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     private void initComponents() {
         setTitle(TITLE);
 
-        todayDateAsString = MMLDate.getDateAsString(new Date());
+        todayDateAsString = LocalDate.now().format(DateUtils.ISO_DATE_FORMATTER);
 
         Preferences prefs = Project.getPreferences();
         isVerticalScroll = prefs.getBoolean(Project.KARTE_SCROLL_DIRECTION, true);

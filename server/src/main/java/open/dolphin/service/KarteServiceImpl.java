@@ -2,6 +2,7 @@ package open.dolphin.service;
 
 import open.dolphin.dto.*;
 import open.dolphin.infomodel.*;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.hibernate.search.mapper.orm.Search;
@@ -11,6 +12,10 @@ import org.jboss.logging.Logger;
 import jakarta.ejb.Asynchronous;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.NoResultException;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -113,14 +118,16 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
         // confirm date をキーとした PhysicalModel の Map
         Map<String, PhysicalModel> map = observations.stream().collect(Collectors.toMap(o -> {
             // key
-            String memo = MMLDate.getDateAsString(o.getRecorded());
+            LocalDate localDate = MMLDate.toLocalDateFromDate(o.getRecorded()); // bridge
+            String memo = localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
             String identified = o.confirmDateAsString();
             return identified != null ? identified : memo;
 
         }, o -> {
             // ObservationModel から PhysicalModel を作成する
             PhysicalModel pm = new PhysicalModel();
-            pm.setMemo(MMLDate.getDateAsString(o.getRecorded()));
+            LocalDate localDate = MMLDate.toLocalDateFromDate(o.getRecorded()); // bridge
+            pm.setMemo(localDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
             pm.setIdentifiedDate(o.confirmDateAsString());
 
             if (o.getPhenomenon().equals(IInfoModel.PHENOMENON_BODY_WEIGHT)) {
@@ -161,10 +168,11 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
     public List<String> getPvtList(KarteBeanSpec spec) {
         long patientPk = spec.getPatientPk();
         Date fromDate = spec.getFromDate();
+        LocalDate localDate = MMLDate.toLocalDateFromDate(fromDate); // bridge
 
         List<PatientVisitModel> latestVisits = em.createQuery("select p from PatientVisitModel p where p.patient.id = :patientPk and p.pvtDate >= :fromDate", PatientVisitModel.class)
                 .setParameter("patientPk", patientPk)
-                .setParameter("fromDate", MMLDate.getDateAsString(fromDate)).getResultList();
+                .setParameter("fromDate", localDate.format(DateUtils.ISO_DATE_FORMATTER)).getResultList();
 
         return latestVisits.stream()
                 .filter(m -> m.getState() != KarteState.CANCEL_PVT)

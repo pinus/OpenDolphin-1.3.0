@@ -263,7 +263,8 @@ public final class SimpleCalendarPanel extends JPanel {
         }
 
         list.forEach(module -> {
-            String mmlDate = MMLDate.getDateAsString(module.getConfirmed());
+            LocalDate localDate = MMLDate.toLocalDateFromDate(module.getConfirmed()); // bridge
+            String mmlDate = localDate.format(DateUtils.ISO_DATE_FORMATTER);
             SimpleDate date = SimpleDate.mmlDateToSimpleDate(mmlDate);
 
             date.setEventCode(event);
@@ -312,7 +313,8 @@ public final class SimpleCalendarPanel extends JPanel {
         list.forEach(appoint -> {
             appoint.setState(AppointmentModel.TT_HAS);
             String mmlToday = SimpleDate.simpleDateToMmldate(today);
-            String mmlAppointDate = MMLDate.getDateAsString(appoint.getDate());
+            LocalDate localDate = MMLDate.toLocalDateFromDate(appoint.getDate()); // bridge
+            String mmlAppointDate = localDate.format(DateUtils.ISO_DATE_FORMATTER);
 
             // 今日以降のものだけ登録
             if (mmlAppointDate.compareTo(mmlToday) >= 0) {

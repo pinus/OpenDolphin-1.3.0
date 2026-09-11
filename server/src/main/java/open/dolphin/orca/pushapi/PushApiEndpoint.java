@@ -28,7 +28,7 @@ public class PushApiEndpoint {
 
     @OnMessage
     public void onMessage(String str) {
-        logger.info("onMessage response = " + str);
+        //logger.info("onMessage response = " + str);
         Response response = JsonUtils.fromJson(str, Response.class);
         responseListener.onResponse(response);
     }

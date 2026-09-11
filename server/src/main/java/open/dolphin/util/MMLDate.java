@@ -56,12 +56,4 @@ public final class MMLDate {
         return null;
     }
 
-    /// Date から時間なしの mmlDate 形式を作る.
-    /// ====> DateUtils.toIsoDate
-    /// @param date Date
-    /// @return 1975-01-01
-    public static String getDateAsString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE);
-        return sdf.format(date);
-    }
 }
