@@ -5,6 +5,7 @@ import open.dolphin.helper.GUIFactory;
 import open.dolphin.infomodel.DocInfoModel;
 import open.dolphin.infomodel.DocumentModel;
 import open.dolphin.infomodel.IInfoModel;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,6 +13,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseListener;
 import java.awt.print.PageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -134,14 +138,15 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         if (document != null) {
 
             StringBuilder timeStamp = new StringBuilder();
-            String dateFormat = IInfoModel.KARTE_DATE;
 
             // time stamp
-            String firstConfirmDate = MMLDate.getDateAsFormatString(document.getDocInfo().getFirstConfirmDate(), dateFormat);
+            Date confirmDate = document.getDocInfo().getFirstConfirmDate();
+            LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(confirmDate); // bridge
+            String firstConfirmDate = localDateTime.format(DateUtils.KARTE_DATE_FORMATTER);
             timeStamp.append(firstConfirmDate);
 
             // 修正日表示
-            String modifyDate = MMLDate.getDateAsFormatString(document.getDocInfo().getConfirmDate(), dateFormat);
+            String modifyDate = firstConfirmDate;
             boolean showModified = getContext().getDocumentHistory().isShowModified(); // 修正履歴表示モードかどうか
             String parent = document.getDocInfo().getParentId(); // 親があるかどうか
 

@@ -4,6 +4,7 @@ import open.dolphin.WebSocket;
 import open.dolphin.dto.PatientVisitSpec;
 import open.dolphin.dto.PvtStateSpec;
 import open.dolphin.infomodel.*;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.JsonUtils;
 import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
@@ -12,6 +13,7 @@ import org.jboss.logging.Logger;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.NoResultException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -215,12 +217,12 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
         //System.out.println("getPvt start at " + new Date());
 
         String date = spec.getDate();
-        if (!date.endsWith("%")) {
-            date += "%";
-        }
+        logger.info("getPvtList: date=" + date);
+        if (!date.endsWith("%")) { date += "%"; }
         int index = date.indexOf('%');
 
-        Date theDate = MMLDate.getDateAsObject(date.substring(0, index));
+        LocalDate localDate = DateUtils.toLocalDateFromIsoDate(date.substring(0, index));
+        Date theDate = MMLDate.toDateFromLocalDate(localDate); // bridge
         int firstResult = spec.getSkipCount();
         String fid = getCallersFacilityId();
 

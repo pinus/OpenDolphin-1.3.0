@@ -1,7 +1,6 @@
 package open.dolphin.infomodel;
 
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 
 import jakarta.persistence.*;
 import java.util.Date;
@@ -14,7 +13,7 @@ import java.util.Date;
 @Entity
 @Table(name = "d_appo")
 public class AppointmentModel extends KarteEntryBean<AppointmentModel> {
-        public static final int TT_NONE = 0;
+    public static final int TT_NONE = 0;
     public static final int TT_NEW = 1;
     public static final int TT_HAS = 2;
     public static final int TT_REPLACE = 3;

@@ -234,7 +234,7 @@ public class LaboTestBean extends AbstractChartDocument {
         String value = pair.getValue();
         int addValue = Integer.parseInt(value);
         LocalDate futureDate = LocalDate.now().plusMonths(addValue);
-        searchLaboTest(DateUtils.toIsoDateFromLocalDate(futureDate));
+        searchLaboTest(futureDate.format(DateUtils.ISO_DATE_FORMATTER));
     }
 
     @Override
@@ -266,7 +266,7 @@ public class LaboTestBean extends AbstractChartDocument {
         final LaboSearchSpec spec = new LaboSearchSpec();
         spec.setKarteId(getContext().getKarte().getId());
         spec.setFromDate(fromDate);
-        spec.setToDate(DateUtils.todayToIsoDate());
+        spec.setToDate(LocalDate.now().format(DateUtils.ISO_DATE_FORMATTER));
         ldl = new LaboDelegater();
 
         ChartTask<Void> task = new ChartTask<>(getContext()) {
@@ -488,7 +488,7 @@ public class LaboTestBean extends AbstractChartDocument {
                 String value = pair.getValue();
                 int addValue = Integer.parseInt(value);
                 LocalDate futureDate = LocalDate.now().plusMonths(addValue);
-                searchLaboTest(DateUtils.toIsoDateFromLocalDate(futureDate));
+                searchLaboTest(futureDate.format(DateUtils.ISO_DATE_FORMATTER));
             }
         });
         JPanel comboPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));

@@ -41,83 +41,6 @@ public class DateUtils {
         return LocalDate.parse(target, ISO_DATE_FORMATTER);
     }
 
-    /// LocalDate から ISO-DATE 形式を作る.
-    ///
-    /// @param localDate LocalDate
-    /// @return 1975-01-01
-    public static String toIsoDateFromLocalDate(LocalDate localDate) {
-        return localDate.format(ISO_DATE_FORMATTER);
-    }
-
-    /// LocalDate から KARTE-DATE 形式を作る.
-    ///
-    /// @param localDate LocalDate
-    /// @return 1975-01-01
-    public static String toKarteDateFromLocalDate(LocalDate localDate) {
-        return localDate.format(KARTE_DATE_FORMATTER);
-    }
-
-    /// LocalDateTime から ISO-DATE 形式を作る.
-    ///
-    /// @param localDateTime LocalDateTime
-    /// @return 1975-01-01
-    public static String toIsoDateFromLocalDateTime(LocalDateTime localDateTime) {
-        return localDateTime.format(ISO_DATE_FORMATTER);
-    }
-
-    /// LocalDateTime から ISO-DATE-TIME 形式を作る.
-    ///
-    /// @param localDateTime LocalDateTime
-    /// @return 1975-01-01T12:23:34
-    public static String toIsoDateTimeFromLocalDateTime(LocalDateTime localDateTime) {
-        return localDateTime.format(ISO_DATE_TIME_FORMATTER);
-    }
-
-    /// 今日を ISO-DATE 型式の文字列で返す.
-    ///
-    /// @return formatted String
-    public static String todayToIsoDate() {
-        return LocalDateTime.now().format(ISO_DATE_FORMATTER);
-    }
-
-    /// 現在時間を ISO-TIME 型式の文字列で返す.
-    ///
-    /// @return formatted String
-    public static String todayToIsoTime() {
-        return LocalDateTime.now().format(ISO_TIME_FORMATTER);
-    }
-
-    /// 今日を ISO-DATE-TIME 型式の文字列で返す.
-    ///
-    /// @return formatted String
-    public static String todayToIsoDateTime() {
-        return LocalDateTime.now().format(ISO_DATE_TIME_FORMATTER);
-    }
-
-    /// 今日から days 日後の日付を ISO-DATE 型式で返す.
-    ///
-    /// @param days 日数
-    /// @return ISO-DATE
-    public static String getIsoDateDaysAhead(int days) {
-        return LocalDateTime.now().plusDays(days).format(ISO_DATE_FORMATTER);
-    }
-
-    /// 今日から months ヶ月後の日付を ISO-DATE 型式で返す.
-    ///
-    /// @param months 月数
-    /// @return ISO-DATE
-    public static String getIsoDateMonthsAhead(int months) {
-        return LocalDateTime.now().plusMonths(months).format(ISO_DATE_FORMATTER);
-    }
-
-    /// 今日から years 年後の日付を ISO-DATE 型式で返す.
-    ///
-    /// @param years 年数
-    /// @return ISO-DATE
-    public static String getIsoDateYearsAhead(int years) {
-        return LocalDateTime.now().plusYears(years).format(ISO_DATE_FORMATTER);
-    }
-
     /// ISO-DATE/ISO-DATE-TIME 形式から時間を取り除いて ISO-DATE を返す.
     ///
     /// @param isoDateTime ISO-DATE/ISO-DATE-TIME
@@ -214,18 +137,18 @@ public class DateUtils {
     }
 
     public static void main(String[] arg) {
-        IO.println(toGengoDateFromOrcaGengoDate("3300101"));
-        IO.println(toGengoDateFromOrcaGengoDate("4300430"));
-        IO.println(toGengoDateFromOrcaGengoDate("5010501"));
-        IO.println(toLocalDateTimeFromIsoDateTime("1975-01-01"));
-        IO.println(toLocalDateTimeFromIsoDateTime("1975-01-01T12:23:34"));
-        IO.println(toIsoDateFromLocalDateTime(LocalDateTime.now()));
-        IO.println(toIsoDateTimeFromLocalDateTime(LocalDateTime.now()));
-        IO.println(todayToIsoDate());
-        IO.println(todayToIsoTime());
-        IO.println(todayToIsoDateTime());
-        IO.println(getIsoDateDaysAhead(365));
-        IO.println(getIsoDateMonthsAhead(12));
-        IO.println(getIsoDateYearsAhead(1));
+        IO.println("1." + toGengoDateFromOrcaGengoDate("3300101"));
+        IO.println("2." + toGengoDateFromOrcaGengoDate("4300430"));
+        IO.println("3." + toGengoDateFromOrcaGengoDate("5010501"));
+        IO.println("4." + toLocalDateFromIsoDate("1975-01-01"));
+        IO.println("5." + toLocalDateTimeFromIsoDateTime("1975-01-01"));
+        IO.println("6." + toLocalDateFromIsoDate("1975-01-01T12:23:34"));
+        IO.println("7." + toLocalDateTimeFromIsoDateTime("1975-01-01T12:23:34"));
+        IO.println("8." + LocalDate.now().format(ISO_DATE_FORMATTER));
+        IO.println("9." + LocalDateTime.now().format(ISO_TIME_FORMATTER));
+        IO.println("10." + LocalDateTime.now().format(ISO_DATE_TIME_FORMATTER));
+        IO.println("11." + LocalDateTime.now().plusYears(1).format(ISO_DATE_FORMATTER));
+        IO.println("12." + LocalDateTime.now().plusMonths(12).format(ISO_DATE_FORMATTER));
+        IO.println("13." + LocalDateTime.now().plusDays(365).format(ISO_DATE_FORMATTER));
     }
 }

@@ -31,21 +31,12 @@ public final class MMLDate {
         return localDateTime;
     }
 
-    /// 時間なしの mmlDate 形式から Date を作る.
-    /// ====> DateUtils.toLocalDate
-    /// @param mmlDate 1975-01-01
-    /// @return parsed Date
-    public static Date getDateAsObject(String mmlDate) {
-        if (mmlDate != null) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE);
-                return sdf.parse(mmlDate);
+    public static Date toDateFromLocalDate(LocalDate localDate) {
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
 
-            } catch (ParseException e) {
-                e.printStackTrace(System.err);
-            }
-        }
-        return null;
+    public static Date toDateFromLocalDateTime(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     /// 時間付きの mmlDate 形式から Date を作る.
@@ -80,17 +71,6 @@ public final class MMLDate {
     /// @return 1975-01-01T12:23:34
     public static String getDateTimeAsString(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE_TIME);
-        return sdf.format(date);
-    }
-
-    /// Date から format で指定した形式の日付文字列を作る.
-    ///
-    /// @param date   Date
-    /// @param format SimpleDateFormat string
-    /// @return formatted string
-    public static String getDateAsFormatString(Date date, String format) {
-        if (date == null) return null;
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.format(date);
     }
 }

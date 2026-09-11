@@ -97,7 +97,7 @@ public class AppointTablePanel extends JPanel {
     public void updateAppoint(AppointmentModel appoint) {
         tableModel.updateAppoint(appoint);
         LocalDate localDate = MMLDate.toLocalDateFromDate(appoint.getDate()); // transition bridge
-        String mmlDate = DateUtils.toIsoDateFromLocalDate(localDate);
+        String mmlDate = localDate.format(DateUtils.ISO_DATE_FORMATTER);
         findAppoint(mmlDate);
     }
 
@@ -286,8 +286,8 @@ public class AppointTablePanel extends JPanel {
             if (entry != null) {
                 Date appoDate = entry.getDate(); // Date 型式
                 LocalDate localDate = MMLDate.toLocalDateFromDate(appoDate); // transition bridge
-                String appo = DateUtils.toIsoDateFromLocalDate(localDate);
-                String today = DateUtils.todayToIsoDate(); // yyyy-mm-dd 型式
+                String appo = localDate.format(DateUtils.ISO_DATE_FORMATTER);
+                String today = LocalDate.now().format(DateUtils.ISO_DATE_FORMATTER); // yyyy-mm-dd 型式
 
                 if (appo.equals(today)) {
                     Color c = parent.getAppointColor(entry.getName());

@@ -11,6 +11,7 @@ import open.dolphin.event.ProxyAction;
 import open.dolphin.infomodel.AppointmentModel;
 import open.dolphin.infomodel.ModuleModel;
 import open.dolphin.infomodel.SimpleDate;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 
 import javax.swing.*;
@@ -381,7 +382,9 @@ public final class SimpleCalendarPanel extends JPanel {
 
         if (appoint == null) {
             appoint = new AppointmentModel();
-            appoint.setDate(MMLDate.getDateAsObject(mmlDate));
+            LocalDate localDate = DateUtils.toLocalDateFromIsoDate(mmlDate);
+            Date appointDate = MMLDate.toDateFromLocalDate(localDate); // bridge
+            appoint.setDate(appointDate);
             map.put(mmlDate, appoint);
         }
 

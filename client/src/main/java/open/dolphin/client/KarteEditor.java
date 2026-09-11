@@ -308,9 +308,8 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
 
         if (modify) {
             Date date = getDocument().getDocInfo().getFirstConfirmDate();
-            LocalDate localDate = MMLDate.toLocalDateFromDate(date);
-
-            String firstConfirm = MMLDate.getDateAsFormatString(getDocument().getDocInfo().getFirstConfirmDate(), IInfoModel.KARTE_DATE);
+            LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(date); // bridge
+            String firstConfirm = localDateTime.format(DateUtils.KARTE_DATE_FORMATTER);
             timeStamp += ORIGINAL_MARK + firstConfirm;
         }
 
@@ -534,7 +533,8 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
 
                     DocInfoModel docInfo = saveModel.getDocInfo();
                     String firstConfirmDate = docInfo.getFirstConfirmDateTrimTime(); // ISO_DATE 型式
-                    boolean isTodaysKarte = DateUtils.todayToIsoDate().equals(firstConfirmDate);
+                    String today = LocalDate.now().format(DateUtils.ISO_DATE_FORMATTER);
+                    boolean isTodaysKarte = today.equals(firstConfirmDate);
 
                     if (isTodaysKarte) {
                         if (docInfo.getStatus().equals(STATUS_TMP)) {
