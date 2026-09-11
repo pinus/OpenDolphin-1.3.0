@@ -38,7 +38,7 @@ public final class MMLDate {
     public static Date getDateAsObject(String mmlDate) {
         if (mmlDate != null) {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.DATE_WITHOUT_TIME);
+                SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE);
                 return sdf.parse(mmlDate);
 
             } catch (ParseException e) {
@@ -55,7 +55,7 @@ public final class MMLDate {
     public static Date getDateTimeAsObject(String mmlDate) {
         if (mmlDate != null) {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_8601_DATE_FORMAT);
+                SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE_TIME);
                 return sdf.parse(mmlDate);
 
             } catch (ParseException e) {
@@ -70,7 +70,8 @@ public final class MMLDate {
     /// @param date Date
     /// @return 1975-01-01
     public static String getDateAsString(Date date) {
-        return getDateAsFormatString(date, IInfoModel.DATE_WITHOUT_TIME);
+        SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE);
+        return sdf.format(date);
     }
 
     /// Date から時間付きの mmlDate 形式を作る.
@@ -78,7 +79,8 @@ public final class MMLDate {
     /// @param date Date
     /// @return 1975-01-01T12:23:34
     public static String getDateTimeAsString(Date date) {
-        return getDateAsFormatString(date, IInfoModel.ISO_8601_DATE_FORMAT);
+        SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE_TIME);
+        return sdf.format(date);
     }
 
     /// Date から format で指定した形式の日付文字列を作る.

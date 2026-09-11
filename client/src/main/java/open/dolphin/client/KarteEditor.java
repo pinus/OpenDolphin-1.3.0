@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -306,7 +307,10 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         String timeStamp = MODIFY_MARK + now;
 
         if (modify) {
-            String firstConfirm = MMLDate.getDateAsFormatString(getDocument().getDocInfo().getFirstConfirmDate(), IInfoModel.KARTE_DATE_FORMAT);
+            Date date = getDocument().getDocInfo().getFirstConfirmDate();
+            LocalDate localDate = MMLDate.toLocalDateFromDate(date);
+
+            String firstConfirm = MMLDate.getDateAsFormatString(getDocument().getDocInfo().getFirstConfirmDate(), IInfoModel.KARTE_DATE);
             timeStamp += ORIGINAL_MARK + firstConfirm;
         }
 

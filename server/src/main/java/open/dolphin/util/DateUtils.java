@@ -13,16 +13,15 @@ import java.time.format.DateTimeFormatter;
 /// - gengoDate: Gyy-MM-dd
 /// - orcaDate: yyyyMMdd
 /// - orcaGengoDate: GyyMMdd
+/// - karteDate: yyyy年M月d日(E) HH:mm
 ///
 /// @author pns
 public class DateUtils {
     private static final String MIN_DATE = "1970-01-01'T'00:00:00";
-    private static final String ISO_DATE = "yyyy-MM-dd";
-    private static final String ISO_TIME = "HH:mm:ss";
-    private static final String ISO_DATE_TIME = ISO_DATE + "'T'" + ISO_TIME;
-    private static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ofPattern(ISO_DATE);
-    private static final DateTimeFormatter ISO_TIME_FORMATTER = DateTimeFormatter.ofPattern(ISO_TIME);
-    private static final DateTimeFormatter ISO_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(ISO_DATE_TIME);
+    public static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ISO_DATE);
+    public static final DateTimeFormatter ISO_TIME_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ISO_TIME);
+    public static final DateTimeFormatter ISO_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ISO_DATE_TIME);
+    public static final DateTimeFormatter KARTE_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.KARTE_DATE);
 
     /// ISO-DATE または ISO-DATE-TIME 型式から LocalDateTime を作る.
     ///
@@ -39,7 +38,7 @@ public class DateUtils {
     /// @return parsed LocalDate
     public static LocalDate toLocalDateFromIsoDate(String isoDate) {
         String target = isoDate.contains("T") ? isoDate.substring(0, 10) : isoDate;
-        return LocalDate.parse(target, DateTimeFormatter.ofPattern(ISO_DATE));
+        return LocalDate.parse(target, ISO_DATE_FORMATTER);
     }
 
     /// LocalDate から ISO-DATE 形式を作る.
@@ -47,7 +46,15 @@ public class DateUtils {
     /// @param localDate LocalDate
     /// @return 1975-01-01
     public static String toIsoDateFromLocalDate(LocalDate localDate) {
-        return localDate.format(DateTimeFormatter.ofPattern(ISO_DATE));
+        return localDate.format(ISO_DATE_FORMATTER);
+    }
+
+    /// LocalDate から KARTE-DATE 形式を作る.
+    ///
+    /// @param localDate LocalDate
+    /// @return 1975-01-01
+    public static String toKarteDateFromLocalDate(LocalDate localDate) {
+        return localDate.format(KARTE_DATE_FORMATTER);
     }
 
     /// LocalDateTime から ISO-DATE 形式を作る.
@@ -55,7 +62,7 @@ public class DateUtils {
     /// @param localDateTime LocalDateTime
     /// @return 1975-01-01
     public static String toIsoDateFromLocalDateTime(LocalDateTime localDateTime) {
-        return localDateTime.format(DateTimeFormatter.ofPattern(ISO_DATE));
+        return localDateTime.format(ISO_DATE_FORMATTER);
     }
 
     /// LocalDateTime から ISO-DATE-TIME 形式を作る.
@@ -63,7 +70,7 @@ public class DateUtils {
     /// @param localDateTime LocalDateTime
     /// @return 1975-01-01T12:23:34
     public static String toIsoDateTimeFromLocalDateTime(LocalDateTime localDateTime) {
-        return localDateTime.format(DateTimeFormatter.ofPattern(ISO_DATE_TIME));
+        return localDateTime.format(ISO_DATE_TIME_FORMATTER);
     }
 
     /// 今日を ISO-DATE 型式の文字列で返す.

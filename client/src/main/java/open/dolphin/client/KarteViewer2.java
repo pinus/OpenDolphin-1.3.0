@@ -6,7 +6,6 @@ import open.dolphin.infomodel.DocInfoModel;
 import open.dolphin.infomodel.DocumentModel;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -135,7 +134,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         if (document != null) {
 
             StringBuilder timeStamp = new StringBuilder();
-            String dateFormat = IInfoModel.KARTE_DATE_FORMAT;
+            String dateFormat = IInfoModel.KARTE_DATE;
 
             // time stamp
             String firstConfirmDate = MMLDate.getDateAsFormatString(document.getDocInfo().getFirstConfirmDate(), dateFormat);

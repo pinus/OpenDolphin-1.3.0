@@ -88,7 +88,7 @@ public interface IInspector {
      */
     default String today() {
         Date today = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.DATE_WITHOUT_TIME);
+        SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE);
         return sdf.format(today);
     }
 }

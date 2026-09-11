@@ -3,7 +3,6 @@ package open.dolphin.infomodel;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import jakarta.persistence.*;
@@ -262,7 +261,7 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
     }
 
     private String dateAsString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_WITHOUT_TIME);
+        SimpleDateFormat sdf = new SimpleDateFormat(ISO_DATE);
         return sdf.format(date);
     }
 
@@ -286,7 +285,7 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
     }
 
     private String timeStampAsString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(ISO_8601_DATE_FORMAT);
+        SimpleDateFormat sdf = new SimpleDateFormat(ISO_DATE_TIME);
         return sdf.format(date);
     }
 }
