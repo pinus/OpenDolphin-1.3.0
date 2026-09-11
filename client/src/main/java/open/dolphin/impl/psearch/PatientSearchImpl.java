@@ -15,7 +15,6 @@ import open.dolphin.ui.*;
 import open.dolphin.ui.sheet.JSheet;
 import open.dolphin.util.DateUtils;
 import open.dolphin.util.Gengo;
-import open.dolphin.util.MMLDate;
 import open.dolphin.dto.PatientSearchSpec.SEARCH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -423,7 +423,7 @@ public class PatientSearchImpl extends AbstractMainComponent {
         }
 
         PatientVisitModel[] pvts = new PatientVisitModel[patients.length];
-        String pvtDate = MMLDate.getDateTimeAsString(new Date());
+        String pvtDate = LocalDateTime.now().format(DateUtils.ISO_DATE_TIME_FORMATTER);
         String dept = constarctDept();
 
         for (int i = 0; i < patients.length; i++) {

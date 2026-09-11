@@ -64,13 +64,4 @@ public final class MMLDate {
         SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE);
         return sdf.format(date);
     }
-
-    /// Date から時間付きの mmlDate 形式を作る.
-    ///
-    /// @param date Date
-    /// @return 1975-01-01T12:23:34
-    public static String getDateTimeAsString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE_TIME);
-        return sdf.format(date);
-    }
 }

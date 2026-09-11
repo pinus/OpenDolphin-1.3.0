@@ -2,6 +2,7 @@ package open.dolphin.infomodel;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -11,6 +12,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -221,7 +223,8 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
     }
 
     public String getFirstConfirmDate() {
-        return MMLDate.getDateTimeAsString(getFirstConfirmed());
+        LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(getFirstConfirmed()); // bridge
+        return localDateTime.format(DateUtils.ISO_DATE_TIME_FORMATTER);
     }
 
     public void setFirstConfirmDate(String timeStamp) {
@@ -229,7 +232,8 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
     }
 
     public String getConfirmDate() {
-        return MMLDate.getDateTimeAsString(getConfirmed());
+        LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(getConfirmed()); // bridge
+        return localDateTime.format(DateUtils.ISO_DATE_TIME_FORMATTER);
     }
 
     public void setConfirmDate(String timeStamp) {

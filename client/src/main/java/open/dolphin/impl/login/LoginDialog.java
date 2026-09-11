@@ -13,8 +13,7 @@ import open.dolphin.setting.ProjectSettingDialog;
 import open.dolphin.ui.BlockGlass2;
 import open.dolphin.ui.Focuser;
 import open.dolphin.ui.PNSOptionPane;
-import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
+import open.dolphin.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * ログインダイアログ　クラス.
@@ -149,7 +148,7 @@ public class LoginDialog {
                     logger.info("User Type = {}", userType);
 
                     // 認証成功
-                    String time = MMLDate.getDateTimeAsString(new Date());
+                    String time = LocalDateTime.now().format(DateUtils.ISO_DATE_TIME_FORMATTER);
                     logger.info("{}: {} がログインしました", time, userModel.getUserId());
 
                     // ユーザID，施設ID，ユーザモデルを ProjectStub へ保存する

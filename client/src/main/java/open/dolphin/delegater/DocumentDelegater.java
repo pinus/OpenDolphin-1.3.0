@@ -5,11 +5,12 @@ import open.dolphin.dto.*;
 import open.dolphin.helper.ImageHelper;
 import open.dolphin.infomodel.*;
 import open.dolphin.service.KarteService;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -178,9 +179,10 @@ public class DocumentDelegater extends BusinessDelegater<KarteService> {
     private ImageEntry getImageEntry(SchemaModel schema, Dimension iconSize) {
 
         ImageEntry entry = new ImageEntry();
+        LocalDateTime confirmed = MMLDate.toLocalDateTimeFromDate(schema.getConfirmed()); // bridge
 
         entry.setId(schema.getId());
-        entry.setConfirmDate(MMLDate.getDateTimeAsString(schema.getConfirmed()));  // First?
+        entry.setConfirmDate(confirmed.format(DateUtils.ISO_DATE_TIME_FORMATTER));
         entry.setContentType(schema.getExtRef().getContentType());
         entry.setTitle(schema.getExtRef().getTitle());
         entry.setMedicalRole(schema.getExtRef().getMedicalRole());

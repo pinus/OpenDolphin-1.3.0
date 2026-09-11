@@ -10,12 +10,14 @@ import open.dolphin.orca.orcadao.OrcaDao;
 import open.dolphin.orca.orcadao.OrcaDbConnection;
 import open.dolphin.orca.orcadao.bean.Syskanri;
 import open.dolphin.orca.orcadao.bean.Wksryact;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static open.dolphin.infomodel.IInfoModel.*;
@@ -347,7 +349,8 @@ public class OrcaServiceApi {
 
         // Patient_ID, Perform_Date, Perform_Time, Medical_Uid をセット
         req.setPatient_ID(ptId);
-        String confirmDate = MMLDate.getDateTimeAsString(doc.getDocInfo().getConfirmDate()); // 2008-02-01T08:30:00
+        LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(doc.getDocInfo().getConfirmDate()); // bridge
+        String confirmDate = localDateTime.format(DateUtils.ISO_DATE_TIME_FORMATTER); // 2008-02-01T08:30:00
         String[] date = confirmDate.split("T");
         req.setPerform_Date(date[0]);
         req.setPerform_Time(date[1]);
@@ -544,13 +547,14 @@ public class OrcaServiceApi {
      * @return ApiResult
      */
     public ApiResult sendDiagnoses(List<RegisteredDiagnosisModel> diagnoses) {
-        RegisteredDiagnosisModel firstDiag = diagnoses.get(0);
+        RegisteredDiagnosisModel firstDiag = diagnoses.getFirst();
 
         Medicalreq req = new Medicalreq();
 
         String ptId = firstDiag.getKarte().getPatient().getPatientId();
         String ptName = firstDiag.getKarte().getPatient().getFullName();
-        String confirmDate = MMLDate.getDateTimeAsString(firstDiag.getConfirmed()); // 2008-02-01T08:30:00
+        LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(firstDiag.getConfirmed()); // bridge
+        String confirmDate = localDateTime.format(DateUtils.ISO_DATE_TIME_FORMATTER); // 2008-02-01T08:30:00
         String[] date = confirmDate.split("T");
 
         req.setPatient_ID(ptId);
