@@ -15,7 +15,6 @@ import open.dolphin.ui.IndentTableCellRenderer;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.ui.UndoableObjectReflectTableModel;
 import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +26,9 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 
 /**
  * 身長体重インスペクタクラス.
@@ -38,7 +38,7 @@ import java.util.*;
  */
 public class PhysicalInspector implements IInspector, TableModelListener {
     public static final InspectorCategory CATEGORY = InspectorCategory.身長体重;
-    private Logger logger = LoggerFactory.getLogger(PhysicalInspector.class);
+    private final Logger logger = LoggerFactory.getLogger(PhysicalInspector.class);
 
     // Chart
     private final ChartImpl context;
@@ -272,8 +272,10 @@ public class PhysicalInspector implements IInspector, TableModelListener {
             PhysicalModel model = tableModel.getObject(e.getFirstRow());
 
             // GUI の同定日をTimeStampに変更する
-            Date confirmed = MMLDate.getDateTimeAsObject(model.getIdentifiedDate() + "T00:00:00");
-            Date recorded = new Date();
+            LocalDateTime confirmedDateTime = LocalDateTime.parse(model.getIdentifiedDate() + "T00:00:00"); // bridge
+            LocalDateTime recordedDateTime = LocalDateTime.now(); // bridge
+            Date confirmed = MMLDate.toDateFromLocalDateTime(confirmedDateTime);
+            Date recorded = MMLDate.toDateFromLocalDateTime(recordedDateTime);
 
             // 身長体重の両方が含まれていると, 身長 → 体重の順に分けてデータベース保存される.
             final List<ObservationModel> observations = new ArrayList<>(2);

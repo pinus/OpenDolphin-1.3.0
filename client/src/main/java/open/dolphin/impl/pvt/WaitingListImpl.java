@@ -20,9 +20,8 @@ import open.dolphin.ui.ObjectReflectTableModel;
 import open.dolphin.ui.PNSBadgeTabbedPane;
 import open.dolphin.ui.PNSOptionPane;
 import open.dolphin.ui.sheet.JSheet;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.Gengo;
-import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -116,8 +116,9 @@ public class WaitingListImpl extends AbstractMainComponent {
         executor.submit(pvtChecker);
 
         // １分ごとに setCheckedTime() を呼んで待ち時間を更新して時計として使う
-        Runnable r = () -> setCheckedTime(LocalDateTime.now());
-        schedule.scheduleAtFixedRate(r, 0, 1, TimeUnit.MINUTES);
+        LocalDateTime now = LocalDateTime.now();
+        int initialDelay = 60 - now.getSecond();
+        schedule.scheduleAtFixedRate(this::setCheckedTime, initialDelay, 60, TimeUnit.SECONDS);
     }
 
     /**
@@ -333,12 +334,11 @@ public class WaitingListImpl extends AbstractMainComponent {
 
     /**
      * 来院情報をチェックした時刻を設定する.
-     *
-     * @param time チェックした時刻
-     */
-    private void setCheckedTime(LocalDateTime time) {
+     * */
+    private void setCheckedTime() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
-        view.getCheckedTimeLbl().setText(dtf.format(time));
+        view.getCheckedTimeLbl().setText(dtf.format(LocalDateTime.now()));
+        updatePvtCount();
     }
 
     /**
@@ -362,11 +362,7 @@ public class WaitingListImpl extends AbstractMainComponent {
                 continuousCount++;
 
                 if (!found) {
-                    long pvtTime = MMLDate.getDateTimeAsObject(pvt.getPvtDate()).getTime();
-                    long nowTime = new Date().getTime();
-                    if (pvtTime < nowTime) { // サーバ・クライアント時間がミリ秒単位でずれて反転することがある
-                        waitingTime = DurationFormatUtils.formatPeriod(pvtTime, nowTime, "HH:mm");
-                    }
+                    waitingTime = getWaitingTime(pvt.getPvtDate());
                     found = true;
                 }
             } else {
@@ -391,6 +387,20 @@ public class WaitingListImpl extends AbstractMainComponent {
         if (Dolphin.forMac) {
             Taskbar.getTaskbar().setIconBadge(waitingCount == 0 ? null : String.valueOf(waitingCount));
         }
+    }
+
+    /// 待ち時間算出
+    ///
+    /// @param from ISO_DATE_TIME 形式
+    /// @return "HH:mm" 形式の待ち時間
+    public static String getWaitingTime(String from) {
+        LocalDateTime fromDateTime = DateUtils.toLocalDateTimeFromIsoDateTime(from);
+        String waitingTime = "00:00";
+        if (fromDateTime.isBefore(LocalDateTime.now())) { // サーバ・クライアント時間がずれて反転することがある
+            long duration = fromDateTime.until(LocalDateTime.now(), ChronoUnit.MILLIS);
+            waitingTime = DurationFormatUtils.formatDuration(duration, "HH:mm");
+        }
+        return waitingTime;
     }
 
     /**
@@ -705,10 +715,10 @@ public class WaitingListImpl extends AbstractMainComponent {
             // PVTDelegater で使う date を作成する
             // [0] = today, date[1] = AppodateFrom, date[2] = AppodateTo
             // [0] 今日, [1] 2ヶ月前(AppodateFrom), [2]その2ヶ月後(AppodateTo) それは今日
-            final LocalDateTime date = LocalDateTime.now();
+            final LocalDateTime now = LocalDateTime.now();
             String[] dateToSearch = new String[3];
-            dateToSearch[0] = dateToSearch[2] = date.format(DateTimeFormatter.ISO_DATE);
-            dateToSearch[1] = date.plusMonths(-2).format((DateTimeFormatter.ISO_DATE));
+            dateToSearch[0] = dateToSearch[2] = now.format(DateTimeFormatter.ISO_DATE);
+            dateToSearch[1] = now.plusMonths(-2).format((DateTimeFormatter.ISO_DATE));
 
             // フルチェックする
             final List<PatientVisitModel> result = delegater.getPvt(dateToSearch, 0);
@@ -767,7 +777,7 @@ public class WaitingListImpl extends AbstractMainComponent {
             pvtTableModel.fireTableDataChanged();
 
             SwingUtilities.invokeLater(() -> {
-                setCheckedTime(date);
+                setCheckedTime();
                 updatePvtCount();
                 setBusy(false);
             });

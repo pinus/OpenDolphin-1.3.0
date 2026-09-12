@@ -1,11 +1,13 @@
 package open.dolphin.infomodel;
 
+import jakarta.persistence.*;
+import open.dolphin.util.DateUtils;
 import open.dolphin.util.MMLDate;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 /**
  * 診断履歴クラス.
@@ -134,14 +136,16 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
                 startDate += "T00:00:00";
             }
             //System.out.println(startDate);
-            setStarted(MMLDate.getDateTimeAsObject(startDate));
+            LocalDateTime localDateTime = LocalDateTime.parse(startDate); // bridge
+            Date start = MMLDate.toDateFromLocalDateTime(localDateTime);
+            setStarted(start);
         }
     }
 
     public String getEndDate() {
         if (getEnded() != null) {
             LocalDate localDate = MMLDate.toLocalDateFromDate(getEnded()); // bridge
-            return localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+            return localDate.format(DateUtils.ISO_DATE_FORMATTER);
         }
         return null;
     }
@@ -152,7 +156,9 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
             if (index < 0) {
                 endDate += "T00:00:00";
             }
-            setEnded(MMLDate.getDateTimeAsObject(endDate));
+            LocalDateTime localDateTime = LocalDateTime.parse(endDate); // bridge
+            Date end = MMLDate.toDateFromLocalDateTime(localDateTime);
+            setEnded(end);
         } else {
             setEnded(null);
         }
@@ -257,11 +263,9 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
     @Override
     public boolean equals(Object obj) {
         // obj が RegisteredDiagnosisModel でなければ not equal
-        if (!(obj instanceof RegisteredDiagnosisModel)) {
+        if (!(obj instanceof RegisteredDiagnosisModel target)) {
             return false;
         }
-
-        RegisteredDiagnosisModel target = (RegisteredDiagnosisModel) obj;
 
         // id == 0 はまだデータベースに保存されていない病名
         // SystemHash の値 ＋ diagnosis の値 で判定（厳密に一意ではないが，まず重なる可能性はない）

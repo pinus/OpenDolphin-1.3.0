@@ -3,18 +3,11 @@ package open.dolphin.impl.pvt;
 import open.dolphin.infomodel.KarteState;
 import open.dolphin.infomodel.PatientVisitModel;
 import open.dolphin.ui.ObjectReflectTableModel;
-import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import javax.swing.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 /**
  * @author kazm
@@ -61,14 +54,8 @@ public class RowTipsTable extends JTable {
                 break;
 
             default:
-                LocalDateTime pvtDateTime = DateUtils.toLocalDateTimeFromIsoDateTime(pvt.getPvtDate());
-                String waitingTime = "00:00";
-                if (pvtDateTime.isBefore(LocalDateTime.now())) { // サーバ・クライアント時間がずれて反転することがある
-                    long duration = pvtDateTime.until(LocalDateTime.now(), ChronoUnit.MILLIS);
-                    waitingTime = DurationFormatUtils.formatDuration(duration, "HH:mm");
-                }
-                int pvtState = pvt.getState();
-                if (pvtState == KarteState.CLOSE_NONE || pvtState == KarteState.OPEN_NONE) {
+                if (pvt.getState() == KarteState.CLOSE_NONE || pvt.getState() == KarteState.OPEN_NONE) {
+                    String waitingTime = WaitingListImpl.getWaitingTime(pvt.getPvtDate());
                     text = pvt.getPatient().getKanaName();
                     text += " - 待ち時間 " + waitingTime;
                 }

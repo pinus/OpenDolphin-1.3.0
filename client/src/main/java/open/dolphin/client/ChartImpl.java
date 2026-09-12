@@ -3,19 +3,24 @@ package open.dolphin.client;
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.event.BadgeEvent;
 import open.dolphin.event.ProxyAction;
-import open.dolphin.helper.*;
+import open.dolphin.helper.GUIDGenerator;
+import open.dolphin.helper.PNSTask;
+import open.dolphin.helper.WindowHolder;
+import open.dolphin.helper.WindowSupport;
 import open.dolphin.impl.care.CareMapDocument;
 import open.dolphin.impl.lbtest.LaboTestBean;
 import open.dolphin.impl.onshi.Onshi;
 import open.dolphin.impl.pinfo.PatientInfoDocument;
 import open.dolphin.impl.pvt.PvtListener;
+import open.dolphin.impl.pvt.WaitingListImpl;
 import open.dolphin.infomodel.*;
 import open.dolphin.inspector.*;
 import open.dolphin.project.Project;
-import open.dolphin.ui.*;
+import open.dolphin.ui.Focuser;
+import open.dolphin.ui.PNSBadgeTabbedPane;
+import open.dolphin.ui.PNSFrame;
+import open.dolphin.ui.StatusPanel;
 import open.dolphin.ui.sheet.JSheet;
-import open.dolphin.util.DateUtils;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,10 +30,8 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
@@ -594,13 +597,8 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         statusPanel.addSeparator();
         statusPanel.add(rdPrifix + " " + created);
 
-        LocalDateTime pvtDateTime = DateUtils.toLocalDateTimeFromIsoDateTime(pvt.getPvtDate());
-        if (pvt.getState() == KarteState.CLOSE_NONE) {
-            String waitingTime = "00:00";
-            if (pvtDateTime.isBefore(LocalDateTime.now())) { // サーバ・クライアント時間がずれて反転することがある
-                long duration = pvtDateTime.until(LocalDateTime.now(), ChronoUnit.MILLIS);
-                waitingTime = DurationFormatUtils.formatDuration(duration, "HH:mm");
-            }
+        if (pvt.getPvtDate() != null && pvt.getState() == KarteState.CLOSE_NONE) {
+            String waitingTime = WaitingListImpl.getWaitingTime(pvt.getPvtDate());
             statusPanel.addSeparator();
             statusPanel.add("待ち時間 " + waitingTime);
         }
