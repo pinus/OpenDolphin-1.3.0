@@ -4,22 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 
-/**
- * KarteEntryBean.
- *
- * @param <T> type of objects compared to
- * @author Minagawa, Kazushi
- */
+/// KarteEntryBean.
+///
+/// @param <T> type of objects compared to
+/// @author Minagawa, Kazushi
 @MappedSuperclass
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class)
 public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel implements Comparable<T> {
@@ -29,19 +24,15 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
     private long id;
 
     @Column(nullable = false)
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date confirmed;
+    private LocalDateTime confirmed;
 
     @Column(nullable = false)
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date started;
+    private LocalDateTime started;
 
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date ended;
+    private LocalDateTime ended;
 
     @Column(nullable = false)
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date recorded;
+    private LocalDateTime recorded;
 
     private long linkId;
 
@@ -68,35 +59,29 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
         this.id = id;
     }
 
-    public Date getConfirmed() {
-        return confirmed;
-    }
+    public LocalDateTime getConfirmed() { return confirmed; }
 
-    public void setConfirmed(Date confirmed) {
-        this.confirmed = confirmed;
-    }
+    public void setConfirmed(LocalDateTime confirmed) { this.confirmed = confirmed; }
 
-    public Date getStarted() {
-        return started;
-    }
+    public LocalDateTime getStarted() { return started; }
 
-    public void setStarted(Date started) {
+    public void setStarted(LocalDateTime started) {
         this.started = started;
     }
 
-    public Date getEnded() {
+    public LocalDateTime getEnded() {
         return ended;
     }
 
-    public void setEnded(Date ended) {
+    public void setEnded(LocalDateTime ended) {
         this.ended = ended;
     }
 
-    public Date getRecorded() {
+    public LocalDateTime getRecorded() {
         return recorded;
     }
 
-    public void setRecorded(Date recorded) {
+    public void setRecorded(LocalDateTime recorded) {
         this.recorded = recorded;
     }
 
@@ -161,17 +146,15 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
         return (id == other.getId());
     }
 
-    /**
-     * 適合開始日と確定日で比較する.
-     *
-     * @param other 比較対象
-     * @return Comparable の比較値
-     */
+    /// 適合開始日と確定日で比較する.
+    ///
+    /// @param other 比較対象
+    /// @return Comparable の比較値
     @Override
     public int compareTo(T other) {
         if (other != null) {
-            Date date1 = getStarted();
-            Date date2 = other.getStarted();
+            LocalDateTime date1 = getStarted();
+            LocalDateTime date2 = other.getStarted();
             int result = compareDate(date1, date2);
             if (result == 0) {
                 date1 = getConfirmed();
@@ -183,25 +166,17 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
         return -1;
     }
 
-    private int compareDate(Date date1, Date date2) {
+    private int compareDate(LocalDateTime date1, LocalDateTime date2) {
         if (date1 == null) {
             // 両方 null なら等しい
-            if (date2 == null) {
-                return 0;
-            }
+            if (date2 == null) { return 0; }
             // null は最上位
-            else {
-                return 1;
-            }
+            else { return 1; }
         } else {
             // null は最上位
-            if (date2 == null) {
-                return -1;
-            }
+            if (date2 == null) { return -1; }
             // date1 != null && date2 != null の場合
-            else {
-                return date1.compareTo(date2);
-            }
+            else { return date1.compareTo(date2); }
         }
     }
 
@@ -213,34 +188,28 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
     //
     // 互換性用のプロキシコード
     //
-    public Date getFirstConfirmed() {
+    public LocalDateTime getFirstConfirmed() {
         return getStarted();
     }
 
-    public void setFirstConfirmed(Date firstConfirmed) {
+    public void setFirstConfirmed(LocalDateTime firstConfirmed) {
         setStarted(firstConfirmed);
     }
 
     public String getFirstConfirmDate() {
-        LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(getFirstConfirmed()); // bridge
-        return localDateTime.format(DateUtils.ISO_DATE_TIME_FORMATTER);
+        return getFirstConfirmed().format(DateUtils.ISO_DATE_TIME_FORMATTER);
     }
 
     public void setFirstConfirmDate(String timeStamp) {
-        LocalDateTime localDateTime = LocalDateTime.parse(timeStamp); // bridge
-        Date firstConfirmed = MMLDate.toDateFromLocalDateTime(localDateTime);
-        setFirstConfirmed(firstConfirmed);
+        setFirstConfirmed(LocalDateTime.parse(timeStamp));
     }
 
     public String getConfirmDate() {
-        LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(getConfirmed()); // bridge
-        return localDateTime.format(DateUtils.ISO_DATE_TIME_FORMATTER);
+        return getConfirmed().format(DateUtils.ISO_DATE_TIME_FORMATTER);
     }
 
     public void setConfirmDate(String timeStamp) {
-        LocalDateTime localDateTime = LocalDateTime.parse(timeStamp); // bridge
-        Date confirmed = MMLDate.toDateFromLocalDateTime(localDateTime);
-        setConfirmed(confirmed);
+        setConfirmed(LocalDateTime.parse(timeStamp));
     }
 
 
@@ -248,51 +217,41 @@ public class KarteEntryBean<T extends KarteEntryBean<T>> extends InfoModel imple
     // 足場コード  Date
     //
     public String firstConfirmDateAsString() {
-        return dateAsString(getFirstConfirmed());
+        return getFirstConfirmed().format(DateUtils.ISO_DATE_FORMATTER);
     }
 
     public String confirmDateAsString() {
-        return dateAsString(getConfirmed());
+        return getConfirmed().format(DateUtils.ISO_DATE_FORMATTER);
     }
 
     public String startedDateAsString() {
-        return dateAsString(getStarted());
+        return getStarted().format(DateUtils.ISO_DATE_FORMATTER);
     }
 
     public String endedDateAsString() {
-        return dateAsString(getEnded());
+        return getEnded().format(DateUtils.ISO_DATE_FORMATTER);
     }
 
     public String recordedDateAsString() {
-        return dateAsString(getRecorded());
-    }
-
-    private String dateAsString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(ISO_DATE);
-        return sdf.format(date);
+        return getRecorded().format(DateUtils.ISO_DATE_FORMATTER);
     }
 
     //
     // 足場コード  TimeStamp
     //
     public String confirmedTimeStampAsString() {
-        return timeStampAsString(getConfirmed());
+        return getConfirmed().format(DateUtils.ISO_DATE_TIME_FORMATTER);
     }
 
     public String startedTimeStampAsString() {
-        return timeStampAsString(getStarted());
+        return getStarted().format(DateUtils.ISO_DATE_TIME_FORMATTER);
     }
 
     public String endedTimeStampAsString() {
-        return timeStampAsString(getEnded());
+        return getEnded().format(DateUtils.ISO_DATE_TIME_FORMATTER);
     }
 
     public String recordedTimeStampAsString() {
-        return timeStampAsString(getRecorded());
-    }
-
-    private String timeStampAsString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(ISO_DATE_TIME);
-        return sdf.format(date);
+        return getRecorded().format(DateUtils.ISO_DATE_TIME_FORMATTER);
     }
 }

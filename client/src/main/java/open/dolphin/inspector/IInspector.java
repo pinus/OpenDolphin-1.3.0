@@ -2,13 +2,12 @@ package open.dolphin.inspector;
 
 import open.dolphin.client.Dolphin;
 import open.dolphin.event.BadgeListener;
-import open.dolphin.infomodel.IInfoModel;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Inspector が持つインターフェース.
@@ -87,8 +86,6 @@ public interface IInspector {
      * @return ISO 型式の日付
      */
     default String today() {
-        Date today = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(IInfoModel.ISO_DATE);
-        return sdf.format(today);
+        return LocalDate.now().format(DateTimeFormatter.ISO_DATE);
     }
 }

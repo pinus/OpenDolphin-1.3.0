@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * AccessLicenseeModel.
- *
- * @author Kazushi Minagawa
- */
+/// AccessLicenseeModel.
+///
+/// @author Kazushi Minagawa
 public class AccessLicenseeModel extends InfoModel {
     
     private String code;

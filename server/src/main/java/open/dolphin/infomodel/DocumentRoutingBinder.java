@@ -6,10 +6,7 @@ import org.hibernate.search.mapper.pojo.bridge.mapping.programmatic.RoutingBinde
 import org.hibernate.search.mapper.pojo.bridge.runtime.RoutingBridgeRouteContext;
 import org.hibernate.search.mapper.pojo.route.DocumentRoutes;
 
-/**
- *
- * @author masuda, Masudana Ika
- */
+/// @author masuda, Masudana Ika
 public class DocumentRoutingBinder implements RoutingBinder, RoutingBridge<DocumentModel> {
 
     @Override

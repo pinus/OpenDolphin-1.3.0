@@ -8,8 +8,7 @@ import open.dolphin.infomodel.PatientVisitModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDateTime;
 
 /**
  * ちょっとカルテ内容をチェックして pvt に必要な情報をセットする.
@@ -17,28 +16,23 @@ import java.util.GregorianCalendar;
  * @author pns
  */
 public class DocumentPeeker {
-
     public static final int LEAST_KARTE_SIZE = 15; // カルテに必要な最低文字数
 
-    private DocumentDelegater ddl;
-    private PnsDelegater pnsdl;
-    private DiagnosisSearchSpec spec;
+    private final DocumentDelegater ddl;
+    private final PnsDelegater pnsdl;
+    private final DiagnosisSearchSpec spec;
     private KarteBean karte;
     private PatientVisitModel pvt;
-    private GregorianCalendar today;
-    private GregorianCalendar yesterday;
+    private final LocalDateTime today;
 
-    private Logger logger;
+    private final Logger logger;
 
     public DocumentPeeker() {
         //使い回す Object
-        today = new GregorianCalendar();
+        today = LocalDateTime.now();
         ddl = new DocumentDelegater();
         pnsdl = new PnsDelegater();
         spec = new DiagnosisSearchSpec();
-        yesterday = new GregorianCalendar();
-        yesterday.add(GregorianCalendar.DATE, -1);
-        yesterday.set(Calendar.HOUR_OF_DAY, 23);
 
         logger = LoggerFactory.getLogger(DocumentPeeker.class);
     }
@@ -55,7 +49,7 @@ public class DocumentPeeker {
 
     public void setPatientVisitModel(PatientVisitModel pvt) {
         this.pvt = pvt;
-        karte = ddl.getKarte(pvt.getPatient().getId(), today.getTime());
+        karte = ddl.getKarte(pvt.getPatient().getId(), today);
     }
 
     public boolean isKarteEmpty() {

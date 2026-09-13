@@ -14,7 +14,6 @@ import open.dolphin.project.Project;
 import open.dolphin.ui.IndentTableCellRenderer;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.ui.UndoableObjectReflectTableModel;
-import open.dolphin.util.MMLDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -272,10 +273,8 @@ public class PhysicalInspector implements IInspector, TableModelListener {
             PhysicalModel model = tableModel.getObject(e.getFirstRow());
 
             // GUI の同定日をTimeStampに変更する
-            LocalDateTime confirmedDateTime = LocalDateTime.parse(model.getIdentifiedDate() + "T00:00:00"); // bridge
-            LocalDateTime recordedDateTime = LocalDateTime.now(); // bridge
-            Date confirmed = MMLDate.toDateFromLocalDateTime(confirmedDateTime);
-            Date recorded = MMLDate.toDateFromLocalDateTime(recordedDateTime);
+            LocalDateTime confirmed = LocalDateTime.parse(model.getIdentifiedDate() + "T00:00:00");
+            LocalDateTime recorded = LocalDateTime.now();
 
             // 身長体重の両方が含まれていると, 身長 → 体重の順に分けてデータベース保存される.
             final List<ObservationModel> observations = new ArrayList<>(2);

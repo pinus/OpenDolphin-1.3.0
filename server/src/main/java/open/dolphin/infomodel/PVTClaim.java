@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-/**
- * Simple Claim　Class used for PVT.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- * Modified by Mirror-I corp for adding 'claimDeptName' and related function to store/get Department name
- */
+/// Simple Claim　Class used for PVT.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
+/// Modified by Mirror-I corp for adding 'claimDeptName' and related function to store/get Department name
 public class PVTClaim extends InfoModel {
 
     private String claimStatus;

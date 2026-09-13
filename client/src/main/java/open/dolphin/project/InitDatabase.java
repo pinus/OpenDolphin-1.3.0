@@ -1,5 +1,6 @@
 package open.dolphin.project;
 
+import jakarta.ws.rs.client.ClientBuilder;
 import open.dolphin.JsonConverter;
 import open.dolphin.helper.HashUtil;
 import open.dolphin.infomodel.*;
@@ -9,12 +10,15 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.ws.rs.client.ClientBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Dolphin用のマスタを登録する.
@@ -48,7 +52,7 @@ public class InitDatabase {
         logger = LoggerFactory.getLogger(InitDatabase.class);
     }
 
-    public static void main(String[] args) throws Exception {
+    static void main(String[] args) throws Exception {
         final InitDatabase initDatabase = new InitDatabase();
         final String usage = "Usage: java -cp OpenDolphin-1.3.0.X.jar open.dolphin.project.InitDatabase id password hostAddress";
 
@@ -138,8 +142,8 @@ public class InitDatabase {
         facility.setAddress(prop.get("facility.address"));
         facility.setTelephone(prop.get("facility.telephone"));
         facility.setUrl(prop.get("facility.url"));
-        Date date = new Date();
-        facility.setRegisteredDate(date);
+        LocalDate today = LocalDate.now();
+        facility.setRegisteredDate(today);
         facility.setMemberType(MEMBER_TYPE);
 
         // Administrator 情報
@@ -187,7 +191,7 @@ public class InitDatabase {
         adminUser.setMemberType(MEMBER_TYPE);
 
         // 登録日
-        adminUser.setRegisteredDate(date);
+        adminUser.setRegisteredDate(today);
 
         // host address
         if (hostAddress == null) {

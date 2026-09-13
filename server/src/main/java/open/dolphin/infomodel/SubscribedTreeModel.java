@@ -2,12 +2,10 @@ package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
 
-/**
- * StampTreeXML のホルダクラス.
- * ユーザがインポートしているTreeクラス.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// StampTreeXML のホルダクラス.
+/// ユーザがインポートしているTreeクラス.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 @Entity
 @Table(name = "d_subscribed_tree")
 public class SubscribedTreeModel extends InfoModel {

@@ -2,11 +2,9 @@ package open.dolphin.infomodel;
 
 import jakarta.persistence.Embeddable;
 
-/**
- * Diagnosis のカテゴリーモデル.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// Diagnosis のカテゴリーモデル.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 @Embeddable
 public class DiagnosisOutcomeModel extends InfoModel {
 

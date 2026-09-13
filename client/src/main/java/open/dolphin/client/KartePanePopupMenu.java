@@ -12,7 +12,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -170,8 +169,7 @@ public class KartePanePopupMenu extends JPopupMenu {
         // firstConfirm が null の場合がある (未保存新規カルテ)
         LocalDate firstConfirmDate = Objects.isNull(document.getDocInfo().getFirstConfirmDate())
                 ? LocalDate.now()
-                : document.getDocInfo().getFirstConfirmDate()
-                    .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                : document.getDocInfo().getFirstConfirmDate().toLocalDate();
         String date = firstConfirmDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
 
         SubjectivesSpec spec = new SubjectivesSpec();

@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * ClaimBundle 要素クラス.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// ClaimBundle 要素クラス.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 public class ClaimBundle extends InfoModel {
 
     private String className;           // 診療行為名

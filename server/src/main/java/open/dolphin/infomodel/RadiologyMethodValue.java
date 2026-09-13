@@ -2,11 +2,9 @@ package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
 
-/**
- * RadiologyMethodValue.
- *
- * @author Minagawa, kazushi
- */
+/// RadiologyMethodValue.
+///
+/// @author Minagawa, kazushi
 @Entity
 @Table(name = "d_radiology_method")
 public class RadiologyMethodValue extends InfoModel {

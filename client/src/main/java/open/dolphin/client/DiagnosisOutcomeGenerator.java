@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -18,10 +17,10 @@ import java.util.stream.Stream;
  * @author pns
  */
 public class DiagnosisOutcomeGenerator {
-    private static int OFFSET = Project.getPreferences().getInt(Project.OFFSET_OUTCOME_DATE, -1);
-    private static String[] ACUTE_DISEASE = { "ヘルペス", "単純疱疹" };
+    private static final int OFFSET = Project.getPreferences().getInt(Project.OFFSET_OUTCOME_DATE, -1);
+    private static final String[] ACUTE_DISEASE = { "ヘルペス", "単純疱疹" };
 
-    private Logger logger = LoggerFactory.getLogger(DiagnosisOutcomeGenerator.class);
+    private final Logger logger = LoggerFactory.getLogger(DiagnosisOutcomeGenerator.class);
     private RegisteredDiagnosisModel rd;
     private LastVisit lv;
 
@@ -61,7 +60,7 @@ public class DiagnosisOutcomeGenerator {
         LocalDate lastVisit = lv.getLastVisit();
         LocalDate endDate = Stream.of(ACUTE_DISEASE).anyMatch(rd.getDiagnosis()::contains)
             // 急性病名. plusDays(1) は started が末日だった場合対応
-            ? rd.getStarted().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(1)
+            ? rd.getStarted().toLocalDate().plusDays(1)
             // その他
             : Objects.nonNull(lv.getLastVisitInHistory()) ? lv.getLastVisitInHistory() : lv.getLastVisit();
 

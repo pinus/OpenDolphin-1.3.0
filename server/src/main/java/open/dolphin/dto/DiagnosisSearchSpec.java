@@ -1,7 +1,7 @@
 package open.dolphin.dto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * DiagnosisSearchSpec.
@@ -13,14 +13,14 @@ public class DiagnosisSearchSpec implements Serializable {
     public static final int CODE_SEARCH = 1;
     public static final int DIAGNOSIS_SEARCH = 2;
     public static final int CREATOR_SEARCH = 3;
-        private int code;
+    private int code;
     private long karteId;
     private String patientId;
     private String diagnosisCode;
     private String diagnosis;
     private String creatorId;
-    private Date fromDate;
-    private Date toDate;
+    private LocalDateTime fromDate;
+    private LocalDateTime toDate;
     private char status;
 
     public int getCode() {
@@ -71,19 +71,19 @@ public class DiagnosisSearchSpec implements Serializable {
         this.creatorId = creatorId;
     }
 
-    public Date getFromDate() {
+    public LocalDateTime getFromDate() {
         return fromDate;
     }
 
-    public void setFromDate(Date fromDate) {
+    public void setFromDate(LocalDateTime fromDate) {
         this.fromDate = fromDate;
     }
 
-    public Date getToDate() {
+    public LocalDateTime getToDate() {
         return toDate;
     }
 
-    public void setToDate(Date toDate) {
+    public void setToDate(LocalDateTime toDate) {
         this.toDate = toDate;
     }
 

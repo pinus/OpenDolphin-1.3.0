@@ -7,11 +7,9 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * LaboSpecimenValue.
- *
- * @author Minagawa, Kazushi
- */
+/// LaboSpecimenValue.
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_labo_specimen")
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class)

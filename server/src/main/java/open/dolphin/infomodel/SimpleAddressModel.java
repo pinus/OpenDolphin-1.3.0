@@ -2,11 +2,9 @@ package open.dolphin.infomodel;
 
 import jakarta.persistence.Embeddable;
 
-/**
- * SimpleAddressModel.
- *
- * @author kazm
- */
+/// SimpleAddressModel.
+///
+/// @author kazm
 @Embeddable
 public class SimpleAddressModel extends InfoModel {
 

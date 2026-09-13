@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * TelephoneModel.
- *
- * @author Minagawa, Kazushi
- */
+/// TelephoneModel.
+///
+/// @author Minagawa, Kazushi
 public class TelephoneModel extends InfoModel {
     
     private String telephoneType;

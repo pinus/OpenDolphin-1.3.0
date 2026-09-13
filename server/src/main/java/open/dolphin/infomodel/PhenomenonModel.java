@@ -1,13 +1,12 @@
 package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
-import java.util.Date;
 
-/**
- * PhenomenonModel.
- *
- * @author Minagawa, Kazushi
- */
+import java.time.LocalDate;
+
+/// PhenomenonModel.
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_phenomenon")
 public class PhenomenonModel extends InfoModel {
@@ -30,14 +29,11 @@ public class PhenomenonModel extends InfoModel {
 
     private String valueSys;
 
-    @Temporal(value = TemporalType.DATE)
-    private Date startDate;
+    private LocalDate startDate;
 
-    @Temporal(value = TemporalType.DATE)
-    private Date endDate;
+    private LocalDate endDate;
 
-    @Temporal(value = TemporalType.DATE)
-    private Date recorded;
+    private LocalDate recorded;
 
 
     public long getId() {
@@ -88,27 +84,27 @@ public class PhenomenonModel extends InfoModel {
         this.valueSys = valueSys;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
-    public Date getRecorded() {
+    public LocalDate getRecorded() {
         return recorded;
     }
 
-    public void setRecorded(Date recorded) {
+    public void setRecorded(LocalDate recorded) {
         this.recorded = recorded;
     }
 

@@ -10,11 +10,9 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * PatientModel.
- *
- * @author Minagawa, kazushi
- */
+/// PatientModel.
+///
+/// @author Minagawa, kazushi
 @Entity
 @Table(name = "d_patient")
 public class PatientModel extends InfoModel {
@@ -24,15 +22,11 @@ public class PatientModel extends InfoModel {
     @GenericField // hibernate search
     private long id;
 
-    /**
-     * 施設ID
-     */
+    /// 施設ID
     @Column(nullable = false)
     private String facilityId;
 
-    /**
-     * 施設内の患者ID
-     */
+    /// 施設内の患者ID
     @Column(nullable = false)
     private String patientId;
 

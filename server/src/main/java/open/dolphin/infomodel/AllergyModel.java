@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * AllergyModel.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// AllergyModel.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 public class AllergyModel extends InfoModel implements Comparable<AllergyModel> {
 
     private long observationId;
@@ -67,12 +65,10 @@ public class AllergyModel extends InfoModel implements Comparable<AllergyModel> 
         this.observationId = observationId;
     }
 
-    /**
-     * 同定日で比較する.
-     *
-     * @param other 比較対象オブジェクト
-     * @return 比較値
-     */
+    /// 同定日で比較する.
+    ///
+    /// @param other 比較対象オブジェクト
+    /// @return 比較値
     @Override
     public int compareTo(AllergyModel other) {
         if (other != null) {

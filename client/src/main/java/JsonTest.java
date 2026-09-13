@@ -8,16 +8,16 @@ import open.dolphin.service.UserService;
 import open.dolphin.util.JsonUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
  * @author pns
  */
 public class JsonTest {
-    public static void main(String[] arg) throws Exception {
+    static void main(String[] arg) throws Exception {
         new JsonTest().start();
     }
 
@@ -44,15 +44,11 @@ public class JsonTest {
         System.out.println("target = " + target);
 
         KarteService karteService = target.proxy(KarteService.class);
-        GregorianCalendar today = new GregorianCalendar();
-        today.add(GregorianCalendar.MONTH, -60);
-        today.clear(Calendar.HOUR_OF_DAY);
-        today.clear(Calendar.MINUTE);
-        today.clear(Calendar.SECOND);
-        today.clear(Calendar.MILLISECOND);
+        LocalDateTime today = LocalDate.now().atStartOfDay().minusMonths(60);
+
         KarteBeanSpec spec = new KarteBeanSpec();
         spec.setPatientPk(953);
-        spec.setFromDate(today.getTime());
+        spec.setFromDate(today);
         KarteBean karte = karteService.getKarte(spec);
         System.out.println("karte = " + karte);
         System.out.println("karteid = " + karte.getId());

@@ -1,7 +1,8 @@
 package open.dolphin.dto;
 
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
+import open.dolphin.util.DateUtils;
+
+import java.time.LocalDate;
 
 /**
  * OrcaEntry.
@@ -13,13 +14,8 @@ public class OrcaEntry implements Comparable {
     /**
      * 今日の日付.
      */
-    private static String refDate;
+    private static final String refDate = LocalDate.now().format(DateUtils.ORCA_DATE_FORMATTER);
 
-    static {
-        GregorianCalendar gc = new GregorianCalendar();
-        SimpleDateFormat f = new SimpleDateFormat("yyyyMMdd");
-        refDate = f.format(gc.getTime());
-    }
     // tbl_tensu, tbl_byome 共通項目
     /**
      * 診療行為コード srycd (or byomeicd)

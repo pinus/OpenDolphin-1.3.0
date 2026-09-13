@@ -7,11 +7,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.StringTokenizer;
 
-/**
- * PatientVisitModel.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// PatientVisitModel.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 @Entity
 @Table(name = "d_patient_visit")
 public class PatientVisitModel extends InfoModel {
@@ -20,73 +18,49 @@ public class PatientVisitModel extends InfoModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    /**
-     * 患者
-     */
+    /// 患者
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private PatientModel patient;
 
-    /**
-     * 施設ID
-     */
+    /// 施設ID
     @Column(nullable = false)
     private String facilityId;
 
-    /**
-     * 受付リスト上の番号
-     */
+    /// 受付リスト上の番号
     @Transient
     private int number;
 
-    /**
-     * 来院時間
-     */
+    /// 来院時間
     @Column(nullable = false)
     private String pvtDate;
 
-    /**
-     * 予約
-     */
+    /// 予約
     @Transient
     private String appointment;
 
-    /**
-     * 診療科
-     */
+    /// 診療科
     private String department;
 
-    /**
-     * 終了フラグ
-     */
+    /// 終了フラグ
     private int status;
 
-    /**
-     * 健康保険GUID 2006-05-01
-     */
+    /// 健康保険GUID 2006-05-01
     private String insuranceUid;
 
-    /**
-     * 今まで付いた病名の総数
-     */
+    /// 今まで付いた病名の総数
     @Column(nullable = false)
     private int byomeiCount;
 
-    /**
-     * 今日付いた病名の数
-     */
+    /// 今日付いた病名の数
     @Column(nullable = false)
     private int byomeiCountToday;
 
-    /**
-     * カルテ記載があるかどうか
-     */
+    /// カルテ記載があるかどうか
     @Transient
     private boolean karteEmpty;
 
-    /**
-     * ORCA から送られる「診療内容」
-     */
+    /// ORCA から送られる「診療内容」
     private String memo;
 
     public boolean isShoshin() {

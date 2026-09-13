@@ -6,13 +6,11 @@ import open.dolphin.helper.ImageHelper;
 import open.dolphin.infomodel.*;
 import open.dolphin.service.KarteService;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,7 +30,7 @@ public class DocumentDelegater extends BusinessDelegater<KarteService> {
      * @param fromDate  履歴の検索開始日
      * @return KarteBean
      */
-    public KarteBean getKarte(long patientPk, Date fromDate) {
+    public KarteBean getKarte(long patientPk, LocalDateTime fromDate) {
         KarteBeanSpec spec = new KarteBeanSpec();
         spec.setPatientPk(patientPk);
         spec.setFromDate(fromDate);
@@ -179,10 +177,8 @@ public class DocumentDelegater extends BusinessDelegater<KarteService> {
     private ImageEntry getImageEntry(SchemaModel schema, Dimension iconSize) {
 
         ImageEntry entry = new ImageEntry();
-        LocalDateTime confirmed = MMLDate.toLocalDateTimeFromDate(schema.getConfirmed()); // bridge
-
         entry.setId(schema.getId());
-        entry.setConfirmDate(confirmed.format(DateUtils.ISO_DATE_TIME_FORMATTER));
+        entry.setConfirmDate(schema.getConfirmed().format(DateUtils.ISO_DATE_TIME_FORMATTER));
         entry.setContentType(schema.getExtRef().getContentType());
         entry.setTitle(schema.getExtRef().getTitle());
         entry.setMedicalRole(schema.getExtRef().getMedicalRole());

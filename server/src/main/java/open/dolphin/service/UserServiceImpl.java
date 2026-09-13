@@ -1,11 +1,12 @@
 package open.dolphin.service;
 
-import open.dolphin.infomodel.*;
-
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.NoResultException;
-import java.util.Date;
+import open.dolphin.infomodel.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -122,7 +123,7 @@ public class UserServiceImpl extends DolphinService implements UserService {
         em.remove(stampTree);
 
         // ユーザを削除する
-        String note = String.valueOf(new Date());
+        String note = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         remove.setMemo(note);
         remove.setPassword("38afd7ae34bd5e3e6fc170d8b09178a3"); // EXPIRED
         remove.setMemberType("EXPIRED");

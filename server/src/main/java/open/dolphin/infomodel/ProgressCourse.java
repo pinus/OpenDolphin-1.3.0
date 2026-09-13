@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * ProgressCourse.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// ProgressCourse.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 public class ProgressCourse extends InfoModel {
     
     private String freeText;

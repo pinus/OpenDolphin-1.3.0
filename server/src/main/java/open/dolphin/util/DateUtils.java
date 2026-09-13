@@ -3,7 +3,9 @@ package open.dolphin.util;
 import open.dolphin.infomodel.IInfoModel;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
 /// DateUtils
@@ -17,11 +19,12 @@ import java.time.format.DateTimeFormatter;
 ///
 /// @author pns
 public class DateUtils {
-    private static final String MIN_DATE = "1970-01-01'T'00:00:00";
+    private static final String MIN_DATE = "1970-01-01T00:00:00";
     public static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ISO_DATE);
     public static final DateTimeFormatter ISO_TIME_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ISO_TIME);
     public static final DateTimeFormatter ISO_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ISO_DATE_TIME);
-    public static final DateTimeFormatter KARTE_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.KARTE_DATE);
+    public static final DateTimeFormatter KARTE_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.KARTE_DATE); // yyyy年M月d日(E) HH:mm
+    public static final DateTimeFormatter ORCA_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ORCA_DATE); // yyyyMMdd
 
     /// ISO-DATE または ISO-DATE-TIME 型式から LocalDateTime を作る.
     ///
@@ -136,7 +139,7 @@ public class DateUtils {
         return toLocalDateTimeFromIsoDateTime(MIN_DATE);
     }
 
-    public static void main(String[] arg) {
+    static void main(String[] arg) {
         IO.println("1." + toGengoDateFromOrcaGengoDate("3300101"));
         IO.println("2." + toGengoDateFromOrcaGengoDate("4300430"));
         IO.println("3." + toGengoDateFromOrcaGengoDate("5010501"));

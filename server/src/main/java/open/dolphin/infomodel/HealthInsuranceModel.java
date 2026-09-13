@@ -2,11 +2,9 @@ package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
 
-/**
- * HealthInsuranceModel.
- *
- * @author Minagawa, kazushi
- */
+/// HealthInsuranceModel.
+///
+/// @author Minagawa, kazushi
 @Entity
 @Table(name = "d_health_insurance")
 public class HealthInsuranceModel extends InfoModel {

@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * PatientLiteModel.
- *
- * @author Minagawa, kazushi
- */
+/// PatientLiteModel.
+///
+/// @author Minagawa, kazushi
 public class PatientLiteModel extends InfoModel {
     
     private String patientId;

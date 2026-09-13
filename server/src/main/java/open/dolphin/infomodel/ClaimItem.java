@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * ClaimItem 要素クラス.
- *
- * @author Kazushi Minagawa, Digital Globe,Inc.
- */
+/// ClaimItem 要素クラス.
+///
+/// @author Kazushi Minagawa, Digital Globe,Inc.
 public class ClaimItem extends InfoModel {
     
     private String name;

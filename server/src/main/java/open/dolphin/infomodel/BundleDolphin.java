@@ -3,11 +3,9 @@ package open.dolphin.infomodel;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 
-/**
- * BundleDolphin.
- *
- * @author Minagawa, Kazushi
- */
+/// BundleDolphin.
+///
+/// @author Minagawa, Kazushi
 public class BundleDolphin extends ClaimBundle {
     
     private String orderName;

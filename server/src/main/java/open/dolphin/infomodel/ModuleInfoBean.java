@@ -1,70 +1,49 @@
 package open.dolphin.infomodel;
 
-import open.dolphin.util.ModelUtils;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
+import open.dolphin.util.ModelUtils;
 
-/**
- * Stamp 及び Module の属性を保持するクラス.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// Stamp 及び Module の属性を保持するクラス.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 @Embeddable
 public class ModuleInfoBean extends InfoModel implements Comparable<ModuleInfoBean> {
     
-    /**
-     * Module 名: StampTree、 オーダ履歴当に表示する名前
-     */
+    /// Module 名: StampTree、 オーダ履歴当に表示する名前
     @Column(nullable = false)
     private String name;
 
-    /**
-     * SOA または P の役割
-     */
+    /// SOA または P の役割
     @Column(nullable = false)
     private String role;
 
-    /**
-     * ドキュメントに出現する順番
-     */
+    /// ドキュメントに出現する順番
     @Column(nullable = false)
     private int stampNumber;
 
-    /**
-     * 情報の実体名
-     */
+    /// 情報の実体名
     @Column(nullable = false)
     private String entity;
 
-    /**
-     * 編集可能かどうか
-     */
+    /// 編集可能かどうか
     @Transient
     private boolean editable = true;
 
-    /**
-     * ASP 提供か
-     */
+    /// ASP 提供か
     @Transient
     private boolean asp;
 
-    /**
-     * DB 保存されている場合、そのキー
-     */
+    /// DB 保存されている場合、そのキー
     @Transient
     private String stampId;
 
-    /**
-     * Memo の内容説明
-     */
+    /// Memo の内容説明
     @Transient
     private String memo;
 
-    /**
-     * 折り返し表示するかどうか
-     */
+    /// 折り返し表示するかどうか
     @Transient
     private boolean turnIn;
 
@@ -154,12 +133,10 @@ public class ModuleInfoBean extends InfoModel implements Comparable<ModuleInfoBe
         this.stampNumber = stampNumber;
     }
 
-    /**
-     * スタンプ番号で比較する.
-     *
-     * @param other 比較対象の ModuleInfoBean
-     * @return 比較値
-     */
+    /// スタンプ番号で比較する.
+    ///
+    /// @param other 比較対象の ModuleInfoBean
+    /// @return 比較値
     @Override
     public int compareTo(ModuleInfoBean other) {
         if (other != null) {

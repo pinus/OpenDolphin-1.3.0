@@ -198,7 +198,6 @@ public class FileInspector implements IInspector {
 
             String fileName = ((File) value).getName();
             setText(" " + fileName);
-            //this.setText(" " + fileName + " " + MMLDate.getDateAsString(new java.util.Date(((File)value).lastModified())));
             return this;
         }
     }
@@ -255,7 +254,7 @@ public class FileInspector implements IInspector {
         }
     }
 
-    public static void main(String[] arg) {
+    static void main(String[] arg) {
         System.out.println(getDocumentPath("000125"));
     }
 }

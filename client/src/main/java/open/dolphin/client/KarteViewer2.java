@@ -6,16 +6,13 @@ import open.dolphin.infomodel.DocInfoModel;
 import open.dolphin.infomodel.DocumentModel;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseListener;
 import java.awt.print.PageFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -140,9 +137,8 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
             StringBuilder timeStamp = new StringBuilder();
 
             // time stamp
-            Date confirmDate = document.getDocInfo().getFirstConfirmDate();
-            LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(confirmDate); // bridge
-            String firstConfirmDate = localDateTime.format(DateUtils.KARTE_DATE_FORMATTER);
+            LocalDateTime confirmDate = document.getDocInfo().getFirstConfirmDate();
+            String firstConfirmDate = confirmDate.format(DateUtils.KARTE_DATE_FORMATTER);
             timeStamp.append(firstConfirmDate);
 
             // 修正日表示

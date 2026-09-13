@@ -12,7 +12,6 @@ import open.dolphin.ui.Focuser;
 import open.dolphin.ui.PNSFrame;
 import open.dolphin.ui.PNSOptionPane;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Objects;
 import java.util.prefs.Preferences;
 
@@ -307,9 +305,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         String timeStamp = MODIFY_MARK + now;
 
         if (modify) {
-            Date date = getDocument().getDocInfo().getFirstConfirmDate();
-            LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(date); // bridge
-            String firstConfirm = localDateTime.format(DateUtils.KARTE_DATE_FORMATTER);
+            String firstConfirm = getDocument().getDocInfo().getFirstConfirmDate().format(DateUtils.KARTE_DATE_FORMATTER);
             timeStamp += ORIGINAL_MARK + firstConfirm;
         }
 
@@ -578,7 +574,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         DocInfoModel docInfo = document.getDocInfo();
 
         // 現在時刻を ConfirmDate にする
-        Date confirmed = new Date();
+        LocalDateTime confirmed = LocalDateTime.now();
         docInfo.setConfirmDate(confirmed);
         logger.debug("composeModel confirmed = " + docInfo.getConfirmDate());
 

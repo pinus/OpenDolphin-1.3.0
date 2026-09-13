@@ -5,23 +5,26 @@ import open.dolphin.delegater.OrcaDelegater;
 import open.dolphin.dto.OrcaEntry;
 import open.dolphin.event.OrderListener;
 import open.dolphin.event.ProxyAction;
-import open.dolphin.helper.*;
+import open.dolphin.helper.PNSPair;
+import open.dolphin.helper.PNSTriple;
+import open.dolphin.helper.StringTool;
+import open.dolphin.helper.TextComponentUndoManager;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.orca.ClaimConst;
 import open.dolphin.order.stampeditor.StampEditor;
 import open.dolphin.ui.*;
 import open.dolphin.util.DateUtils;
 
-import javax.swing.FocusManager;
 import javax.swing.*;
+import javax.swing.FocusManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -90,10 +93,7 @@ public class MasterSearchPanel extends JPanel {
     public MasterSearchPanel(String entity) {
         super();
         this.entity = entity;
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        todayDate = sdf.format(new Date());
-
+        todayDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         initComponents();
     }
 

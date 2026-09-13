@@ -1,13 +1,12 @@
 package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
-import java.util.Date;
 
-/**
- * FacilityModel.
- *
- * @author Minagawa, Kazushi
- */
+import java.time.LocalDate;
+
+/// FacilityModel.
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_facility")
 public class FacilityModel extends InfoModel {
@@ -34,8 +33,7 @@ public class FacilityModel extends InfoModel {
     private String url;
 
     @Column(nullable = false)
-    @Temporal(value = TemporalType.DATE)
-    private Date registeredDate;
+    private LocalDate registeredDate;
 
     @Column(nullable = false)
     private String memberType;
@@ -96,11 +94,11 @@ public class FacilityModel extends InfoModel {
         this.url = url;
     }
 
-    public Date getRegisteredDate() {
+    public LocalDate getRegisteredDate() {
         return registeredDate;
     }
 
-    public void setRegisteredDate(Date registeredDate) {
+    public void setRegisteredDate(LocalDate registeredDate) {
         this.registeredDate = registeredDate;
     }
 
@@ -116,7 +114,7 @@ public class FacilityModel extends InfoModel {
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + (int) (id ^ (id >>> 32));
+        result = PRIME * result + Long.hashCode(id);
         return result;
     }
 

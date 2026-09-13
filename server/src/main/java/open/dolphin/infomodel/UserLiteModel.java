@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * UserLiteModel.
- *
- * @author Minagawa, Kazushi
- */
+/// UserLiteModel.
+///
+/// @author Minagawa, Kazushi
 public class UserLiteModel extends InfoModel {
     
     private String userId;

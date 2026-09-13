@@ -23,7 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 患者のメモを表示し編集するクラス.
@@ -251,7 +251,7 @@ public class MemoInspector implements IInspector {
             patientMemoModel = new PatientMemoModel();
         }
         // 上書き更新
-        Date confirmed = new Date();
+        LocalDateTime confirmed = LocalDateTime.now();
         patientMemoModel.setKarte(context.getKarte());
         patientMemoModel.setCreator(Project.getUserModel());
         patientMemoModel.setConfirmed(confirmed);

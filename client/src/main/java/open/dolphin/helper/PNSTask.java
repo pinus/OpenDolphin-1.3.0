@@ -1,8 +1,6 @@
 package open.dolphin.helper;
 
 import open.dolphin.ui.PNSProgressMonitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -262,7 +261,7 @@ public abstract class PNSTask<T> extends SwingWorker<T, Integer> implements Acti
         void unblock();
     }
 
-    public static void main(String[] argv) {
+    static void main(String[] argv) {
         PNSTask<String> task = new PNSTask<>(null, "テスト１", "実行中...") {
             @Override
             protected String doInBackground() throws Exception {
@@ -275,34 +274,34 @@ public abstract class PNSTask<T> extends SwingWorker<T, Integer> implements Acti
 
             @Override
             protected void succeeded(String result) {
-                System.out.println("ended: " + new java.util.Date());
-                System.out.println("result=" + result);
+                IO.println("ended: " + LocalDateTime.now());
+                IO.println("result=" + result);
             }
 
             @Override
             protected void cancelled() {
-                System.out.println("Canceled");
+                IO.println("Canceled");
             }
 
             @Override
             protected void failed(Throwable cause) {
-                System.out.println("failed " + cause);
+                IO.println("failed " + cause);
             }
 
             @Override
             protected void interrupted(InterruptedException ex) {
-                System.out.println("interrupted " + ex);
+                IO.println("interrupted " + ex);
             }
 
         };
         task.setTimeOut(3000);
         task.execute();
-        System.out.println("PNSTask thread started: " + new java.util.Date());
+        IO.println("PNSTask thread started: " + LocalDateTime.now());
 
         PNSTask<Object> task2 = new PNSTask<>(null, "テスト２", "実行中...") {
             @Override
             protected Object doInBackground() throws Exception {
-                System.out.println("task2 start");
+                IO.println("task2 start");
                 for (int i = 0; i < 5; i++) {
                     setProgress(i * 20);
                     Thread.sleep(1000);
@@ -312,7 +311,7 @@ public abstract class PNSTask<T> extends SwingWorker<T, Integer> implements Acti
 
             @Override
             protected void succeeded(Object result) {
-                System.out.println("task2 done");
+                IO.println("task2 done");
             }
 
         };
@@ -320,12 +319,12 @@ public abstract class PNSTask<T> extends SwingWorker<T, Integer> implements Acti
         task2.execute();
 
 
-        System.out.println("Main thread is waiting for the thread done.");
+        IO.println("Main thread is waiting for the thread done.");
         try {
             Thread.sleep(6000);
         } catch (InterruptedException ex) {
         }
-        System.out.println("Main thread ended.");
+        IO.println("Main thread ended.");
     }
 }
 

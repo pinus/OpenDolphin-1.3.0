@@ -11,13 +11,11 @@ import open.dolphin.orca.orcadao.OrcaDbConnection;
 import open.dolphin.orca.orcadao.bean.Syskanri;
 import open.dolphin.orca.orcadao.bean.Wksryact;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static open.dolphin.infomodel.IInfoModel.*;
@@ -349,8 +347,7 @@ public class OrcaServiceApi {
 
         // Patient_ID, Perform_Date, Perform_Time, Medical_Uid をセット
         req.setPatient_ID(ptId);
-        LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(doc.getDocInfo().getConfirmDate()); // bridge
-        String confirmDate = localDateTime.format(DateUtils.ISO_DATE_TIME_FORMATTER); // 2008-02-01T08:30:00
+        String confirmDate = doc.getDocInfo().getConfirmDate().format(DateUtils.ISO_DATE_TIME_FORMATTER); // 2008-02-01T08:30:00
         String[] date = confirmDate.split("T");
         req.setPerform_Date(date[0]);
         req.setPerform_Time(date[1]);
@@ -553,8 +550,7 @@ public class OrcaServiceApi {
 
         String ptId = firstDiag.getKarte().getPatient().getPatientId();
         String ptName = firstDiag.getKarte().getPatient().getFullName();
-        LocalDateTime localDateTime = MMLDate.toLocalDateTimeFromDate(firstDiag.getConfirmed()); // bridge
-        String confirmDate = localDateTime.format(DateUtils.ISO_DATE_TIME_FORMATTER); // 2008-02-01T08:30:00
+        String confirmDate = firstDiag.getConfirmed().format(DateUtils.ISO_DATE_TIME_FORMATTER); // 2008-02-01T08:30:00
         String[] date = confirmDate.split("T");
 
         req.setPatient_ID(ptId);

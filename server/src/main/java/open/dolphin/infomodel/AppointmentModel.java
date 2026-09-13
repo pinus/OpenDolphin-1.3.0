@@ -1,18 +1,16 @@
 package open.dolphin.infomodel;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
-
-import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
-/**
- * AppointmentModel.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// AppointmentModel.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 @Entity
 @Table(name = "d_appo")
 public class AppointmentModel extends KarteEntryBean<AppointmentModel> {
@@ -21,9 +19,7 @@ public class AppointmentModel extends KarteEntryBean<AppointmentModel> {
     public static final int TT_HAS = 2;
     public static final int TT_REPLACE = 3;
 
-    /**
-     * 施設内の患者ID
-     */
+    /// 施設内の患者ID
     private String patientId;
 
     @Transient
@@ -35,8 +31,7 @@ public class AppointmentModel extends KarteEntryBean<AppointmentModel> {
     private String memo;
 
     @Column(name = "c_date", nullable = false)
-    @Temporal(value = TemporalType.DATE)
-    private Date date;
+    private LocalDate date;
 
     public int getState() {
         return state;
@@ -46,11 +41,9 @@ public class AppointmentModel extends KarteEntryBean<AppointmentModel> {
         state = val;
     }
 
-    public Date getDate() {
-        return date;
-    }
+    public LocalDate getDate() { return date; }
 
-    public void setDate(Date val) {
+    public void setDate(LocalDate val) {
         date = val;
     }
 
@@ -70,40 +63,29 @@ public class AppointmentModel extends KarteEntryBean<AppointmentModel> {
         memo = val;
     }
 
-    /**
-     * Returns the patientId.
-     *
-     * @return 施設内の患者 ID
-     */
+    /// @return 施設内の患者 ID
     public String getPatientId() {
         return patientId;
     }
 
-    /**
-     * The patientId to set.
-     *
-     * @param patientId 施設内の患者 ID
-     */
+    /// @param patientId 施設内の患者 ID
     public void setPatientId(String patientId) {
         this.patientId = patientId;
     }
 
-    /**
-     * 予約日で比較する.
-     *
-     * @param o AppointmentModel
-     * @return 比較値
-     */
+    /// 予約日で比較する.
+    ///
+    /// @param o AppointmentModel
+    /// @return 比較値
     @Override
     public int compareTo(AppointmentModel o) {
-        Date s1 = this.date;
-        Date s2 = o.getDate();
+        LocalDate s1 = this.date;
+        LocalDate s2 = o.getDate();
         return s1.compareTo(s2);
     }
 
     @Override
     public String toString() {
-        LocalDate localDate = MMLDate.toLocalDateFromDate(getDate()); // bridge
-        return localDate.format(DateUtils.ISO_DATE_FORMATTER);
+        return date.format(DateUtils.ISO_DATE_FORMATTER);
     }
 }

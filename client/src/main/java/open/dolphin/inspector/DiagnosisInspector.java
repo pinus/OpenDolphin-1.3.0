@@ -14,7 +14,6 @@ import java.awt.*;
 import java.awt.dnd.*;
 import java.awt.event.*;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -463,7 +462,7 @@ public class DiagnosisInspector implements IInspector {
             boolean deleted = DiagnosisDocument.DELETED_RECORD.equals(rd.getStatus());
             boolean ended = rd.getEndDate() != null;
             boolean ikou = DiagnosisDocument.IKOU_BYOMEI_RECORD.equals(rd.getStatus());
-            LocalDate started = rd.getStarted().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate started = rd.getStarted().toLocalDate();
             LocalDate lastVisit = context.getLastVisit().getLastVisit();
             boolean today = started.equals(lastVisit);
 

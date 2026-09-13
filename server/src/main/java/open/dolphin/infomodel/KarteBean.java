@@ -8,14 +8,12 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
-/**
- * KarteBean.
- *
- * @author Minagawa, Kazushi
- */
+/// KarteBean.
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_karte")
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class)
@@ -32,8 +30,7 @@ public class KarteBean extends InfoModel {
     private PatientModel patient;
 
     @Column(nullable = false)
-    @Temporal(value = TemporalType.DATE)
-    private Date created;
+    private LocalDate created;
 
     // Entry fields -　KarteService.getKarte で付加する field:
     // オリジナルは Map<String,List> entries になってたのを分けた
@@ -69,11 +66,11 @@ public class KarteBean extends InfoModel {
         this.patient = patient;
     }
 
-    public Date getCreated() {
+    public LocalDate getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDate created) {
         this.created = created;
     }
 

@@ -33,9 +33,10 @@ import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 
@@ -520,18 +521,9 @@ public final class DiagnosisDocument extends AbstractChartDocument implements Pr
         int index = extractionCombo.getSelectedIndex();
         int past = extractionCombo.getItemAt(index).getValue();
 
-        Date date;
-        if (past != 0) {
-            GregorianCalendar today = new GregorianCalendar();
-            today.add(GregorianCalendar.MONTH, past);
-            today.clear(Calendar.HOUR_OF_DAY);
-            today.clear(Calendar.MINUTE);
-            today.clear(Calendar.SECOND);
-            today.clear(Calendar.MILLISECOND);
-            date = today.getTime();
-        } else {
-            date = new Date(0L);
-        }
+        LocalDateTime date = past == 0
+                ? DateUtils.getMinLocalDateTime()
+                : LocalDate.now().atStartOfDay().plusMonths(past);
 
         getDiagnosisHistory(date);
     }
@@ -1016,7 +1008,7 @@ public final class DiagnosisDocument extends AbstractChartDocument implements Pr
         logger.debug("sendDiagnosis = " + sendDiagnosis);
 
         // continue to save
-        Date confirmed = new Date();
+        LocalDateTime confirmed = LocalDateTime.now();
         logger.debug("confirmed = " + confirmed);
 
         boolean go = true;
@@ -1097,7 +1089,7 @@ public final class DiagnosisDocument extends AbstractChartDocument implements Pr
     /// addedDiagnosis, updatedDiagnossis, deletedDiagnosis 対応 by pns
     ///
     /// @param past 指定期間の開始日
-    public void getDiagnosisHistory(Date past) {
+    public void getDiagnosisHistory(LocalDateTime past) {
 
         final DiagnosisSearchSpec spec = new DiagnosisSearchSpec();
         spec.setCode(DiagnosisSearchSpec.PATIENT_SEARCH);
@@ -1276,7 +1268,7 @@ public final class DiagnosisDocument extends AbstractChartDocument implements Pr
         List<RegisteredDiagnosisModel> addedList = new ArrayList<>();
         List<RegisteredDiagnosisModel> updatedList = new ArrayList<>();
 
-        Date confirmed = new Date();
+        LocalDateTime confirmed = LocalDateTime.now();
         int[] rows = diagTable.getSelectedRows();
         for (int r : rows) {
             int row = diagTable.convertRowIndexToModel(r);

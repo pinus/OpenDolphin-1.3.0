@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * VersionModel.
- *
- * @author Kazushi Minagawa
- */
+/// VersionModel.
+///
+/// @author Kazushi Minagawa
 public class VersionModel extends InfoModel {
     
     private int number;

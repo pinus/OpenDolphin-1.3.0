@@ -1,13 +1,12 @@
 package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
-import java.util.Date;
 
-/**
- * PersonalTreeModel と PublishedStampTreeModel の共通親.
- *
- * @author pns
- */
+import java.time.LocalDate;
+
+/// PersonalTreeModel と PublishedStampTreeModel の共通親.
+///
+/// @author pns
 @MappedSuperclass
 public abstract class StampTreeBean extends InfoModel {
     
@@ -42,8 +41,7 @@ public abstract class StampTreeBean extends InfoModel {
 
     // 公開した日
     @Column(nullable = false)
-    @Temporal(value = TemporalType.DATE)
-    private Date publishedDate;
+    private LocalDate publishedDate;
 
     @Transient
     private String treeXml;
@@ -54,8 +52,7 @@ public abstract class StampTreeBean extends InfoModel {
 
     // 更新した日
     @Column(nullable = false)
-    @Temporal(value = TemporalType.DATE)
-    private Date lastUpdated;
+    private LocalDate lastUpdated;
 
     public abstract long getId();
 
@@ -118,11 +115,9 @@ public abstract class StampTreeBean extends InfoModel {
         this.description = description;
     }
 
-    public Date getPublishedDate() {
-        return publishedDate;
-    }
+    public LocalDate getPublishedDate() { return publishedDate; }
 
-    public void setPublishedDate(Date publishedDate) {
+    public void setPublishedDate(LocalDate publishedDate) {
         this.publishedDate = publishedDate;
     }
 
@@ -142,11 +137,11 @@ public abstract class StampTreeBean extends InfoModel {
         this.treeXml = treeXml;
     }
 
-    public Date getLastUpdated() {
+    public LocalDate getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(Date updatedDate) {
+    public void setLastUpdated(LocalDate updatedDate) {
         this.lastUpdated = updatedDate;
     }
 

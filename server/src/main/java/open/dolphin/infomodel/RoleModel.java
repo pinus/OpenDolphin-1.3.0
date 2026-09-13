@@ -5,11 +5,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.*;
 
-/**
- * RoleModel.
- *
- * @author Minagawa, Kazushi
- */
+/// RoleModel.
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_roles")
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class)

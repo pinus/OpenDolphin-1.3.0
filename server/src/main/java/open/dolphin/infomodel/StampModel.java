@@ -5,12 +5,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import jakarta.persistence.*;
 
-/**
- * StampModel.
- * Field 'model' contains any of BundleMed, BundleDolphin, RegisteredDiagnosisModel, or TextStampModel
- *
- * @author Minagawa, Kazushi
- */
+/// StampModel.
+/// Field 'model' contains any of BundleMed, BundleDolphin, RegisteredDiagnosisModel, or TextStampModel
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_stamp")
 public class StampModel extends InfoModel {

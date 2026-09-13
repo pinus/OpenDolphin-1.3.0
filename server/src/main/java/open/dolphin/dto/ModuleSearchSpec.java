@@ -1,7 +1,7 @@
 package open.dolphin.dto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * ModuleSearchSpec.
@@ -14,8 +14,8 @@ public class ModuleSearchSpec implements Serializable {
     private long karteId;
     private String patientId;
     private String entity;
-    private Date[] fromDate;
-    private Date[] toDate;
+    private LocalDateTime[] fromDate;
+    private LocalDateTime[] toDate;
     private String status;
 
     public int getCode() {
@@ -42,19 +42,19 @@ public class ModuleSearchSpec implements Serializable {
         this.patientId = patientId;
     }
 
-    public Date[] getFromDate() {
+    public LocalDateTime[] getFromDate() {
         return fromDate;
     }
 
-    public void setFromDate(Date[] fromDate) {
+    public void setFromDate(LocalDateTime[] fromDate) {
         this.fromDate = fromDate;
     }
 
-    public Date[] getToDate() {
+    public LocalDateTime[] getToDate() {
         return toDate;
     }
 
-    public void setToDate(Date[] toDate) {
+    public void setToDate(LocalDateTime[] toDate) {
         this.toDate = toDate;
     }
 

@@ -1,25 +1,19 @@
 package open.dolphin.infomodel;
 
-import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
+import open.dolphin.util.DateUtils;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.StringTokenizer;
 
-/**
- * DocInfoModel.
- * DocumentModel に Embed される
- *
- * @author Minagawa, kazushi
- */
+/// DocInfoModel.
+/// DocumentModel に Embed される
+///
+/// @author Minagawa, kazushi
 @Embeddable
 public class DocInfoModel extends InfoModel implements Comparable<DocInfoModel> {
     
@@ -48,10 +42,10 @@ public class DocInfoModel extends InfoModel implements Comparable<DocInfoModel> 
     private String purposeCodeSys;
 
     @Transient
-    private Date firstConfirmDate;
+    private LocalDateTime firstConfirmDate;
 
     @Transient
-    private Date confirmDate;
+    private LocalDateTime confirmDate;
 
     private String department;
 
@@ -164,30 +158,24 @@ public class DocInfoModel extends InfoModel implements Comparable<DocInfoModel> 
         this.purposeCodeSys = purposeCodeSys;
     }
 
-    public Date getFirstConfirmDate() {
-        return firstConfirmDate;
-    }
+    public LocalDateTime getFirstConfirmDate() { return firstConfirmDate; }
 
-    public void setFirstConfirmDate(Date firstConfirmDate) {
+    public void setFirstConfirmDate(LocalDateTime firstConfirmDate) {
         this.firstConfirmDate = firstConfirmDate;
     }
 
     public String getFirstConfirmDateTrimTime() {
-        LocalDate localDate = MMLDate.toLocalDateFromDate(getFirstConfirmDate()); // bridge
-        return localDate.format(DateUtils.ISO_DATE_FORMATTER);
+        return getFirstConfirmDate().format(DateUtils.ISO_DATE_FORMATTER);
     }
 
-    public Date getConfirmDate() {
+    public LocalDateTime getConfirmDate() {
         return confirmDate;
     }
 
-    public void setConfirmDate(Date confirmDate) {
-        this.confirmDate = confirmDate;
-    }
+    public void setConfirmDate(LocalDateTime confirmDate) { this.confirmDate = confirmDate; }
 
     public String getConfirmDateTrimTime() {
-        LocalDate localDate = MMLDate.toLocalDateFromDate(getConfirmDate()); // bridge
-        return localDate.format(DateUtils.ISO_DATE_FORMATTER);
+        return getConfirmDate().format(DateUtils.ISO_DATE_FORMATTER);
     }
 
     public String getDepartment() {
@@ -418,8 +406,8 @@ public class DocInfoModel extends InfoModel implements Comparable<DocInfoModel> 
     @Override
     public int compareTo(DocInfoModel other) {
         if (other != null) {
-            Date val1 = getFirstConfirmDate();
-            Date val2 = other.getFirstConfirmDate();
+            LocalDateTime val1 = getFirstConfirmDate();
+            LocalDateTime val2 = other.getFirstConfirmDate();
             int result = val1.compareTo(val2);
             if (result == 0) {
                 val1 = getConfirmDate();

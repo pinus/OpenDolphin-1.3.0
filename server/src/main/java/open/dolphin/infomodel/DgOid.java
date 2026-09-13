@@ -2,11 +2,9 @@ package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
 
-/**
- * Digital Globe OID.
- *
- * @author Minagawa, Kazushi
- */
+/// Digital Globe OID.
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_oid")
 public class DgOid extends InfoModel {

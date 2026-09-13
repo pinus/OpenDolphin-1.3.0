@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * PhysicalModel.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// PhysicalModel.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 public class PhysicalModel extends InfoModel implements Comparable<PhysicalModel> {
     
     private long heightId;

@@ -5,11 +5,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.*;
 
-/**
- * LaboItemValue.
- *
- * @author Minagawa, Kazushi
- */
+/// LaboItemValue.
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_labo_item")
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class)

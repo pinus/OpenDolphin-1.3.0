@@ -1,7 +1,7 @@
 package open.dolphin.dto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * ObservationSearchSpec.
@@ -13,13 +13,13 @@ public class ObservationSearchSpec implements Serializable {
     private long karteId;
     private String observation;
     private String phenomenon;
-    private Date firstConfirmed;
+    private LocalDateTime firstConfirmed;
 
-    public Date getFirstConfirmed() {
+    public LocalDateTime getFirstConfirmed() {
         return firstConfirmed;
     }
 
-    public void setFirstConfirmed(Date firstConfirmed) {
+    public void setFirstConfirmed(LocalDateTime firstConfirmed) {
         this.firstConfirmed = firstConfirmed;
     }
 

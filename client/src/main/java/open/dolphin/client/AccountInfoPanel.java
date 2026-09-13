@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.im.InputSubset;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * AccountInfoPanel.
@@ -115,8 +115,8 @@ public class AccountInfoPanel extends JPanel {
         facility.setUrl(urlField.getText().trim());
 
         // 登録日 MemberTpe
-        Date date = new Date();
-        facility.setRegisteredDate(date);
+        LocalDate today = LocalDate.now();
+        facility.setRegisteredDate(today);
         facility.setMemberType(MEMBER_TYPE);
 
         // 管理者基本情報
@@ -141,7 +141,7 @@ public class AccountInfoPanel extends JPanel {
         admin.setMemberType(MEMBER_TYPE);
 
         // 登録日
-        admin.setRegisteredDate(date);
+        admin.setRegisteredDate(today);
 
         return admin;
     }

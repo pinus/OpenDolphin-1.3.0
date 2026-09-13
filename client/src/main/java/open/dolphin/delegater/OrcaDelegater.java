@@ -11,10 +11,8 @@ import open.dolphin.ui.PNSOptionPane;
 
 import javax.swing.*;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -126,8 +124,8 @@ public class OrcaDelegater extends BusinessDelegater<OrcaService> {
 
         DiagnosisSearchSpec spec = new DiagnosisSearchSpec();
         spec.setPatientId(patientId);
-        spec.setFromDate(Date.from(from.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        spec.setToDate(Date.from(to.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        spec.setFromDate(from.atStartOfDay());
+        spec.setToDate(to.atStartOfDay());
 
         return getService().getOrcaDisease(spec);
     }

@@ -2,12 +2,10 @@ package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
 
-/**
- * PersonalTreeModel.
- * User のパーソナルツリークラス.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// PersonalTreeModel.
+/// User のパーソナルツリークラス.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 @Entity
 @Table(name = "d_stamp_tree")
 public class PersonalTreeModel extends StampTreeBean {

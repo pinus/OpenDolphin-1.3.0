@@ -2,7 +2,7 @@ package open.dolphin.dto;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * ImageSearchSpec.
@@ -12,13 +12,13 @@ import java.util.Date;
 public class ImageSearchSpec implements Serializable {
     public static final int ID_SEARCH = 0;
     public static final int PATIENT_SEARCH = 1;
-        private int code;
+    private int code;
     private long karteId;
     private long id;
     private String patientId;
     private String medicalRole;
-    private Date[] fromDate;
-    private Date[] toDate;
+    private LocalDateTime[] fromDate;
+    private LocalDateTime[] toDate;
     private Dimension iconSize;
     private String status;
 
@@ -54,19 +54,19 @@ public class ImageSearchSpec implements Serializable {
         this.medicalRole = medicalRole;
     }
 
-    public Date[] getFromDate() {
+    public LocalDateTime[] getFromDate() {
         return fromDate;
     }
 
-    public void setFromDate(Date[] fromDate) {
+    public void setFromDate(LocalDateTime[] fromDate) {
         this.fromDate = fromDate;
     }
 
-    public Date[] getToDate() {
+    public LocalDateTime[] getToDate() {
         return toDate;
     }
 
-    public void setToDate(Date[] toDate) {
+    public void setToDate(LocalDateTime[] toDate) {
         this.toDate = toDate;
     }
 

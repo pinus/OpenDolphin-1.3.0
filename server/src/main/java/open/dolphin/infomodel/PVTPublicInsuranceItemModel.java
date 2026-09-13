@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * PVTPublicInsuranceItemModel.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// PVTPublicInsuranceItemModel.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 public class PVTPublicInsuranceItemModel extends InfoModel {
 
     private String priority;

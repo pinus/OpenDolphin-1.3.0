@@ -20,8 +20,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -277,13 +278,12 @@ public class StampBoxExtraMenu extends MouseAdapter {
         }
 
         private String makeComment() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<!-- StampBox Export Data, Creator: ");
-            sb.append(Project.getUserModel().getFacilityModel().getFacilityName());
-            sb.append(", Created on: ");
-            sb.append(new Date().toString());
-            sb.append(" -->\n");
-            return sb.toString();
+            String sb = "<!-- StampBox Export Data, Creator: " +
+                    Project.getUserModel().getFacilityModel().getFacilityName() +
+                    ", Created on: " +
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
+                    " -->\n";
+            return sb;
         }
 
         @Override

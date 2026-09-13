@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * LaboModuleValue.
- */
+/// LaboModuleValue.
 @Entity
 @Table(name = "d_labo_module")
 public class LaboModuleValue extends KarteEntryBean<LaboModuleValue> {

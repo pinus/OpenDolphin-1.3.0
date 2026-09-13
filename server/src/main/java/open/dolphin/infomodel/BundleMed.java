@@ -2,11 +2,9 @@ package open.dolphin.infomodel;
 
 import java.util.StringJoiner;
 
-/**
- * BundleMed.
- *
- * @author pns
- */
+/// BundleMed.
+///
+/// @author pns
 public class BundleMed extends BundleDolphin {
     
     @Override
@@ -27,11 +25,9 @@ public class BundleMed extends BundleDolphin {
         return sj.toString();
     }
 
-    /**
-     * スタンプに表示される文字列を返す. Velocity で使うので public でないとだめ.
-     *
-     * @return スタンプの用法に表示される文字列
-     */
+    /// スタンプに表示される文字列を返す. Velocity で使うので public でないとだめ.
+    ///
+    /// @return スタンプの用法に表示される文字列
     public String getAdminDisplayString() {
 
         String adminString = null;

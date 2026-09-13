@@ -13,8 +13,6 @@ import open.dolphin.ui.PNSOptionPane;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.ui.sheet.JSheet;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +23,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -612,7 +610,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             ChartImpl chart = (ChartImpl) getContext();
             DocumentModel model = chart.getKarteModelToEdit(getBaseKarte().getDocument());
             model.setKarte(getContext().getKarte());
-            model.getDocInfo().setConfirmDate(new Date());
+            model.getDocInfo().setConfirmDate(LocalDateTime.now());
             model.setCreator(Project.getUserModel());       // 送信者
 
             OrcaDelegater delegater = new OrcaDelegater();

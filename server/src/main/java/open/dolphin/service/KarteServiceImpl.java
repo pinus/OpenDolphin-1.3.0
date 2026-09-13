@@ -1,20 +1,17 @@
 package open.dolphin.service;
 
+import jakarta.ejb.Asynchronous;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.NoResultException;
 import open.dolphin.dto.*;
 import open.dolphin.infomodel.*;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 import open.dolphin.util.ModelUtils;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.jboss.logging.Logger;
 
-import jakarta.ejb.Asynchronous;
-import jakarta.ejb.Stateless;
-import jakarta.persistence.NoResultException;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,7 +34,7 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
     @Override
     public KarteBean getKarte(KarteBeanSpec spec) {
         long patientPk = spec.getPatientPk();
-        Date fromDate = spec.getFromDate();
+        LocalDateTime fromDate = spec.getFromDate();
 
         try {
             // 最初に患者のカルテを取得する
@@ -118,16 +115,14 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
         // confirm date をキーとした PhysicalModel の Map
         Map<String, PhysicalModel> map = observations.stream().collect(Collectors.toMap(o -> {
             // key
-            LocalDate localDate = MMLDate.toLocalDateFromDate(o.getRecorded()); // bridge
-            String memo = localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+            String memo = o.getRecorded().format(DateTimeFormatter.ISO_LOCAL_DATE);
             String identified = o.confirmDateAsString();
             return identified != null ? identified : memo;
 
         }, o -> {
             // ObservationModel から PhysicalModel を作成する
             PhysicalModel pm = new PhysicalModel();
-            LocalDate localDate = MMLDate.toLocalDateFromDate(o.getRecorded()); // bridge
-            pm.setMemo(localDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+            pm.setMemo(o.getRecorded().format(DateTimeFormatter.ISO_LOCAL_DATE));
             pm.setIdentifiedDate(o.confirmDateAsString());
 
             if (o.getPhenomenon().equals(IInfoModel.PHENOMENON_BODY_WEIGHT)) {
@@ -167,12 +162,11 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
     @Override
     public List<String> getPvtList(KarteBeanSpec spec) {
         long patientPk = spec.getPatientPk();
-        Date fromDate = spec.getFromDate();
-        LocalDate localDate = MMLDate.toLocalDateFromDate(fromDate); // bridge
+        LocalDateTime fromDate = spec.getFromDate();
 
         List<PatientVisitModel> latestVisits = em.createQuery("select p from PatientVisitModel p where p.patient.id = :patientPk and p.pvtDate >= :fromDate", PatientVisitModel.class)
                 .setParameter("patientPk", patientPk)
-                .setParameter("fromDate", localDate.format(DateUtils.ISO_DATE_FORMATTER)).getResultList();
+                .setParameter("fromDate", fromDate.format(DateUtils.ISO_DATE_FORMATTER)).getResultList();
 
         return latestVisits.stream()
                 .filter(m -> m.getState() != KarteState.CANCEL_PVT)
@@ -346,7 +340,7 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
 
         } else {
             // 適合終了日を新しい版の確定日にする
-            Date ended = document.getConfirmed();
+            LocalDateTime ended = document.getConfirmed();
 
             // オリジナルを取得し 終了日と status = M を設定する
             old.setEnded(ended);
@@ -393,7 +387,7 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
         // 関連するDocumentModelを再帰で取得する
         Set<DocumentModel> delSet = getChildren(parent);
 
-        Date ended = new Date();
+        LocalDateTime ended = LocalDateTime.now();
 
         for (DocumentModel delete : delSet) {
 
@@ -497,8 +491,8 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
     public List<List<ModuleModel>> getModuleList(ModuleSearchSpec spec) {
 
         // 抽出期間は別けられている
-        Date[] fromDate = spec.getFromDate();
-        Date[] toDate = spec.getToDate();
+        LocalDateTime[] fromDate = spec.getFromDate();
+        LocalDateTime[] toDate = spec.getToDate();
         int len = fromDate.length;
         List<List<ModuleModel>> ret = new ArrayList<>(len);
 
@@ -530,8 +524,8 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
     public List<List<SchemaModel>> getImageList(ImageSearchSpec spec) {
 
         // 抽出期間は別けられている
-        Date[] fromDate = spec.getFromDate();
-        Date[] toDate = spec.getToDate();
+        LocalDateTime[] fromDate = spec.getFromDate();
+        LocalDateTime[] toDate = spec.getToDate();
         int len = fromDate.length;
         List<List<SchemaModel>> ret = new ArrayList<>(len);
 
@@ -632,7 +626,7 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
         List<ObservationModel> ret = null;
         String observation = spec.getObservation();
         String phenomenon = spec.getPhenomenon();
-        Date firstConfirmed = spec.getFirstConfirmed();
+        LocalDateTime firstConfirmed = spec.getFirstConfirmed();
 
         if (observation != null) {
             if (firstConfirmed != null) {
@@ -771,8 +765,8 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
     public List<List<AppointmentModel>> getAppointmentList(ModuleSearchSpec spec) {
 
         // 抽出期間は別けられている
-        Date[] fromDate = spec.getFromDate();
-        Date[] toDate = spec.getToDate();
+        LocalDateTime[] fromDate = spec.getFromDate();
+        LocalDateTime[] toDate = spec.getToDate();
         int len = fromDate.length;
 
         List<List<AppointmentModel>> ret = new ArrayList<>(len);

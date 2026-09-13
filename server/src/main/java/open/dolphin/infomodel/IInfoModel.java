@@ -16,8 +16,10 @@ public interface IInfoModel extends Serializable {
     String ISO_TIME = "HH:mm:ss";
 
     /// カルテの確定日表示用のフォーマット
-    //String KARTE_DATE_FORMAT = "yyyy年M月d日'（'EEE'）'H時m分";
     String KARTE_DATE = "yyyy年M月d日(E) HH:mm";
+
+    /// ORCA の日付フォーマット
+    String ORCA_DATE = "yyyyMMdd";
 
     /// 複合キーにするための結合子
     String COMPOSITE_KEY_MAKER = ":";

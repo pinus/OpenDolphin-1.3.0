@@ -12,7 +12,6 @@ import open.dolphin.infomodel.AppointmentModel;
 import open.dolphin.infomodel.ModuleModel;
 import open.dolphin.infomodel.SimpleDate;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +33,7 @@ import java.util.List;
  * @author pns
  */
 public final class SimpleCalendarPanel extends JPanel {
-        // MmlDate 型式の日付をキー，AppointmentModel を value とする HashMap
+    // MmlDate 型式の日付をキー，AppointmentModel を value とする HashMap
     private final HashMap<String, AppointmentModel> map = new HashMap<>();
     private SimpleDate today;
     private final int relativeMonth;
@@ -43,12 +42,7 @@ public final class SimpleCalendarPanel extends JPanel {
     private Chart context;
     private CareMapDocument parent;
     private boolean dirty;
-
     private CalendarListener listener;
-
-    public SimpleCalendarPanel() {
-        this(0);
-    }
 
     public SimpleCalendarPanel(int n) {
         // 今月を基点とした相対月数
@@ -112,7 +106,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * ChartImpl を保存，誕生日を登録.
      *
-     * @param context
+     * @param context Chart
      */
     public void setChartContext(Chart context) {
         this.context = context;
@@ -123,7 +117,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * 親の ChartDocument を登録する.
      *
-     * @param doc
+     * @param doc CareMapDocument
      */
     public void setParent(CareMapDocument doc) {
         parent = doc;
@@ -132,7 +126,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * CalendarTableModel を返す.
      *
-     * @return
+     * @return CalendarTableModel
      */
     public CalendarTableModel getTableModel() {
         return tableModel;
@@ -141,7 +135,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * 今月からの相対月数を返す.
      *
-     * @return
+     * @return relative month
      */
     public int getRelativeMonth() {
         return relativeMonth;
@@ -150,7 +144,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * 今月かどうかを返す.
      *
-     * @return
+     * @return true if this month
      */
     public boolean isThisMonth() {
         return relativeMonth == 0;
@@ -159,7 +153,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * CalendarListener を登録する.
      *
-     * @param l
+     * @param l CalendarListener
      */
     public void addCalendarListener(CalendarListener l) {
         listener = l;
@@ -168,7 +162,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * この月の初日を MML 型式で返す.
      *
-     * @return
+     * @return first day
      */
     public String getFirstDate() {
         return String.format("%04d-%02d-%02d", tableModel.getYear(), tableModel.getMonth(), 1);
@@ -177,7 +171,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * この月の末日を MML 型式で返す.
      *
-     * @return
+     * @return last day
      */
     public String getLastDate() {
         LocalDate lastDay = YearMonth.of(tableModel.getYear(), tableModel.getMonth()).atEndOfMonth();
@@ -187,8 +181,8 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * MmlDate に対応する AppointmentModel を返す.
      *
-     * @param mmlDate
-     * @return
+     * @param mmlDate MmlDate
+     * @return AppointmentModel
      */
     public AppointmentModel getAppointmentModel(String mmlDate) {
         return map.get(mmlDate);
@@ -254,8 +248,8 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * ModuleModel のリストを登録する.
      *
-     * @param event
-     * @param list
+     * @param event event code
+     * @param list ModuleModel list
      */
     public void setModuleList(String event, List<ModuleModel> list) {
         if (list == null || list.isEmpty()) {
@@ -263,8 +257,7 @@ public final class SimpleCalendarPanel extends JPanel {
         }
 
         list.forEach(module -> {
-            LocalDate localDate = MMLDate.toLocalDateFromDate(module.getConfirmed()); // bridge
-            String mmlDate = localDate.format(DateUtils.ISO_DATE_FORMATTER);
+            String mmlDate = module.getConfirmed().format(DateUtils.ISO_DATE_FORMATTER);
             SimpleDate date = SimpleDate.mmlDateToSimpleDate(mmlDate);
 
             date.setEventCode(event);
@@ -279,8 +272,8 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * ImageEntry のリストを登録する.
      *
-     * @param event
-     * @param list
+     * @param event event code
+     * @param list ImageEntry list
      */
     public void setImageList(String event, List<ImageEntry> list) {
         if (list == null || list.isEmpty()) {
@@ -303,7 +296,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * AppointModel のリストを登録する.
      *
-     * @param list
+     * @param list AppointmentModel list
      */
     public void setAppointmentList(List<AppointmentModel> list) {
         if (list == null || list.isEmpty()) {
@@ -313,8 +306,7 @@ public final class SimpleCalendarPanel extends JPanel {
         list.forEach(appoint -> {
             appoint.setState(AppointmentModel.TT_HAS);
             String mmlToday = SimpleDate.simpleDateToMmldate(today);
-            LocalDate localDate = MMLDate.toLocalDateFromDate(appoint.getDate()); // bridge
-            String mmlAppointDate = localDate.format(DateUtils.ISO_DATE_FORMATTER);
+            String mmlAppointDate = appoint.getDate().format(DateUtils.ISO_DATE_FORMATTER);
 
             // 今日以降のものだけ登録
             if (mmlAppointDate.compareTo(mmlToday) >= 0) {
@@ -332,7 +324,7 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * 取り消しのポップアップを出す.
      *
-     * @param e
+     * @param e MouseEvent
      */
     private void doPopup(MouseEvent e) {
 
@@ -371,10 +363,10 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * 予約を設定する.
      *
-     * @param row
-     * @param col
-     * @param appointName
-     * @param memo
+     * @param row row index
+     * @param col column index
+     * @param appointName appointment name
+     * @param memo memo
      */
     private void processAppoint(int row, int col, String appointName, String memo) {
 
@@ -384,32 +376,19 @@ public final class SimpleCalendarPanel extends JPanel {
 
         if (appoint == null) {
             appoint = new AppointmentModel();
-            LocalDate localDate = DateUtils.toLocalDateFromIsoDate(mmlDate);
-            Date appointDate = MMLDate.toDateFromLocalDate(localDate); // bridge
+            LocalDate appointDate = DateUtils.toLocalDateFromIsoDate(mmlDate);
             appoint.setDate(appointDate);
             map.put(mmlDate, appoint);
         }
 
         int oldState = appoint.getState();
-        int next = 0;
-        switch (oldState) {
-
-            case AppointmentModel.TT_NONE:
-                next = AppointmentModel.TT_NEW;
-                break;
-
-            case AppointmentModel.TT_NEW:
-                next = AppointmentModel.TT_NEW;
-                break;
-
-            case AppointmentModel.TT_HAS:
-                next = AppointmentModel.TT_REPLACE;
-                break;
-
-            case AppointmentModel.TT_REPLACE:
-                next = AppointmentModel.TT_REPLACE;
-                break;
-        }
+        int next = switch (oldState) {
+            case AppointmentModel.TT_NONE -> AppointmentModel.TT_NEW;
+            case AppointmentModel.TT_NEW -> AppointmentModel.TT_NEW;
+            case AppointmentModel.TT_HAS -> AppointmentModel.TT_REPLACE;
+            case AppointmentModel.TT_REPLACE -> AppointmentModel.TT_REPLACE;
+            default -> 0;
+        };
         appoint.setState(next);
         appoint.setName(appointName);
         appoint.setMemo(memo);
@@ -427,8 +406,8 @@ public final class SimpleCalendarPanel extends JPanel {
     /**
      * 予約をキャンセルする.
      *
-     * @param row
-     * @param col
+     * @param row row index
+     * @param col column index
      */
     private void processCancel(int row, int col) {
 
@@ -440,19 +419,11 @@ public final class SimpleCalendarPanel extends JPanel {
         }
 
         int oldState = appoint.getState();
-        int nextState = 0;
-
-        switch (oldState) {
-            case AppointmentModel.TT_NONE:
-            case AppointmentModel.TT_NEW:
-                nextState = AppointmentModel.TT_NONE;
-                break;
-
-            case AppointmentModel.TT_HAS:
-            case AppointmentModel.TT_REPLACE:
-                nextState = AppointmentModel.TT_REPLACE;
-                break;
-        }
+        int nextState = switch (oldState) {
+            case AppointmentModel.TT_NONE, AppointmentModel.TT_NEW -> AppointmentModel.TT_NONE;
+            case AppointmentModel.TT_HAS, AppointmentModel.TT_REPLACE -> AppointmentModel.TT_REPLACE;
+            default -> 0;
+        };
 
         // 変更されたことを記憶するために，キャンセルされる前の AppointMentModel を残す
         appoint.setState(nextState);
@@ -492,7 +463,7 @@ public final class SimpleCalendarPanel extends JPanel {
          * 半透明の visual representation を返す.
          * table からドラッグ該当部分のイメージを切り出して使う.
          *
-         * @return
+         * @return visual representation
          */
         private Image getVisualRepresentation() {
             int width = table.getWidth();
@@ -572,7 +543,7 @@ public final class SimpleCalendarPanel extends JPanel {
                 }
 
             } catch (UnsupportedFlavorException | IOException ue) {
-                System.out.println(ue);
+                ue.printStackTrace(System.err);
                 return false;
             }
         }

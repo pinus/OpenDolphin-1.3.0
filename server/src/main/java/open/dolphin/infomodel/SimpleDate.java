@@ -3,11 +3,9 @@ package open.dolphin.infomodel;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-/**
- * SimpleDate.
- *
- * @author Kazushi Minagawa
- */
+/// SimpleDate.
+///
+/// @author Kazushi Minagawa
 public class SimpleDate extends InfoModel implements Comparable<SimpleDate> {
     
     private int year;

@@ -21,6 +21,7 @@ import open.dolphin.ui.PNSBadgeTabbedPane;
 import open.dolphin.ui.PNSFrame;
 import open.dolphin.ui.StatusPanel;
 import open.dolphin.ui.sheet.JSheet;
+import open.dolphin.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,8 @@ import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -443,14 +445,9 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
                 // Database から患者のカルテを取得する
                 //
                 int past = Project.getPreferences().getInt(Project.DOC_HISTORY_PERIOD, -12);
-                GregorianCalendar today = new GregorianCalendar();
-                today.add(GregorianCalendar.MONTH, past);
-                today.clear(Calendar.HOUR_OF_DAY);
-                today.clear(Calendar.MINUTE);
-                today.clear(Calendar.SECOND);
-                today.clear(Calendar.MILLISECOND);
+                LocalDateTime today = LocalDate.now().atStartOfDay().plusMonths(past);
                 DocumentDelegater ddl = new DocumentDelegater();
-                return ddl.getKarte(getPatientVisit().getPatient().getId(), today.getTime());
+                return ddl.getKarte(getPatientVisit().getPatient().getId(), today);
             }
 
             @Override
@@ -579,12 +576,9 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         lastVisit = new LastVisit(this);
         // Status パネルに表示する情報を生成する
         // カルテ登録日 Status パネルの右側に配置する
-        String rdFormat = ClientContext.getString("common.dateFormat");         // yyyy-MM-dd
         String rdPrifix = ClientContext.getString("common.registeredDatePrefix");     // カルテ登録日:
         String patientIdPrefix = ClientContext.getString("common.registeredDatePatientIdPrefix"); // 患者ID:
-        Date date = getKarte().getCreated();
-        SimpleDateFormat sdf = new SimpleDateFormat(rdFormat);
-        String created = sdf.format(date);
+        String created = getKarte().getCreated().format(DateUtils.ISO_DATE_FORMATTER);
 
         // status panel 設定
         // 患者ID Status パネルの左に配置する

@@ -17,8 +17,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -763,7 +763,7 @@ public class AddUser extends AbstractMainTool {
             if (Project.getUserModel().getMemberType().equals("ASP_TESTER")) {
                 user.setRegisteredDate(Project.getUserModel().getRegisteredDate());
             } else {
-                user.setRegisteredDate(new Date());
+                user.setRegisteredDate(LocalDate.now());
             }
 
             // Email

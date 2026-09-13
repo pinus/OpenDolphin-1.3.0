@@ -3,11 +3,9 @@ package open.dolphin.infomodel;
 import jakarta.persistence.*;
 import javax.swing.*;
 
-/**
- * CompositeImageModel.
- *
- * @author kazm
- */
+/// CompositeImageModel.
+///
+/// @author kazm
 @Entity
 @Table(name = "d_composite_image")
 public class CompositeImageModel extends KarteEntryBean<CompositeImageModel> {

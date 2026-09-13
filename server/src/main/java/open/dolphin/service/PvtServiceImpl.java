@@ -1,17 +1,15 @@
 package open.dolphin.service;
 
+import jakarta.ejb.Stateless;
+import jakarta.persistence.NoResultException;
 import open.dolphin.WebSocket;
 import open.dolphin.dto.PatientVisitSpec;
 import open.dolphin.dto.PvtStateSpec;
 import open.dolphin.infomodel.*;
 import open.dolphin.util.DateUtils;
 import open.dolphin.util.JsonUtils;
-import open.dolphin.util.MMLDate;
-import open.dolphin.util.ModelUtils;
 import org.jboss.logging.Logger;
 
-import jakarta.ejb.Stateless;
-import jakarta.persistence.NoResultException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
@@ -109,7 +107,7 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
             // この患者のカルテを生成する
             KarteBean karte = new KarteBean();
             karte.setPatient(patientModel);
-            karte.setCreated(new Date());
+            karte.setCreated(LocalDate.now());
             em.persist(karte);
         }
 
@@ -123,7 +121,7 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
 
         if (!persistentPvt.isEmpty()) {
             // 重複がある場合は既存の id をコピーして新しい pvt にすげ替える
-            PatientVisitModel exist = persistentPvt.get(0);
+            PatientVisitModel exist = persistentPvt.getFirst();
             pvt.setId(exist.getId());
         }
 
@@ -133,7 +131,7 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
         // Websocket に通知
         if (pvt.getId() == 0) {
             // id が付与されていない場合取り直す. flush() は無効だった.
-            PatientVisitModel exist = getPersistentPvt(pvt).get(0);
+            PatientVisitModel exist = getPersistentPvt(pvt).getFirst();
             pvt.setId(exist.getId());
             logger.info("generated pvt id = " + pvt.getId());
         }
@@ -220,8 +218,7 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
         if (!date.endsWith("%")) { date += "%"; }
         int index = date.indexOf('%');
 
-        LocalDate localDate = DateUtils.toLocalDateFromIsoDate(date.substring(0, index));
-        Date theDate = MMLDate.toDateFromLocalDate(localDate); // bridge
+        LocalDate theDate = DateUtils.toLocalDateFromIsoDate(date.substring(0, index));
         int firstResult = spec.getSkipCount();
         String fid = getCallersFacilityId();
 
@@ -246,7 +243,7 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
                         .setParameter("pk", patient.getId())
                         .setParameter("date", theDate).getResultList();
                 if (!c.isEmpty()) {
-                    AppointmentModel appo = c.get(0);
+                    AppointmentModel appo = c.getFirst();
                     pvt.setAppointment(appo.getName());
                 }
             });

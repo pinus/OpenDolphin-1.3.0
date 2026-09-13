@@ -16,8 +16,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 /**
@@ -65,7 +65,7 @@ public final class ClientContextStub {
     }
 
     private void logStartupInformation() {
-        logger.info("起動時刻 = {}", DateFormat.getDateTimeInstance().format(new Date()));
+        logger.info("起動時刻 = {}", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
         logger.info("os.name = {}", System.getProperty("os.name"));
         logger.info("os.arch = {}", System.getProperty("os.arch"));
         logger.info("java.version = {}", System.getProperty("java.version"));

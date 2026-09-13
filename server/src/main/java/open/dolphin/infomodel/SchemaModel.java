@@ -3,11 +3,9 @@ package open.dolphin.infomodel;
 import jakarta.persistence.*;
 import javax.swing.*;
 
-/**
- * SchemaModel.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// SchemaModel.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 @Entity
 @Table(name = "d_image")
 public class SchemaModel extends KarteEntryBean<SchemaModel> {

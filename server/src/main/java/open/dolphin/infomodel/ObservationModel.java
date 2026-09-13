@@ -4,11 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
-/**
- * ObservationModel.
- *
- * @author Minagawa, Kazushi
- */
+/// ObservationModel.
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_observation")
 public class ObservationModel extends KarteEntryBean<ObservationModel> {

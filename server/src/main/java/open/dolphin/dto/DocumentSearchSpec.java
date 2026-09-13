@@ -1,7 +1,7 @@
 package open.dolphin.dto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * DocumentSearchSpec.
@@ -13,7 +13,7 @@ public class DocumentSearchSpec implements Serializable {
     public static final int PURPOSE_SEARCH = 1;
     public static final int CREATOR_SEARCH = 2;
     public static final int LICENSE_SEARCH = 3;
-        private int code;
+    private int code;
     private long karteId;
     private int docId;
     private String facilityId;
@@ -22,8 +22,8 @@ public class DocumentSearchSpec implements Serializable {
     private String purpose;
     private String creator;
     private String license;
-    private Date fromDate;
-    private Date toDate;
+    private LocalDateTime fromDate;
+    private LocalDateTime toDate;
     private String status;
     private boolean includeModifid;
     private boolean ascending;
@@ -76,11 +76,9 @@ public class DocumentSearchSpec implements Serializable {
         this.facilityId = facilityId;
     }
 
-    public Date getFromDate() {
-        return fromDate;
-    }
+    public LocalDateTime getFromDate() { return fromDate; }
 
-    public void setFromDate(Date fromDate) {
+    public void setFromDate(LocalDateTime fromDate) {
         this.fromDate = fromDate;
     }
 
@@ -124,11 +122,11 @@ public class DocumentSearchSpec implements Serializable {
         this.status = status;
     }
 
-    public Date getToDate() {
+    public LocalDateTime getToDate() {
         return toDate;
     }
 
-    public void setToDate(Date toDate) {
+    public void setToDate(LocalDateTime toDate) {
         this.toDate = toDate;
     }
 

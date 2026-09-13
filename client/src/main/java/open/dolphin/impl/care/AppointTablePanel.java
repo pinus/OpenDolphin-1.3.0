@@ -6,7 +6,8 @@ import open.dolphin.ui.ObjectReflectTableModel;
 import open.dolphin.ui.PNSCellEditor;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -14,16 +15,13 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
-/**
- * AppointTablePanel.
- * CareMapDocument の一番下に配置されるパネル.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- * @author pns
- */
+/// AppointTablePanel.
+/// CareMapDocument の一番下に配置されるパネル.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
+/// @author pns
 public class AppointTablePanel extends JPanel {
 
     private final String[] COLUMN_NAMES = {"予約日", "内  容", "メ   モ"};
@@ -34,6 +32,8 @@ public class AppointTablePanel extends JPanel {
     private JTable appointTable;
     private CareMapDocument parent;
     private boolean dirty;
+
+    private final Logger logger = LoggerFactory.getLogger(AppointTablePanel.class);
 
     public AppointTablePanel(JButton updateBtn) {
         super(new BorderLayout(0, 5));
@@ -71,41 +71,32 @@ public class AppointTablePanel extends JPanel {
         this.add(scroller, BorderLayout.CENTER);
     }
 
-    /**
-     * 親の ChartDocument を登録する.
-     *
-     * @param doc CareMapDocument
-     */
+    /// 親の ChartDocument を登録する.
+    ///
+    /// @param doc CareMapDocument
     public void setParent(CareMapDocument doc) {
         parent = doc;
     }
 
-    /**
-     * AppointmentModel のリストを登録する.
-     *
-     * @param list list of AppointomentModel
-     */
+    /// AppointmentModel のリストを登録する.
+    ///
+    /// @param list list of AppointomentModel
     public void setAppointmentList(List<AppointmentModel> list) {
         tableModel.setObjectList(list);
     }
 
-    /**
-     * AppointmentModel を更新して，テーブルの行選択する.
-     *
-     * @param appoint AppointmentModel
-     */
+    /// AppointmentModel を更新して，テーブルの行選択する.
+    ///
+    /// @param appoint AppointmentModel
     public void updateAppoint(AppointmentModel appoint) {
         tableModel.updateAppoint(appoint);
-        LocalDate localDate = MMLDate.toLocalDateFromDate(appoint.getDate()); // transition bridge
-        String mmlDate = localDate.format(DateUtils.ISO_DATE_FORMATTER);
+        String mmlDate = appoint.getDate().format(DateUtils.ISO_DATE_FORMATTER);
         findAppoint(mmlDate);
     }
 
-    /**
-     * MmlDate に一致する行を選択する.
-     *
-     * @param mmlDate ISO_DATE
-     */
+    /// MmlDate に一致する行を選択する.
+    ///
+    /// @param mmlDate ISO\_DATE
     private void findAppoint(String mmlDate) {
         for (int i = 0; i < tableModel.getObjectCount(); i++) {
             String val = (String) tableModel.getValueAt(i, 0); // date column
@@ -116,22 +107,18 @@ public class AppointTablePanel extends JPanel {
         }
     }
 
-    /**
-     * TableModel of AppointmentTable.
-     */
+    /// TableModel of AppointmentTable.
     private class CareTableModel extends ObjectReflectTableModel<AppointmentModel> {
 
         public CareTableModel(String[] columnNames) {
             super(columnNames);
         }
 
-        /**
-         * メモ列だけ編集できる.
-         *
-         * @param row 行
-         * @param col 列
-         * @return 編集できるかどうか
-         */
+        /// メモ列だけ編集できる.
+        ///
+        /// @param row 行
+        /// @param col 列
+        /// @return 編集できるかどうか
         @Override
         public boolean isCellEditable(int row, int col) {
             return isValidRow(row) && col == MEMO_COLUMN;
@@ -139,27 +126,21 @@ public class AppointTablePanel extends JPanel {
 
         @Override
         public Object getValueAt(int row, int col) {
-
             AppointmentModel entry = getObject(row);
-            if (entry == null) {
-                return null;
-            }
-            LocalDate localDate = MMLDate.toLocalDateFromDate(entry.getDate()); // bridge
+            if (entry == null) { return null; }
             return switch(col) {
-                case 0 -> localDate.format(DateUtils.ISO_DATE_FORMATTER); // 日付
+                case 0 -> entry.getDate().format(DateUtils.ISO_DATE_FORMATTER); // 日付
                 case 1 -> entry.getName(); // 内容
                 case 2 -> entry.getMemo(); // メモ
                 default -> null;
             };
         }
 
-        /**
-         * メモ列に文字列を入れる.
-         *
-         * @param val 値
-         * @param row 行
-         * @param col 列
-         */
+        /// メモ列に文字列を入れる.
+        ///
+        /// @param val 値
+        /// @param row 行
+        /// @param col 列
         @Override
         public void setValueAt(Object val, int row, int col) {
             String str = (String) val;
@@ -185,11 +166,9 @@ public class AppointTablePanel extends JPanel {
             }
         }
 
-        /**
-         * update AppointmentModel.
-         *
-         * @param appoint AppointmentModel
-         */
+        /// update AppointmentModel.
+        ///
+        /// @param appoint AppointmentModel
         public void updateAppoint(AppointmentModel appoint) {
 
             int row = findAppointEntry(appoint);
@@ -208,11 +187,9 @@ public class AppointTablePanel extends JPanel {
             }
         }
 
-        /**
-         * ObjectList に entry を加えてソートする.
-         *
-         * @param entry AppoitmentModel
-         */
+        /// ObjectList に entry を加えてソートする.
+        ///
+        /// @param entry AppoitmentModel
         public void addAppointEntry(AppointmentModel entry) {
             addRow(entry);
             // AppointmentModel は日付でソートされる.
@@ -221,12 +198,10 @@ public class AppointTablePanel extends JPanel {
             fireTableRowsUpdated(0, index);
         }
 
-        /**
-         * appoint と一致する行を返す. 内容ではなくオブジェクトとして一致するかどうか.
-         *
-         * @param appoint AppointmentModel
-         * @return 一致行があれば行数，なければ -1
-         */
+        /// appoint と一致する行を返す. 内容ではなくオブジェクトとして一致するかどうか.
+        ///
+        /// @param appoint AppointmentModel
+        /// @return 一致行があれば行数，なければ -1
         private int findAppointEntry(AppointmentModel appoint) {
 
             List<AppointmentModel> appList = getObjectList();
@@ -245,9 +220,7 @@ public class AppointTablePanel extends JPanel {
         }
     }
 
-    /**
-     * 今日の予約のバックグランドに色を付けるレンダラ.
-     */
+    /// 今日の予約のバックグランドに色を付けるレンダラ.
     private class TodayRowRenderer extends DefaultTableCellRenderer {
 
         public TodayRowRenderer() {
@@ -284,9 +257,8 @@ public class AppointTablePanel extends JPanel {
             AppointmentModel entry = tableModel.getObject(row);
 
             if (entry != null) {
-                Date appoDate = entry.getDate(); // Date 型式
-                LocalDate localDate = MMLDate.toLocalDateFromDate(appoDate); // transition bridge
-                String appo = localDate.format(DateUtils.ISO_DATE_FORMATTER);
+                LocalDate appoDate = entry.getDate();
+                String appo = appoDate.format(DateUtils.ISO_DATE_FORMATTER);
                 String today = LocalDate.now().format(DateUtils.ISO_DATE_FORMATTER); // yyyy-mm-dd 型式
 
                 if (appo.equals(today)) {

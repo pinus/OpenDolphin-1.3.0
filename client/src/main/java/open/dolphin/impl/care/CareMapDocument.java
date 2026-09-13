@@ -14,15 +14,15 @@ import open.dolphin.infomodel.ModuleModel;
 import open.dolphin.infomodel.SimpleDate;
 import open.dolphin.project.Project;
 import open.dolphin.ui.PNSBorderFactory;
-import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
 
 /**
  * CareMapDocument.
@@ -400,23 +400,15 @@ public final class CareMapDocument extends AbstractChartDocument {
         spec.setStatus("F");
 
         // カレンダ別に検索する
-        LocalDateTime[] fromDateTime = new LocalDateTime[3];
+        LocalDateTime[] fromDate = new LocalDateTime[3];
         for (int i = 0; i < 3; i++) {
-            fromDateTime[i] = LocalDateTime.parse(calendarMap.get(i-1).getFirstDate() + "T00:00:00"); // bridge
-        }
-        Date[] fromDate = new Date[3];
-        for (int i = 0; i < 3; i++) {
-            fromDate[i] = MMLDate.toDateFromLocalDateTime(fromDateTime[i]);
+            fromDate[i] = LocalDateTime.parse(calendarMap.get(i-1).getFirstDate() + "T00:00:00");
         }
         spec.setFromDate(fromDate);
 
-        LocalDateTime[] toDateTime = new LocalDateTime[3];
+        LocalDateTime[] toDate = new LocalDateTime[3];
         for (int i = 0; i < 3; i++) {
-            toDateTime[i] = LocalDateTime.parse(calendarMap.get(i-1).getLastDate() + "T23:59:59"); // bridge
-        }
-        Date[] toDate = new Date[3];
-        for (int i = 0; i < 3; i++) {
-            toDate[i] = MMLDate.toDateFromLocalDateTime(toDateTime[i]);
+            toDate[i] = LocalDateTime.parse(calendarMap.get(i-1).getLastDate() + "T23:59:59"); // bridge
         }
         spec.setToDate(toDate);
 
@@ -459,23 +451,15 @@ public final class CareMapDocument extends AbstractChartDocument {
         spec.setStatus("F");
 
         // カレンダ別に検索する
-        LocalDateTime[] fromDateTime = new LocalDateTime[3];
+        LocalDateTime[] fromDate = new LocalDateTime[3];
         for (int i = 0; i < 3; i++) {
-            fromDateTime[i] = LocalDateTime.parse(calendarMap.get(i-1).getFirstDate() + "T00:00:00"); // bridge
-        }
-        Date[] fromDate = new Date[3];
-        for (int i = 0; i < 3; i++) {
-            fromDate[i] = MMLDate.toDateFromLocalDateTime(fromDateTime[i]);
+            fromDate[i] = LocalDateTime.parse(calendarMap.get(i-1).getFirstDate() + "T00:00:00");
         }
         spec.setFromDate(fromDate);
 
-        LocalDateTime[] toDateTime = new LocalDateTime[3];
+        LocalDateTime[] toDate = new LocalDateTime[3];
         for (int i = 0; i < 3; i++) {
-            toDateTime[i] = LocalDateTime.parse(calendarMap.get(i-1).getLastDate() + "T23:59:59"); // bridge
-        }
-        Date[] toDate = new Date[3];
-        for (int i = 0; i < 3; i++) {
-            toDate[i] = MMLDate.toDateFromLocalDateTime(toDateTime[i]);
+            toDate[i] = LocalDateTime.parse(calendarMap.get(i-1).getLastDate() + "T23:59:59"); // bridge
         }
         spec.setToDate(toDate);
         spec.setIconSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
@@ -532,7 +516,7 @@ public final class CareMapDocument extends AbstractChartDocument {
 
                     // 確定日，記録日，開始日
                     // 現状の実装はここまで
-                    Date confirmed = new Date();
+                    LocalDateTime confirmed = LocalDateTime.now();
                     appo.setConfirmed(confirmed);
                     appo.setRecorded(confirmed);
                     if (appo.getStarted() == null) {

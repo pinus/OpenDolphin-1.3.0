@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * ID.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// ID.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 public class ID extends InfoModel {
 
     private String id;

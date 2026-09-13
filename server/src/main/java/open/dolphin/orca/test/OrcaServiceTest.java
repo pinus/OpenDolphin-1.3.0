@@ -17,15 +17,17 @@ import open.dolphin.service.OrcaServiceDao;
 import open.dolphin.util.JsonUtils;
 
 import java.lang.reflect.Method;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class OrcaServiceTest {
 
     private long lap;
 
-    public static void main(String[] argv) throws ReflectiveOperationException {
+    static void main(String[] argv) throws ReflectiveOperationException {
         String userDir = System.getProperty("user.dir");
         System.setProperty("jboss.server.base.dir", userDir);
         OrcaServiceTest test = new OrcaServiceTest();
@@ -106,7 +108,7 @@ public class OrcaServiceTest {
         DiagnosisSearchSpec spec = new DiagnosisSearchSpec();
         spec.setPatientId("000001");
         //spec.setToDate();
-        spec.setFromDate(new GregorianCalendar(2008, Calendar.FEBRUARY, 1).getTime());
+        spec.setFromDate(LocalDateTime.of(2008, Month.FEBRUARY, 1, 0, 0));
         List<RegisteredDiagnosisModel> rds = (List<RegisteredDiagnosisModel>) invoke(orcaService, "getOrcaDisease", spec);
         for (RegisteredDiagnosisModel rd : rds) {
             System.out.println(String.join(" : ", rd.getDiagnosis(), rd.getDiagnosisCode(), rd.getStartDate(), rd.getEndDate(), rd.getDiagnosisOutcomeModel().getOutcomeDesc()));
@@ -166,7 +168,7 @@ public class OrcaServiceTest {
             }
         }
 
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 
     private void hasDrugHistory(OrcaServiceDao orcaService) {
@@ -206,7 +208,7 @@ public class OrcaServiceTest {
 
             sb.append(String.format("%s %s %s\n", k.getKomokuname(), k.getDataValue(), k.getDataTani()));
         }
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 
     private void hasKenshin(OrcaServiceDao orcaService) {

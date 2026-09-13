@@ -5,11 +5,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-/**
- * PublishedTreeModel.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// PublishedTreeModel.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 @Entity
 @Table(name = "d_published_tree")
 public class PublishedTreeModel extends StampTreeBean {

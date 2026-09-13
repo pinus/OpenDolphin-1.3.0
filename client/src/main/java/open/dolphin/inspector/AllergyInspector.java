@@ -14,7 +14,6 @@ import open.dolphin.project.Project;
 import open.dolphin.ui.IndentTableCellRenderer;
 import open.dolphin.ui.PNSScrollPane;
 import open.dolphin.ui.UndoableObjectReflectTableModel;
-import open.dolphin.util.MMLDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -269,8 +270,7 @@ public class AllergyInspector implements IInspector, TableModelListener {
             AllergyModel model = tableModel.getObject(e.getFirstRow());
 
             // GUI の同定日をTimeStampに変更する
-            LocalDateTime localDateTime = LocalDateTime.parse(model.getIdentifiedDate() + "T00:00:00"); // bridge
-            Date date = MMLDate.toDateFromLocalDateTime(localDateTime);
+            LocalDateTime date = LocalDateTime.parse(model.getIdentifiedDate() + "T00:00:00");
 
             List<ObservationModel> observations = new ArrayList<>(1);
             ObservationModel observation = new ObservationModel();
@@ -280,7 +280,7 @@ public class AllergyInspector implements IInspector, TableModelListener {
             observation.setPhenomenon(model.getFactor());
             observation.setCategoryValue(model.getSeverity());
             observation.setConfirmed(date);
-            observation.setRecorded(new Date());
+            observation.setRecorded(LocalDateTime.now());
             observation.setStarted(date);
             observation.setStatus(IInfoModel.STATUS_FINAL);
             observation.setMemo(model.getMemo());

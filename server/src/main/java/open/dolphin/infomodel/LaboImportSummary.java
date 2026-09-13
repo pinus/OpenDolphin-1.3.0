@@ -2,14 +2,11 @@ package open.dolphin.infomodel;
 
 import java.io.Serializable;
 
-/**
- * LaboImportSummary.
- *
- * @author Minagawa, Kazushi
- */
+/// LaboImportSummary.
+///
+/// @author Minagawa, Kazushi
 public class LaboImportSummary implements Serializable {
 
-    
     private String patientId;
 
     private PatientModel patient;

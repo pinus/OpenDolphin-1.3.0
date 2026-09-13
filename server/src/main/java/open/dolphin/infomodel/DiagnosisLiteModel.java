@@ -1,10 +1,10 @@
 package open.dolphin.infomodel;
 
-/**
- * DiagnosisDocument の undo 用にデータを入れておく軽いモデル.
- *
- * @author pns
- */
+import java.util.Objects;
+
+/// DiagnosisDocument の undo 用にデータを入れておく軽いモデル.
+///
+/// @author pns
 public class DiagnosisLiteModel {
     private String diagnosisDesc;
     private String diagnosisCode;
@@ -150,6 +150,6 @@ public class DiagnosisLiteModel {
      * @return 判定結果
      */
     private boolean equals(String s1, String s2) {
-        return (s1 == null) ? s2 == null : s1.equals(s2);
+        return Objects.equals(s1, s2);
     }
 }

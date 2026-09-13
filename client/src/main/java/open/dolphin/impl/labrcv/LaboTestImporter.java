@@ -20,10 +20,11 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.MouseEvent;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * LaboTestImport.
@@ -147,9 +148,8 @@ public class LaboTestImporter extends AbstractMainComponent {
         updateCount();
 
         // 日付を設定する
-        String formatStr = ClientContext.getString("waitingList.state.dateFormat");
-        SimpleDateFormat sdf = new SimpleDateFormat(formatStr); // 2006-11-20(水)
-        dateLabel.setText(sdf.format(new Date()) + " ");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd(E)", Locale.JAPANESE);
+        dateLabel.setText(LocalDate.now().format(formatter) + " ");
 
         // 全体をレイアウトする
         MainComponentPanel view = new MainComponentPanel();

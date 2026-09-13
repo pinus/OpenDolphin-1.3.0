@@ -15,16 +15,18 @@ import open.dolphin.ui.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.FocusManager;
 import javax.swing.*;
+import javax.swing.FocusManager;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 
 /**
  * 文書履歴を取得し，表示するクラス.
@@ -51,7 +53,7 @@ public class DocumentHistory implements IInspector {
     // 選択された文書情報(DocInfo)の配列
     private DocInfoModel[] selectedHistories;
     // 抽出開始日
-    private Date extractionPeriod;
+    private LocalDateTime extractionPeriod;
     // 自動的に取得する文書数
     private final int autoFetchCount;
     // 昇順降順のフラグ
@@ -454,14 +456,8 @@ public class DocumentHistory implements IInspector {
         if (e.getStateChange() == ItemEvent.SELECTED) {
             int index = extractionCombo.getSelectedIndex();
             int addValue = ComboBoxFactory.getDocumentExtractionPeriodModel().get(index).getValue();
-
-            GregorianCalendar today = new GregorianCalendar();
-            today.add(GregorianCalendar.MONTH, addValue);
-            today.clear(Calendar.HOUR_OF_DAY);
-            today.clear(Calendar.MINUTE);
-            today.clear(Calendar.SECOND);
-            today.clear(Calendar.MILLISECOND);
-            setExtractionPeriod(today.getTime());
+            LocalDateTime today = LocalDate.now().atStartOfDay().plusMonths(addValue);
+            setExtractionPeriod(today);
         }
     }
 
@@ -499,7 +495,7 @@ public class DocumentHistory implements IInspector {
      *
      * @return 抽出期間
      */
-    public Date getExtractionPeriod() {
+    public LocalDateTime getExtractionPeriod() {
         return extractionPeriod;
     }
 
@@ -508,7 +504,7 @@ public class DocumentHistory implements IInspector {
      *
      * @param extractionPeriod 抽出期間
      */
-    public void setExtractionPeriod(Date extractionPeriod) {
+    public void setExtractionPeriod(LocalDateTime extractionPeriod) {
         this.extractionPeriod = extractionPeriod;
         update();
     }

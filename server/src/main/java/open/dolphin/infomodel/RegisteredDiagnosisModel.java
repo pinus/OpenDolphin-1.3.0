@@ -2,18 +2,11 @@ package open.dolphin.infomodel;
 
 import jakarta.persistence.*;
 import open.dolphin.util.DateUtils;
-import open.dolphin.util.MMLDate;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
-/**
- * 診断履歴クラス.
- *
- * @author Kazushi Minagawa, Digital Globe,Inc.
- */
+/// 診断履歴クラス.
+///
+/// @author Kazushi Minagawa, Digital Globe,Inc.
 @Entity
 @Table(name = "d_diagnosis")
 public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosisModel> {
@@ -123,8 +116,7 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
 
     public String getStartDate() {
         if (getStarted() != null) {
-            LocalDate localDate = MMLDate.toLocalDateFromDate(getStarted()); // bridge
-            return localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+            return getStarted().format(DateUtils.ISO_DATE_FORMATTER);
         }
         return null;
     }
@@ -136,16 +128,13 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
                 startDate += "T00:00:00";
             }
             //System.out.println(startDate);
-            LocalDateTime localDateTime = LocalDateTime.parse(startDate); // bridge
-            Date start = MMLDate.toDateFromLocalDateTime(localDateTime);
-            setStarted(start);
+            setStarted(LocalDateTime.parse(startDate));
         }
     }
 
     public String getEndDate() {
         if (getEnded() != null) {
-            LocalDate localDate = MMLDate.toLocalDateFromDate(getEnded()); // bridge
-            return localDate.format(DateUtils.ISO_DATE_FORMATTER);
+            return getEnded().format(DateUtils.ISO_DATE_FORMATTER);
         }
         return null;
     }
@@ -156,9 +145,7 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
             if (index < 0) {
                 endDate += "T00:00:00";
             }
-            LocalDateTime localDateTime = LocalDateTime.parse(endDate); // bridge
-            Date end = MMLDate.toDateFromLocalDateTime(localDateTime);
-            setEnded(end);
+            setEnded(LocalDateTime.parse(endDate));
         } else {
             setEnded(null);
         }
@@ -254,12 +241,10 @@ public class RegisteredDiagnosisModel extends KarteEntryBean<RegisteredDiagnosis
         return (alias == null) ? this.diagnosis : alias;
     }
 
-    /**
-     * RegisteredDiagnosisModel の equal 判定.
-     *
-     * @param obj 比較対象
-     * @return 判定結果
-     */
+    /// RegisteredDiagnosisModel の equal 判定.
+    ///
+    /// @param obj 比較対象
+    /// @return 判定結果
     @Override
     public boolean equals(Object obj) {
         // obj が RegisteredDiagnosisModel でなければ not equal

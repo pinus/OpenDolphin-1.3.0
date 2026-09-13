@@ -1,10 +1,8 @@
 package open.dolphin.infomodel;
 
-/**
- * AccessRightModel.
- *
- * @author Kazushi Minagawa
- */
+/// AccessRightModel.
+///
+/// @author Kazushi Minagawa
 public class AccessRightModel extends InfoModel {
 
     private String permission;

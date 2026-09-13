@@ -1,6 +1,6 @@
 package open.dolphin.dto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * KarteBeanSpec.
@@ -10,7 +10,7 @@ import java.util.Date;
 public class KarteBeanSpec {
     // PatientModel primary key
     private long patientPk;
-    private Date fromDate;
+    private LocalDateTime fromDate;
 
     public long getPatientPk() {
         return patientPk;
@@ -20,11 +20,11 @@ public class KarteBeanSpec {
         this.patientPk = patientPk;
     }
 
-    public Date getFromDate() {
+    public LocalDateTime getFromDate() {
         return fromDate;
     }
 
-    public void setFromDate(Date fromDate) {
+    public void setFromDate(LocalDateTime fromDate) {
         this.fromDate = fromDate;
     }
 }

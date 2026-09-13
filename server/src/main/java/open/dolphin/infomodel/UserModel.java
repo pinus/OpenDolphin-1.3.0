@@ -4,15 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
-/**
- * UserModel.
- *
- * @author Minagawa, Kazushi
- */
+/// UserModel.
+///
+/// @author Minagawa, Kazushi
 @Entity
 @Table(name = "d_users")
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class)
@@ -22,9 +21,7 @@ public class UserModel extends InfoModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    /**
-     * composite businnes key
-     */
+    /// composite businnes key
     @Column(nullable = false, unique = true)
     private String userId;
 
@@ -50,8 +47,7 @@ public class UserModel extends InfoModel {
     private String memo;
 
     @Column(nullable = false)
-    @Temporal(value = TemporalType.DATE)
-    private Date registeredDate;
+    private LocalDate registeredDate;
 
     @Column(nullable = false)
     private String email;
@@ -149,7 +145,6 @@ public class UserModel extends InfoModel {
     }
 
     public void addRole(RoleModel value) {
-
         if (roles == null) {
             roles = new ArrayList<>(1);
         }
@@ -157,7 +152,6 @@ public class UserModel extends InfoModel {
     }
 
     public UserLiteModel getLiteModel() {
-
         UserLiteModel model = new UserLiteModel();
         model.setUserId(getUserId());
         model.setCommonName(getCommonName());
@@ -185,11 +179,11 @@ public class UserModel extends InfoModel {
         this.memo = memo;
     }
 
-    public Date getRegisteredDate() {
+    public LocalDate getRegisteredDate() {
         return registeredDate;
     }
 
-    public void setRegisteredDate(Date registeredDate) {
+    public void setRegisteredDate(LocalDate registeredDate) {
         this.registeredDate = registeredDate;
     }
 

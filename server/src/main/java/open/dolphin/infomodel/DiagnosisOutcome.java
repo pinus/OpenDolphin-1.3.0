@@ -1,11 +1,9 @@
 package open.dolphin.infomodel;
 
-/**
- * DiagnosisOutcome.
- * ORCA の CLAIM では 1.治癒，2.死亡，3.中止，4.移行 の４つしか判定しない.
- *
- * @author pns
- */
+/// DiagnosisOutcome.
+/// ORCA の CLAIM では 1.治癒，2.死亡，3.中止，4.移行 の４つしか判定しない.
+///
+/// @author pns
 public enum DiagnosisOutcome {
 
     NONE("", ""),
@@ -16,7 +14,7 @@ public enum DiagnosisOutcome {
 
     private final DiagnosisOutcomeModel model = new DiagnosisOutcomeModel();
 
-    private DiagnosisOutcome(String desc, String codeSys) {
+    DiagnosisOutcome(String desc, String codeSys) {
         model.setOutcome(name().equals("none") ? "" : name());
         model.setOutcomeDesc(desc);
         model.setOutcomeCodeSys(codeSys);

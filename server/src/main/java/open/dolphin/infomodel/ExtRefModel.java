@@ -4,11 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
 
-/**
- * 外部参照要素クラス.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// 外部参照要素クラス.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
 @Embeddable
 public class ExtRefModel extends InfoModel {
     
