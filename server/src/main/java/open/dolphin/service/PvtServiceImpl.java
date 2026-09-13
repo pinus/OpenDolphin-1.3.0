@@ -12,7 +12,9 @@ import org.jboss.logging.Logger;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -175,15 +177,10 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
      * @return 病名数
      */
     private int getByomeiCountToday(long patientPk) {
-        // 昨日の夜11時
-        GregorianCalendar yesterday = new GregorianCalendar();
-        yesterday.add(GregorianCalendar.DATE, -1);
-        yesterday.set(Calendar.HOUR_OF_DAY, 23);
-
         return em.createQuery(
                 "select r from RegisteredDiagnosisModel r where r.karte.id = (select k.id from KarteBean k where k.patient.id = :pk) and r.started >= :fromDate", RegisteredDiagnosisModel.class)
                 .setParameter("pk", patientPk)
-                .setParameter("fromDate", yesterday.getTime())
+                .setParameter("fromDate", LocalDate.now().atStartOfDay())
                 .getResultList().size();
     }
 
