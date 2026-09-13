@@ -727,7 +727,6 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
      */
     @Override
     public int putAppointment(AppointSpec spec) {
-
         Collection<AppointmentModel> added = spec.getAdded();
         Collection<AppointmentModel> updated = spec.getUpdated();
         Collection<AppointmentModel> removed = spec.getRemoved();
@@ -763,7 +762,6 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
      */
     @Override
     public List<List<AppointmentModel>> getAppointmentList(ModuleSearchSpec spec) {
-
         // 抽出期間は別けられている
         LocalDateTime[] fromDate = spec.getFromDate();
         LocalDateTime[] toDate = spec.getToDate();
@@ -773,11 +771,10 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
 
         // 抽出期間ごとに検索しコレクションに加える
         for (int i = 0; i < len; i++) {
-
             List<AppointmentModel> c = em.createQuery("select a from AppointmentModel a where a.karte.id = :karteId and a.date between :fromDate and :toDate", AppointmentModel.class)
                     .setParameter("karteId", spec.getKarteId())
-                    .setParameter("fromDate", fromDate[i])
-                    .setParameter("toDate", toDate[i]).getResultList();
+                    .setParameter("fromDate", fromDate[i].toLocalDate())
+                    .setParameter("toDate", toDate[i].toLocalDate()).getResultList();
             ret.add(c);
         }
         return ret;

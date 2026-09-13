@@ -1,11 +1,5 @@
 package open.dolphin;
 
-import open.dolphin.infomodel.InfoModel;
-import open.dolphin.infomodel.UserModel;
-import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.util.Encode;
-
-import jakarta.ws.rs.core.Response;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -14,18 +8,22 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
+import open.dolphin.infomodel.InfoModel;
+import open.dolphin.infomodel.UserModel;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.util.Encode;
+
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.*;
 
-/**
- * Security Filter
- * Authorization Header pattern : "facilityId:username;password"
- *
- * @author pns
- */
+/// Security Filter
+/// Authorization Header pattern : "facilityId:username;password"
+///
+/// @author pns
 @Provider
 public class SecurityFilter implements ContainerRequestFilter {
     private static final String AUTHORIZATION_PROPERTY = "Authorization";
@@ -75,7 +73,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 }
 
                 // Get encoded username and password
-                final String encoded = authorization.get(0).replaceFirst(AUTHENTICATION_SCHEME + " ", "");
+                final String encoded = authorization.getFirst().replaceFirst(AUTHENTICATION_SCHEME + " ", "");
 
                 // Decode username and password
                 String usernameAndPassword = Encode.decode(encoded); // application/x-www-form-urlencoded
@@ -95,14 +93,12 @@ public class SecurityFilter implements ContainerRequestFilter {
         }
     }
 
-    /**
-     * Check if user is authorized or not.
-     *
-     * @param userId
-     * @param password
-     * @param roles
-     * @return
-     */
+    /// Checks if the provided user credentials and roles match the database records.
+    ///
+    /// @param userId the unique identifier of the user.
+    /// @param password the password associated with the user.
+    /// @param roles a set of roles required to grant access.
+    /// @return true if the user credentials are valid and the user has at least one of the required roles, false otherwise.
     public boolean isUserAllowed(final String userId, final String password, final Set<String> roles) {
 
         //Step 1. Fetch user and password from database and match them with argument
@@ -115,13 +111,11 @@ public class SecurityFilter implements ContainerRequestFilter {
         return validUser.getRoles().stream().anyMatch(roleModel -> roles.contains(roleModel.getRole()));
     }
 
-    /**
-     * Fetch password-matched valid UserModel for authentication.
-     *
-     * @param userId
-     * @param password
-     * @return valid UserModel if present, return null if not.
-     */
+    /// Retrieves a valid [UserModel] object based on the provided user ID and password.
+    ///
+    /// @param userId the unique identifier of the user.
+    /// @param password the password associated with the user.
+    /// @return the valid [UserModel] object if the user credentials are correct and the user exists, otherwise returns null.
     public UserModel getValidUserModel(final String userId, final String password) {
         UserModel user = null;
         Long pk = cachedUserMap.get(userId);
@@ -141,7 +135,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 return null;
             }
             // user found
-            user = fetched.get(0);
+            user = fetched.getFirst();
             // cache pk
             cachedUserMap.put(user.getUserId(), user.getId());
         }

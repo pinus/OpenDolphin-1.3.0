@@ -420,7 +420,7 @@ public final class CareMapDocument extends AbstractChartDocument {
                 @Override
                 public PNSPair<List<List<ModuleModel>>, List<List<AppointmentModel>>> doInBackground() {
                     List<List<ModuleModel>> modules = ddl.getModuleList(spec);
-                    List<List<AppointmentModel>> appoints = appo ? ddl.getAppoinmentList(spec) : null;
+                    List<List<AppointmentModel>> appoints = appo ? ddl.getAppointmentList(spec) : null;
                     return new PNSPair<>(modules, appoints);
                 }
 

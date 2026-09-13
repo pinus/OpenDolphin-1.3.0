@@ -2,20 +2,18 @@ package open.dolphin.util;
 
 import java.util.Arrays;
 
-/**
- * Gengo 元号Enum.
- *
- * @author pns
- */
+/// Gengo 元号Enum.
+///
+/// @author pns
 public enum Gengo {
     DEFAULT("R", "㋿", "令和"),
     MEIJI("M", "㍾", "明治"),
     TAISHO("T", "㍽", "大正"),
     SHOWA("S", "㍼", "昭和"),
     HEISEI("H", "㍻", "平成"),
-    REIWA("R", String.valueOf('\u32ff'), "令和");
+    REIWA("R", String.valueOf('㋿'), "令和");
 
-    String alphabet, halfKanji, kanji;
+    final String alphabet, halfKanji, kanji;
 
     Gengo(String alphabet, String halfKanji, String kanji) {
         this.alphabet = alphabet;
@@ -23,21 +21,19 @@ public enum Gengo {
         this.kanji = kanji;
     }
 
-    /**
-     * ISO_DATE -> 元号変換.
-     *
-     * @param isoDate 1975-01-01
-     * @return 元号 S50-01-01
-     */
+    /// ISO\_DATE -> 元号変換.
+    ///
+    /// @param isoDate 1975-01-01
+    /// @return 元号 S50-01-01
     public static String isoDateToGengo(String isoDate) {
         int year;
         int month;
         int day;
         Gengo gengo;
 
-        year = Integer.valueOf(isoDate.substring(0, 4));
-        month = Integer.valueOf(isoDate.substring(5, 7));
-        day = Integer.valueOf(isoDate.substring(8, 10));
+        year = Integer.parseInt(isoDate.substring(0, 4));
+        month = Integer.parseInt(isoDate.substring(5, 7));
+        day = Integer.parseInt(isoDate.substring(8, 10));
 
         // 2020年より先は令和
         if (year >= 2020) {
@@ -114,29 +110,25 @@ public enum Gengo {
         return String.format("%s%02d-%02d-%02d", gengo.alphabet(), year, month, day);
     }
 
-    /**
-     * ISO_DATE を "元号xx年x月x日" に変換.
-     *
-     * @param isoDate ISO_DATE
-     * @return 元号
-     */
+    /// ISO\_DATE を "元号xx年x月x日" に変換.
+    ///
+    /// @param isoDate ISO\_DATE
+    /// @return 元号
     public static String isoDateToFullGengo(String isoDate) {
         String[] gengo = isoDateToGengo(isoDate).split("-");
         String g = gengoAlphabetToKanji(gengo[0].substring(0, 1));
-        int y = Integer.valueOf(gengo[0].substring(1));
-        int m = Integer.valueOf(gengo[1]);
-        int d = Integer.valueOf(gengo[2]);
+        int y = Integer.parseInt(gengo[0].substring(1));
+        int m = Integer.parseInt(gengo[1]);
+        int d = Integer.parseInt(gengo[2]);
         return y == 1
                 ? String.format("%s元年%d月%d日", g, m, d)
                 : String.format("%s%d年%d月%d日", g, y, m, d);
     }
 
-    /**
-     * 元号 -> ISO_DATE.
-     *
-     * @param gengoDate H22-7-26
-     * @return ISO_DATE 2010-07-26
-     */
+    /// 元号 -> ISO\_DATE.
+    ///
+    /// @param gengoDate H22-7-26
+    /// @return ISO\_DATE 2010-07-26
     public static String gengoToIsoDate(String gengoDate) {
         String[] date = gengoDate.split("-");
         int year;
@@ -145,16 +137,16 @@ public enum Gengo {
 
         if (date[0].length() == 4) {
             // 西暦で入ってきた場合
-            year = Integer.valueOf(date[0]);
-            month = Integer.valueOf(date[1]);
-            day = Integer.valueOf(date[2]);
+            year = Integer.parseInt(date[0]);
+            month = Integer.parseInt(date[1]);
+            day = Integer.parseInt(date[2]);
 
         } else {
             // 元号処理
             String gengo = date[0].substring(0, 1).toUpperCase();
-            year = Integer.valueOf(date[0].substring(1));
-            month = Integer.valueOf(date[1]);
-            day = Integer.valueOf(date[2]);
+            year = Integer.parseInt(date[0].substring(1));
+            month = Integer.parseInt(date[1]);
+            day = Integer.parseInt(date[2]);
 
             if (gengo.equals(MEIJI.alphabet())) {
                 year += 1867;
@@ -172,55 +164,45 @@ public enum Gengo {
         return String.format("%d-%02d-%02d", year, month, day);
     }
 
-    /**
-     * Orca 型式の元号数字 -> 元号アルファベット変換.
-     *
-     * @param gengoNumber Orca で元号を表す数字 [1,2,3,4,...]
-     * @return 元号を表すアルファベット [M,T,S,H,...]
-     */
+    /// Orca 型式の元号数字 -> 元号アルファベット変換.
+    ///
+    /// @param gengoNumber Orca で元号を表す数字 [1,2,3,4,...]
+    /// @return 元号を表すアルファベット [M,T,S,H,...]
     public static String gengoNumberToAlphabet(String gengoNumber) {
-        int num = Integer.valueOf(gengoNumber);
+        int num = Integer.parseInt(gengoNumber);
         if (num > values().length || num < 1) {
             return "U";
         } else return (values()[num].alphabet());
     }
 
-    /**
-     * 年号アルファベットを漢字に変換.
-     *
-     * @param alphabet [M,T,S,H,...]
-     * @return 元号漢字 [明治,大正,昭和,平成,...]
-     */
+    /// 年号アルファベットを漢字に変換.
+    ///
+    /// @param alphabet [M,T,S,H,...]
+    /// @return 元号漢字 [明治,大正,昭和,平成,...]
     public static String gengoAlphabetToKanji(String alphabet) {
         return Arrays.stream(values()).filter(value -> value.alphabet().equals(alphabet)).findAny().orElse(Gengo.DEFAULT).kanji();
     }
 
-    /**
-     * 年号アルファベットを複合漢字に変換.
-     *
-     * @param alphabet [M,T,S,H,...]
-     * @return 元号漢字 [㍾,㍽,㍼,㍻,...]
-     */
+    /// 年号アルファベットを複合漢字に変換.
+    ///
+    /// @param alphabet [M,T,S,H,...]
+    /// @return 元号漢字 [㍾,㍽,㍼,㍻,...]
     public static String gengoAlphabetToHalfKanji(String alphabet) {
         return Arrays.stream(values()).filter(value -> value.alphabet().equals(alphabet)).findAny().orElse(Gengo.DEFAULT).halfKanji();
     }
 
-    /**
-     * ISO_DATE -> 元号変換の簡易呼び出し.
-     *
-     * @param isoDate ISO_DATE
-     * @return gengo date
-     */
+    /// ISO\_DATE -> 元号変換の簡易呼び出し.
+    ///
+    /// @param isoDate ISO\_DATE
+    /// @return gengo date
     public static String toGengo(String isoDate) {
         return isoDateToGengo(isoDate);
     }
 
-    /**
-     * 元号 -> ISO_DATE の簡易呼び出し.
-     *
-     * @param gengoDate H22-7-26
-     * @return ISO_DATE 2010-07-26
-     */
+    /// 元号 -> ISO\_DATE の簡易呼び出し.
+    ///
+    /// @param gengoDate H22-7-26
+    /// @return ISO\_DATE 2010-07-26
     public static String toSeireki(String gengoDate) {
         return gengoToIsoDate(gengoDate);
     }

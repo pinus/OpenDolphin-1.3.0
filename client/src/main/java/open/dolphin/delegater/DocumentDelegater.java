@@ -288,7 +288,7 @@ public class DocumentDelegater extends BusinessDelegater<KarteService> {
      * @param spec 検索仕様
      * @return 予約の List
      */
-    public List<List<AppointmentModel>> getAppoinmentList(ModuleSearchSpec spec) {
+    public List<List<AppointmentModel>> getAppointmentList(ModuleSearchSpec spec) {
         return getService().getAppointmentList(spec);
     }
 }

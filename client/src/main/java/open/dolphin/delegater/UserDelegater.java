@@ -24,49 +24,49 @@ public class UserDelegater extends BusinessDelegater<UserService> {
     }
 
     /**
-     * 全てのユーザリストを返す.
+     * 施設内の全ユーザを検索して返す。
      *
-     * @return
+     * @return 施設内ユーザリスト
      */
     public List<UserModel> getAllUser() {
         return  new ArrayList<>(getService().getAllUser());
     }
 
     /**
-     * ユーザを保存する.
+     * ユーザを追加する.
      *
-     * @param userModel
-     * @return
+     * @param userModel 追加するユーザモデル
+     * @return 追加件数
      */
     public int putUser(UserModel userModel) {
         return getService().addUser(userModel);
     }
 
     /**
-     * ユーザを更新する.
+     * ユーザ情報を更新する。
      *
-     * @param userModel
-     * @return
+     * @param userModel 更新するユーザモデル
+     * @return 更新件数
      */
     public int updateUser(UserModel userModel) {
         return getService().updateUser(userModel);
     }
 
     /**
-     * ユーザ ID を指定してユーザを削除する.
+     * ユーザを削除する.
      *
-     * @param uid facilityId:username 型式の userId
-     * @return
+     * @param uid 削除するユーザのId
+     * @return 削除件数
      */
     public int removeUser(String uid) {
         return getService().removeUser(uid);
     }
 
     /**
-     * ユーザの FacilityModel を更新する.
+     * 施設情報を更新する。
      *
-     * @param user
-     * @return
+     * @param user 更新するユーザモデル
+     * @return 更新件数
      */
     public int updateFacility(UserModel user) {
         return getService().updateFacility(user);

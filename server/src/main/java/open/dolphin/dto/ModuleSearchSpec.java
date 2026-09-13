@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  */
 public class ModuleSearchSpec implements Serializable {
     public static final int ENTITY_SEARCH = 0;
-        private int code;
+    private int code;
     private long karteId;
     private String patientId;
     private String entity;

@@ -1,5 +1,6 @@
 package open.dolphin.service;
 
+import jakarta.ejb.Stateless;
 import open.dolphin.infomodel.DocumentModel;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.infomodel.ModuleModel;
@@ -11,9 +12,8 @@ import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.jboss.logging.Logger;
 
-import jakarta.ejb.Stateless;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -28,27 +28,23 @@ public class PnsServiceImpl extends DolphinService implements PnsService {
     private final Preferences prefs = Preferences.userNodeForPackage(PnsServiceImpl.class);
     private final Logger logger = Logger.getLogger(PnsServiceImpl.class);
 
-    /// patient\_id から，今日のカルテ内容の module のリストを返す.　カルテがなければ null.
+    /// patientId から，今日のカルテ内容の module のリストを返す.　カルテがなければ null.
     ///
     /// @param patientId PatientModel の pk
     /// @return List of ModuleModel
     @Override
     public List<ModuleModel> peekKarte(Long patientId) {
         try {
-            GregorianCalendar today = new GregorianCalendar();
-            today.set(Calendar.HOUR_OF_DAY, 0);
+            LocalDateTime today = LocalDate.now().atStartOfDay();
 
             Long karteId = em.createQuery("select k.id from KarteBean k where k.patient.id = :patientId", Long.class)
                     .setParameter("patientId", patientId).getSingleResult();
 
             List<DocumentModel> docList = em.createQuery("from DocumentModel d where d.karte.id = :karteId and (d.status ='F' or d.status='T') and d.started >= :fromDate", DocumentModel.class)
                     .setParameter("karteId", karteId)
-                    .setParameter("fromDate", today.getTime()).getResultList();
+                    .setParameter("fromDate", today).getResultList();
 
-            if (docList.isEmpty()) {
-                return null;
-
-            } else {
+            if (!docList.isEmpty()) {
                 // beanBytes を変換して新しいモデルにして返す
                 return docList.getFirst().getModules().stream().map(src -> {
                     ModuleModel dist = new ModuleModel();
