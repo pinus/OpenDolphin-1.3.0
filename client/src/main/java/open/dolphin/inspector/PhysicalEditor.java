@@ -199,7 +199,7 @@ public class PhysicalEditor {
                 popup = new JPopupMenu();
                 CalendarPanel cp = new CalendarPanel();
                 cp.getTable().addCalendarListener(date -> {
-                    identifiedFld.setText(SimpleDate.simpleDateToMmldate(date));
+                    identifiedFld.setText(date.toIsoDate());
                     popup.setVisible(false);
                     popup = null;
                 });

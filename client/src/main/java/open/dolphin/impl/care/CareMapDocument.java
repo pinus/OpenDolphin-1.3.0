@@ -234,7 +234,7 @@ public final class CareMapDocument extends AbstractChartDocument {
      */
     private void updatePanel(SimpleCalendarPanel target, SimpleDate date) {
         String code = date.getEventCode();
-        String mmlDate = SimpleDate.simpleDateToMmldate(date);
+        String mmlDate = date.toIsoDate();
         AppointmentModel appoint = target.getAppointmentModel(mmlDate);
         boolean cancelledAppoint = appoint != null && appoint.getName() == null;
 

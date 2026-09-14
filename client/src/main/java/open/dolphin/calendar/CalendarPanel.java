@@ -10,8 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
 
 /**
  * CalendarTable にコントローラーを付けたパネル.
@@ -140,11 +139,11 @@ public class CalendarPanel extends JPanel {
         dialog.setIconImage(GUIConst.ICON_DOLPHIN.getImage());
 
         dialog.setLayout(new GridLayout(4, 3));
-        GregorianCalendar gc = new GregorianCalendar(tableModel.getYear(), tableModel.getMonth(), 1);
-        gc.add(Calendar.MONTH, -6);
+        // 6ヶ月前
+        LocalDate localDate = LocalDate.of(tableModel.getYear(), tableModel.getMonth(), 1).minusMonths(6);
 
         for (int i = 0; i < 12; i++) {
-            CalendarTable tbl = new CalendarTable(gc);
+            CalendarTable tbl = new CalendarTable(localDate);
             CalendarTableModel mdl = (CalendarTableModel) tbl.getModel();
             mdl.setMarkDates(tableModel.getMarkDates());
 
@@ -177,7 +176,7 @@ public class CalendarPanel extends JPanel {
             tbl.getTitledPanel().addMouseMotionListener(ma);
 
             dialog.add(tbl.getTitledPanel());
-            gc.add(Calendar.MONTH, 1);
+            localDate = localDate.plusMonths(1);
         }
         Point p = getLocationOnScreen();
         dialog.pack();

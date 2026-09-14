@@ -175,12 +175,11 @@ public class DiagnosisDocumentPopupMenu extends MouseAdapter implements MouseMot
      * @param date SimpleDate
      */
     public void setDate(SimpleDate date) {
-        String d = SimpleDate.simpleDateToMmldate(date);
-        textField.setText(d);
+        textField.setText(date.toIsoDate());
         int[] rows = diagTable.getSelectedRows();
         for (int r : rows) {
             int row = diagTable.convertRowIndexToModel(r);
-            diagTableModel.setValueAt(d, row, targetColumn);
+            diagTableModel.setValueAt(date.toIsoDate(), row, targetColumn);
         }
         calendarPopup.setVisible(false);
         calendarPopup = null;

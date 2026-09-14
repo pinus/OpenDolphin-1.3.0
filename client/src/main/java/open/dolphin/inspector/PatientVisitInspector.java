@@ -96,7 +96,7 @@ public class PatientVisitInspector implements IInspector {
         if (latestVisit != null) {
             List<SimpleDate> visits = new ArrayList<>();
             latestVisit.forEach(pvtDate -> {
-                SimpleDate sd = SimpleDate.mmlDateToSimpleDate(pvtDate);
+                SimpleDate sd = new SimpleDate(pvtDate);
                 sd.setEventCode(pvtCode);
                 visits.add(sd);
             });

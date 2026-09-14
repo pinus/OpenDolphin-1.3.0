@@ -105,7 +105,7 @@ public class ImageHistoryPanel extends JPanel {
     }
 
     public void findDate(SimpleDate date) {
-        String mmlDate = SimpleDate.simpleDateToMmldate(date);
+        String mmlDate = date.toIsoDate();
         int index = tModel.findDate(mmlDate);
 
         if (index != -1) {

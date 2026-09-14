@@ -1,13 +1,16 @@
 package open.dolphin.calendar;
 
+import jakarta.ejb.Local;
 import open.dolphin.helper.Holiday;
 import open.dolphin.infomodel.SimpleDate;
 
 import javax.swing.table.AbstractTableModel;
+import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * CalendarTableModel.
@@ -21,27 +24,15 @@ public class CalendarTableModel extends AbstractTableModel {
     private final int numRows = 6; // 6週で固定
     private final int numCols = 7; // 7日で固定
     // SimpleDate を入れる HashMap
-    private final HashMap<GregorianCalendar, SimpleDate> data = new HashMap<>();
-    // 今日
-    private final SimpleDate today = new SimpleDate(new GregorianCalendar());
-    // このカレンダーテーブルの年月
-    private int year;
-    private int month;
-    // このカレンダーテーブルの左上隅の日
-    private GregorianCalendar startDate;
+    private final HashMap<LocalDate, SimpleDate> data = new HashMap<>();
+    // 現在の年月
+    private LocalDate thisMonth;
+    // 現在の左上隅の日
+    private LocalDate startDate;
     // 外部から登録された，EventCode でマークされた SimpleDate のコレクション
-    private Collection<SimpleDate> markDates;
+    private Collection<SimpleDate> markedDates;
     // 誕生日
     private SimpleDate birthday;
-
-    /**
-     * CalendarTableModel を生成する.
-     *
-     * @param gc
-     */
-    public CalendarTableModel(GregorianCalendar gc) {
-        this(gc.get(Calendar.YEAR), gc.get(Calendar.MONTH));
-    }
 
     /**
      * CalendarTableModel を生成する.
@@ -50,97 +41,80 @@ public class CalendarTableModel extends AbstractTableModel {
      * @param month 　 カレンダの月
      */
     public CalendarTableModel(int year, int month) {
-        init(year, month);
+        // 作成する月の最初の日  yyyyMM01
+        thisMonth = LocalDate.of(year, month, 1);
+        calculateStartDate();
     }
 
-    /**
-     * 指定した year, month で初期化する.
-     *
-     * @param y
-     * @param m
-     */
-    private void init(int y, int m) {
-        year = y;
-        month = m;
-
-        // 作成する月の最初の日  yyyyMM1
-        GregorianCalendar gc = new GregorianCalendar(year, month, 1);
-
+    private void calculateStartDate() {
         // その月の１日の日付は週の何日目か 1=SUN 7=SAT
-        int diff = gc.get(Calendar.DAY_OF_WEEK);
-
+        int diff = thisMonth.get(WeekFields.of(Locale.JAPAN).dayOfWeek());
         // このカレンダーの左上の日まで戻して左上の日を登録
-        startDate = (GregorianCalendar) gc.clone();
-        startDate.add(Calendar.DAY_OF_MONTH, -diff + 1);
-    }
-
-    /**
-     * model を１週間進める.
-     */
-    public void nextWeek() {
-        startDate.add(Calendar.DAY_OF_MONTH, 7);
-        calibrateYearMonth();
-    }
-
-    /**
-     * model を１週間戻す.
-     */
-    public void previousWeek() {
-        startDate.add(Calendar.DAY_OF_MONTH, -7);
-        calibrateYearMonth();
-    }
-
-    /**
-     * model を１ヶ月進める.
-     */
-    public void nextMonth() {
-        if (month == 11) {
-            reset(year + 1, 0);
-        } else {
-            reset(year, month + 1);
-        }
-    }
-
-    /**
-     * model を１ヶ月戻す.
-     */
-    public void previousMonth() {
-        if (month == 0) {
-            reset(year - 1, 11);
-        } else {
-            reset(year, month - 1);
-        }
+        startDate = thisMonth.minusDays(diff - 1);
+        fireTableDataChanged();
     }
 
     /**
      * 今表示しているカレンダーがどの月か決める.
      * startDate の２週後の週の週末(20日後)を含む月がこのモデルの表す月と定義する.
      */
-    private void calibrateYearMonth() {
-        GregorianCalendar gc = (GregorianCalendar) startDate.clone();
-        gc.add(Calendar.DAY_OF_MONTH, 20);
-        year = gc.get(Calendar.YEAR);
-        month = gc.get(Calendar.MONTH);
-
+    private void calculateThisMonth() {
+        LocalDate twentyDaysAfter = startDate.plusDays(20);
+        thisMonth = LocalDate.of(twentyDaysAfter.getYear(), twentyDaysAfter.getMonthValue(), 1);
         fireTableDataChanged();
+    }
+
+    /**
+     * model を１週間進める.
+     */
+    public void nextWeek() {
+        startDate = startDate.plusWeeks(1);
+        // month は startDay の位置に応じて計算し直す
+        calculateThisMonth();
+    }
+
+    /**
+     * model を１週間戻す.
+     */
+    public void previousWeek() {
+        startDate = startDate.minusWeeks(1);
+        // month は startDay の位置に応じて計算し直す
+        calculateThisMonth();
+    }
+
+    /**
+     * model を１ヶ月進める.
+     */
+    public void nextMonth() {
+        thisMonth = thisMonth.plusMonths(1);
+        calculateStartDate();
+    }
+
+    /**
+     * model を１ヶ月戻す.
+     */
+    public void previousMonth() {
+        thisMonth = thisMonth.minusMonths(1);
+        calculateStartDate();
     }
 
     /**
      * model を今日にリセットする.
      */
     public void reset() {
-        init(today.getYear(), today.getMonth());
-        fireTableDataChanged();
+        LocalDate today = LocalDate.now();
+        reset(today.getYear(), today.getMonthValue());
     }
 
     /**
      * model を y年 m月にリセットする.
      *
-     * @param y
-     * @param m
+     * @param y year
+     * @param m month
      */
     public void reset(int y, int m) {
-        init(y, m);
+        thisMonth = LocalDate.of(y, m, 1);
+        calculateStartDate();
         fireTableDataChanged();
     }
 
@@ -150,7 +124,7 @@ public class CalendarTableModel extends AbstractTableModel {
      * @return
      */
     public int getYear() {
-        return year;
+        return thisMonth.getYear();
     }
 
     /**
@@ -159,7 +133,7 @@ public class CalendarTableModel extends AbstractTableModel {
      * @return
      */
     public int getMonth() {
-        return month;
+        return thisMonth.getMonthValue();
     }
 
     @Override
@@ -191,16 +165,15 @@ public class CalendarTableModel extends AbstractTableModel {
         int cellNumber = row * numCols + col;
 
         // startDay から cellNumber だけ進める
-        GregorianCalendar targetDay = (GregorianCalendar) startDate.clone();
-        targetDay.add(Calendar.DAY_OF_MONTH, cellNumber);
+        LocalDate theDate = startDate.plusDays(cellNumber);
 
-        // 戻り値の SimpleDate
-        SimpleDate ret = data.get(targetDay);
+        // その日に対応する SimpleDate
+        SimpleDate ret = data.get(theDate);
 
         // データがない場合は作る
         if (ret == null) {
-            ret = createSimpleDate(targetDay);
-            data.put(targetDay, ret);
+            ret = createSimpleDate(theDate);
+            data.put(theDate, ret);
         }
 
         return ret;
@@ -217,18 +190,18 @@ public class CalendarTableModel extends AbstractTableModel {
     @Override
     public void setValueAt(Object value, int row, int col) {
         SimpleDate d = (SimpleDate) value;
-        GregorianCalendar gc = new GregorianCalendar(d.getYear(), d.getMonth(), d.getDay());
-        data.put(gc, d);
+        LocalDate theDate = LocalDate.of(d.getYear(), d.getMonth(), d.getDay());
+        data.put(theDate, d);
     }
 
     /**
      * EventCode に今日情報，休日情報，誕生日を入れた SimpleDate を作る.
      *
-     * @param gc
+     * @param localDate
      * @return
      */
-    private SimpleDate createSimpleDate(GregorianCalendar gc) {
-        return createSimpleDate(new SimpleDate(gc));
+    private SimpleDate createSimpleDate(LocalDate localDate) {
+        return createSimpleDate(new SimpleDate(localDate));
     }
 
     /**
@@ -238,14 +211,13 @@ public class CalendarTableModel extends AbstractTableModel {
      * @return
      */
     private SimpleDate createSimpleDate(SimpleDate date) {
+        SimpleDate today = new SimpleDate(LocalDate.now());
         // 休日登録
         Holiday.setTo(date);
-
         // 今日なら上書き登録
         if (date.equals(today)) {
             date.setEventCode(CalendarEvent.TODAY.name());
         }
-
         // さらに誕生日なら上書き登録
         if (birthday != null && birthday.getMonth() == date.getMonth() && birthday.getDay() == date.getDay()) {
             date.setEventCode(CalendarEvent.BIRTHDAY.name());
@@ -259,7 +231,7 @@ public class CalendarTableModel extends AbstractTableModel {
      * @param mmlBirthday
      */
     public void setBirthday(String mmlBirthday) {
-        birthday = SimpleDate.mmlDateToSimpleDate(mmlBirthday);
+        birthday = new SimpleDate(mmlBirthday);
     }
 
     /**
@@ -268,7 +240,7 @@ public class CalendarTableModel extends AbstractTableModel {
      * @return
      */
     public Collection<SimpleDate> getMarkDates() {
-        return markDates;
+        return markedDates;
     }
 
     /**
@@ -277,15 +249,16 @@ public class CalendarTableModel extends AbstractTableModel {
      * @param c
      */
     public void setMarkDates(Collection<SimpleDate> c) {
-        markDates = c;
+        markedDates = c;
+        SimpleDate today = new SimpleDate(LocalDate.now());
         if (c != null) {
             c.forEach(date -> {
                 // 今日
                 if (today.equals(date)) {
                     date.setEventCode(CalendarEvent.TODAY.name());
                 }
-                GregorianCalendar gc = new GregorianCalendar(date.getYear(), date.getMonth(), date.getDay());
-                data.put(gc, date);
+                LocalDate target = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+                data.put(target, date);
             });
             fireTableDataChanged();
         }
@@ -315,9 +288,7 @@ public class CalendarTableModel extends AbstractTableModel {
     public boolean isOutOfMonth(int row, int col) {
         // startDate から cellNumber 進める
         int cellNumber = row * numCols + col;
-        GregorianCalendar gc = (GregorianCalendar) startDate.clone();
-        gc.add(Calendar.DAY_OF_MONTH, cellNumber);
-
-        return year != gc.get(Calendar.YEAR) || month != gc.get(Calendar.MONTH);
+        LocalDate test = startDate.plusDays(cellNumber);
+        return thisMonth.getYear() != test.getYear() || thisMonth.getMonthValue() != test.getMonthValue();
     }
 }

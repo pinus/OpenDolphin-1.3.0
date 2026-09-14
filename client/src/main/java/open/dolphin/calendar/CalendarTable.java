@@ -15,9 +15,8 @@ import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -51,46 +50,17 @@ public class CalendarTable extends JTable {
      * 今月のカレンダーを作る.
      */
     public CalendarTable() {
-        initComponents(new GregorianCalendar());
+        this(LocalDate.now());
     }
 
     /**
-     * GregorianCalendar で指定された月のカレンダーを作る.
+     *  指定された月のカレンダーを作る.
      *
-     * @param gc GregorianCalendar
+     * @param localDate LocalDate
      */
-    public CalendarTable(GregorianCalendar gc) {
-        initComponents(gc);
-    }
-
-    static void main(String[] arg) {
-        open.dolphin.client.ClientContext.setClientContextStub(new open.dolphin.client.ClientContextStub());
-
-        JFrame f = new JFrame();
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        CalendarTable table = new CalendarTable();
-
-        List<SimpleDate> dates = new ArrayList<>();
-        GregorianCalendar gc = new GregorianCalendar();
-
-        for (CalendarEvent e : CalendarEvent.values()) {
-            SimpleDate d = new SimpleDate(gc);
-            d.setEventCode(e.name());
-            dates.add(d);
-            gc.add(Calendar.DAY_OF_MONTH, 1);
-        }
-
-        CalendarTableModel model = (CalendarTableModel) table.getModel();
-        model.setMarkDates(dates);
-
-        f.add(table.getTitledPanel());
-        f.pack();
-        f.setVisible(true);
-    }
-
-    private void initComponents(GregorianCalendar gc) {
+    public CalendarTable(LocalDate localDate) {
         // TableModel をセット
-        tableModel = new CalendarTableModel(gc);
+        tableModel = new CalendarTableModel(localDate.getYear(), localDate.getMonthValue());
         setModel(tableModel);
 
         // SelectionModel をセット
@@ -193,9 +163,9 @@ public class CalendarTable extends JTable {
         String title = String.format("%d年%d月", tableModel.getYear(), tableModel.getMonth() + 1);
 
         // 今月はラベルの色を変える
-        GregorianCalendar gc = new GregorianCalendar();
-        int y = gc.get(Calendar.YEAR);
-        int m = gc.get(Calendar.MONTH);
+        LocalDate today = LocalDate.now();
+        int y = today.getYear();
+        int m = today.getMonthValue();
 
         Color color = null;
         Font font = null;
@@ -277,7 +247,7 @@ public class CalendarTable extends JTable {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.05f));
 
-        String month = MONTH_NAME[tableModel.getMonth()];
+        String month = MONTH_NAME[tableModel.getMonth()-1];
         //String year = String.valueOf(tableModel.getYear());
         String year = getNengo();
 
@@ -307,7 +277,7 @@ public class CalendarTable extends JTable {
      */
     private String getNengo() {
         SimpleDate date = new SimpleDate(tableModel.getYear(), tableModel.getMonth(), 1);
-        String mmlDate = SimpleDate.simpleDateToMmldate(date);
+        String mmlDate = date.toIsoDate();
         String nengoDate = Gengo.toGengo(mmlDate);
         String[] split = nengoDate.split("-");
 
@@ -416,5 +386,30 @@ public class CalendarTable extends JTable {
             }
             return compo;
         }
+    }
+
+    static void main(String[] arg) {
+        open.dolphin.client.ClientContext.setClientContextStub(new open.dolphin.client.ClientContextStub());
+
+        JFrame f = new JFrame();
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        CalendarTable table = new CalendarTable();
+
+        List<SimpleDate> dates = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+
+        for (CalendarEvent e : CalendarEvent.values()) {
+            SimpleDate d = new SimpleDate(now);
+            d.setEventCode(e.name());
+            dates.add(d);
+            now = now.plusDays(1);
+        }
+
+        CalendarTableModel model = (CalendarTableModel) table.getModel();
+        model.setMarkDates(dates);
+
+        f.add(table.getTitledPanel());
+        f.pack();
+        f.setVisible(true);
     }
 }

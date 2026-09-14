@@ -162,7 +162,7 @@ public final class OrderHistoryPanel extends JPanel {
      */
     public void findDate(SimpleDate date) {
         if (CalendarEvent.isModule(date.getEventCode())) {
-            String mmlDate = SimpleDate.simpleDateToMmldate(date);
+            String mmlDate = date.toIsoDate();
 
             for (int row = 0; row < tModel.getObjectCount(); row++) {
                 String rowDate = (String) tModel.getValueAt(row, 0);

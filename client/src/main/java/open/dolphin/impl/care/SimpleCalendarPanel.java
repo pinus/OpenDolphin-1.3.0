@@ -52,14 +52,13 @@ public final class SimpleCalendarPanel extends JPanel {
 
     private void init() {
         // Get right now
-        today = new SimpleDate(new GregorianCalendar());
-        GregorianCalendar gc = new GregorianCalendar(today.getYear(), today.getMonth(), today.getDay());
+        today = new SimpleDate(LocalDate.now());
 
         // Create requested month calendar
         // Add relative number to create
-        gc.add(Calendar.MONTH, relativeMonth);
+        LocalDate localDate = LocalDate.now().plusMonths(relativeMonth);
 
-        table = new CalendarTable(gc);
+        table = new CalendarTable(localDate);
         tableModel = (CalendarTableModel) table.getModel();
 
         CalendarTableTransferHandler th = new CalendarTableTransferHandler();
@@ -202,7 +201,7 @@ public final class SimpleCalendarPanel extends JPanel {
                 SimpleDate date = (SimpleDate) table.getValueAt(row, col);
 
                 if (date.getYear() == tableModel.getYear() && date.getMonth() == tableModel.getMonth()) {
-                    String mmlDate = SimpleDate.simpleDateToMmldate(date);
+                    String mmlDate = date.toIsoDate();
 
                     AppointmentModel appoint = map.get(mmlDate);
 
@@ -231,7 +230,7 @@ public final class SimpleCalendarPanel extends JPanel {
                 SimpleDate date = (SimpleDate) table.getValueAt(row, col);
 
                 if (date.getYear() == tableModel.getYear() && date.getMonth() == tableModel.getMonth()) {
-                    String mmlDate = SimpleDate.simpleDateToMmldate(date);
+                    String mmlDate = date.toIsoDate();
 
                     AppointmentModel appoint = map.get(mmlDate);
 
@@ -258,7 +257,7 @@ public final class SimpleCalendarPanel extends JPanel {
 
         list.forEach(module -> {
             String mmlDate = module.getConfirmed().format(DateUtils.ISO_DATE_FORMATTER);
-            SimpleDate date = SimpleDate.mmlDateToSimpleDate(mmlDate);
+            SimpleDate date = new SimpleDate(mmlDate);
 
             date.setEventCode(event);
 
@@ -282,7 +281,7 @@ public final class SimpleCalendarPanel extends JPanel {
 
         list.forEach(entry -> {
             String mmlDate = entry.getConfirmDate();
-            SimpleDate date = SimpleDate.mmlDateToSimpleDate(mmlDate);
+            SimpleDate date = new SimpleDate(mmlDate);
 
             date.setEventCode(event);
 
@@ -305,12 +304,12 @@ public final class SimpleCalendarPanel extends JPanel {
 
         list.forEach(appoint -> {
             appoint.setState(AppointmentModel.TT_HAS);
-            String mmlToday = SimpleDate.simpleDateToMmldate(today);
+            String mmlToday = today.toIsoDate();
             String mmlAppointDate = appoint.getDate().format(DateUtils.ISO_DATE_FORMATTER);
 
             // 今日以降のものだけ登録
             if (mmlAppointDate.compareTo(mmlToday) >= 0) {
-                SimpleDate date = SimpleDate.mmlDateToSimpleDate(mmlAppointDate);
+                SimpleDate date = new SimpleDate(mmlAppointDate);
                 date.setEventCode(CalendarEvent.getCode(appoint.getName()));
 
                 map.put(mmlAppointDate, appoint);
@@ -340,7 +339,7 @@ public final class SimpleCalendarPanel extends JPanel {
         }
 
         SimpleDate date = (SimpleDate) table.getValueAt(row, col);
-        AppointmentModel appoint = map.get(SimpleDate.simpleDateToMmldate(date));
+        AppointmentModel appoint = map.get(date.toIsoDate());
 
         // 予約のない日. popup menu がキャンセルのみなので
         if (appoint == null) {
@@ -371,7 +370,7 @@ public final class SimpleCalendarPanel extends JPanel {
     private void processAppoint(int row, int col, String appointName, String memo) {
 
         SimpleDate date = (SimpleDate) table.getValueAt(row, col);
-        String mmlDate = SimpleDate.simpleDateToMmldate(date);
+        String mmlDate = date.toIsoDate();
         AppointmentModel appoint = map.get(mmlDate);
 
         if (appoint == null) {
@@ -412,7 +411,7 @@ public final class SimpleCalendarPanel extends JPanel {
     private void processCancel(int row, int col) {
 
         SimpleDate date = (SimpleDate) table.getValueAt(row, col);
-        AppointmentModel appoint = map.get(SimpleDate.simpleDateToMmldate(date));
+        AppointmentModel appoint = map.get(date.toIsoDate());
 
         if (appoint == null) {
             return;
@@ -485,7 +484,7 @@ public final class SimpleCalendarPanel extends JPanel {
             }
 
             SimpleDate date = (SimpleDate) table.getValueAt(srcRow, srcCol);
-            String mmlDate = SimpleDate.simpleDateToMmldate(date);
+            String mmlDate = date.toIsoDate();
             AppointmentModel appo = map.get(mmlDate);
 
             // appo がないか，変更されて name = null になっている場合

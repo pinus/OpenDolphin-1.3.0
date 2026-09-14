@@ -693,7 +693,7 @@ public final class DiagnosisDocument extends AbstractChartDocument implements Pr
     public void setDiagnosisCount() {
         diagnosisCount = 0;
         int diagnosisCountToday = 0;
-        String today = SimpleDate.simpleDateToMmldate(new SimpleDate(new GregorianCalendar()));
+        String today = LocalDate.now().toString();
 
         for (int row = 0; row < tableModel.getObjectCount(); row++) {
             RegisteredDiagnosisModel rd = tableModel.getObject(row);
