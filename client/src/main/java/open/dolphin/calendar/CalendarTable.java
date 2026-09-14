@@ -25,7 +25,6 @@ import java.util.List;
  * @author pns
  */
 public class CalendarTable extends JTable {
-
     //private static final String[] MONTH_NAME = new String[] {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
     private static final String[] MONTH_NAME = new String[]{"睦月", "如月", "弥生", "卯月", "皐月", "水無月", "文月", "葉月", "長月", "神無月", "霜月", "師走"};
 
@@ -37,12 +36,12 @@ public class CalendarTable extends JTable {
     private static final Font CALENDAR_FONT = GUIFactory.getFont(13);
     private static final Font CALENDAR_FONT_SMALL = GUIFactory.getFont(10);
 
-    private CalendarTableModel tableModel;
+    private final CalendarTableModel tableModel;
 
     // 日付がマウスで選択された時に呼ばれる listener
     private CalendarListener listener;
     // header 付きのカレンダー
-    private JPanel calendarPanel;
+    private final JPanel calendarPanel;
     // バックグランドのタイトルを付けるかどうか
     private boolean showBackgroundTitle = true;
 
@@ -160,7 +159,7 @@ public class CalendarTable extends JTable {
      * カレンダーのタイトル部分を描画する.
      */
     private void setCalendarTitle() {
-        String title = String.format("%d年%d月", tableModel.getYear(), tableModel.getMonth() + 1);
+        String title = String.format("%d年%d月", tableModel.getYear(), tableModel.getMonth());
 
         // 今月はラベルの色を変える
         LocalDate today = LocalDate.now();
@@ -319,12 +318,14 @@ public class CalendarTable extends JTable {
             int h = getHeight();
 
             if (eventColor != null) {
+                g.setColor(eventColor);
                 g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
                 int d = Math.min(w, h);
                 int x = (w - d) / 2;
                 int y = (h - d) / 2;
-                g.setColor(eventColor);
-                g.fillOval(x, y, d - 1, d - 1);
+                if (!eventColor.equals(CalendarEvent.getColor("BIRTHDAY"))) {
+                    g.fillOval(x, y, d - 1, d - 1);
+                }
                 g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
                 g.drawOval(x, y, d - 1, d - 1);
             }
@@ -352,13 +353,12 @@ public class CalendarTable extends JTable {
 
                 SimpleDate targetDate = (SimpleDate) value;
 
+                // 曜日によって ForeColor を変える
                 Color foregroundColor = switch (col) {
                     case 0 -> SUNDAY_FOREGROUND;
                     case 6 -> SATURDAY_FOREGROUND;
                     default -> WEEKDAY_FOREGROUND;
                 };
-
-                // 曜日によって ForeColor を変える
 
                 // Event "PVT", "TODAY", "BIRTHDAY"
                 eventColor = CalendarEvent.getColor(targetDate.getEventCode());

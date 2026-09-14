@@ -3,32 +3,34 @@ package open.dolphin.calendar;
 import java.awt.*;
 import java.util.stream.Stream;
 
-/**
- * CalendarEvent.
- *
- * @author pns
- */
+/// CalendarEvent.
+///
+/// @author pns
 public enum CalendarEvent {
-    TODAY("今日", new Color(251, 44, 35, 200)), BIRTHDAY("誕生日", new Color(0xadd8e6)), PVT("受診日", new Color(255, 192, 203)),
+    TODAY("今日", new Color(0x00947a)),
+    PVT("受診日", new Color(0xc8e6c9)),
+    BIRTHDAY("誕生日", new Color(0xd70035)),
 
-    EXAM_APPO("再診", new Color(255, 165, 0)), IMAGE_APPO("画像検査", new Color(119, 200, 211)),
-    TEST_APPO("検体検査", new Color(255, 69, 0)), MISC_APPO("その他", new Color(251, 239, 128)),
+    EXAM_APPO("再診", new Color(0xe3adc1)),
+    IMAGE_APPO("画像検査", new Color(0x88bfbf)),
+    TEST_APPO("検体検査", new Color(0xe6bfb2)),
+    MISC_APPO("その他", new Color(0xabb1ad)),
 
     medOrder("処方", Color.PINK), treatmentOrder("処置", Color.PINK), instractionChargeOrder("指導", Color.PINK),
     testOrder("ラボテスト", Color.PINK), physiologyOrder("生体検査", Color.PINK), radiologyOrder("放射線", Color.PINK), image("画像", Color.PINK);
     private final Color color;
     private final String title;
 
-    private CalendarEvent(String t, Color c) {
+     CalendarEvent(String t, Color c) {
         title = t;
         color = c;
     }
 
     /**
-     * CalendarEvent の色を返す.
+     * Returns the color associated with a specific calendar event code.
      *
-     * @param code
-     * @return
+     * @param code The code of the calendar event.
+     * @return The color associated with the specified calendar event code, or null if no match is found.
      */
     public static Color getColor(String code) {
         for (CalendarEvent event : CalendarEvent.values()) {
@@ -40,10 +42,10 @@ public enum CalendarEvent {
     }
 
     /**
-     * CalendarEvent のタイトル文字列を返す.
+     * Returns the title associated with a specific calendar event code.
      *
-     * @param code
-     * @return
+     * @param code The code of the calendar event.
+     * @return The title associated with the specified calendar event code or the input code if no match is found.
      */
     public static String getTitle(String code) {
         for (CalendarEvent event : CalendarEvent.values()) {
@@ -55,10 +57,10 @@ public enum CalendarEvent {
     }
 
     /**
-     * CalendarEvent のコートから title を返す.
+     * Returns the code associated with a specific calendar event title.
      *
-     * @param title
-     * @return
+     * @param title The title of the calendar event.
+     * @return The code associated with the specified calendar event title or the input title if no match is found.
      */
     public static String getCode(String title) {
         for (CalendarEvent event : CalendarEvent.values()) {
@@ -70,10 +72,10 @@ public enum CalendarEvent {
     }
 
     /**
-     * code が予約関連のコードかどうかを返す.
+     * Checks if the given code corresponds to an appointment-related event.
      *
-     * @param code
-     * @return
+     * @param code The code of the calendar event to check.
+     * @return true if the code is associated with an appointment-related event, false otherwise.
      */
     public static boolean isAppoint(String code) {
         return Stream.of(CalendarEvent.values())
@@ -82,10 +84,10 @@ public enum CalendarEvent {
     }
 
     /**
-     * code がオーダー関連のコードかどうかを返す.
+     * Checks if the given code corresponds to a module-related event.
      *
-     * @param code
-     * @return
+     * @param code The code of the calendar event to check.
+     * @return true if the code is associated with a module-related event, false otherwise.
      */
     public static boolean isModule(String code) {
         return Stream.of(CalendarEvent.values())
