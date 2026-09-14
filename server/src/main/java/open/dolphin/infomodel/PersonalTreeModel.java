@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 public class PersonalTreeModel extends StampTreeBean {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = InfoModel.GENERATOR_NAME)
     private long id;
 
     // 公開しているtreeのエンティティ

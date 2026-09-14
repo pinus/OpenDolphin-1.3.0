@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class PhenomenonModel extends InfoModel {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = InfoModel.GENERATOR_NAME)
     private long id;
 
     // 患者ID、UserId、施設ID等

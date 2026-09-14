@@ -12,9 +12,9 @@ import jakarta.persistence.*;
 @Table(name = "d_labo_item")
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class)
 public class LaboItemValue extends InfoModel {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = InfoModel.GENERATOR_NAME)
     private long id;
 
     @ManyToOne

@@ -18,9 +18,9 @@ import java.util.List;
 @Table(name = "d_karte")
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class)
 public class KarteBean extends InfoModel {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = InfoModel.GENERATOR_NAME)
     private long id;
 
     @IndexedEmbedded // hibernate search
@@ -33,7 +33,7 @@ public class KarteBean extends InfoModel {
     private LocalDate created;
 
     // Entry fields -　KarteService.getKarte で付加する field:
-    // オリジナルは Map<String,List> entries になってたのを分けた
+    // オリジナルは Map<String, List> entries になってたのを分けた
     // allergy
     @Transient
     private List<AllergyModel> allergyEntry;
@@ -118,7 +118,7 @@ public class KarteBean extends InfoModel {
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + (int) (id ^ (id >>> 32));
+        result = PRIME * result + Long.hashCode(id);
         return result;
     }
 

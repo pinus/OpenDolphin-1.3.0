@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 public class SubscribedTreeModel extends InfoModel {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = InfoModel.GENERATOR_NAME)
     private long id;
 
     @ManyToOne

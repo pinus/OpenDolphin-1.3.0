@@ -10,7 +10,7 @@ import jakarta.persistence.*;
 public class HealthInsuranceModel extends InfoModel {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = InfoModel.GENERATOR_NAME)
     private long id;
 
     @Lob
@@ -49,7 +49,7 @@ public class HealthInsuranceModel extends InfoModel {
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + (int) (id ^ (id >>> 32));
+        result = PRIME * result + Long.hashCode(id);
         return result;
     }
 
