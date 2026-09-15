@@ -141,10 +141,11 @@ public class ItemTablePanel extends JPanel {
 
             @Override
             public boolean isCellEditable(int row, int col) {
-                // col=0 がコメントコード（810000001)なら，col=1 を編集可能とする
                 // col=2 なら編集可能
-                return (col == 1 && "810000001".equals(this.getValueAt(row, 0)))
-                        || (col == 2);
+                // col=0 のコードによって，col=1 を編集可能とする
+                return col == 2
+                        || (col == 1 && "810000001".equals(this.getValueAt(row, 0)))
+                        || (col == 1 && "830100080".equals(this.getValueAt(row, 0))); // 紹介先病院コメント
             }
 
             @Override
