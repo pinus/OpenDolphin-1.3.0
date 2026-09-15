@@ -8,16 +8,21 @@ import java.util.stream.Stream;
 /// @author pns
 public enum CalendarEvent {
     TODAY("今日", new Color(0x00947a)),
-    PVT("受診日", new Color(0xc8e6c9)),
+    PVT("受診日", new Color(0xa5c9c1)),
     BIRTHDAY("誕生日", new Color(0xd70035)),
 
-    EXAM_APPO("再診", new Color(0xe3adc1)),
-    IMAGE_APPO("画像検査", new Color(0x88bfbf)),
+    EXAM_APPO("再診", new Color(0xa5c9c1)),
+    IMAGE_APPO("画像検査", new Color(0xd1bada)),
     TEST_APPO("検体検査", new Color(0xe6bfb2)),
     MISC_APPO("その他", new Color(0xabb1ad)),
 
-    medOrder("処方", Color.PINK), treatmentOrder("処置", Color.PINK), instractionChargeOrder("指導", Color.PINK),
-    testOrder("ラボテスト", Color.PINK), physiologyOrder("生体検査", Color.PINK), radiologyOrder("放射線", Color.PINK), image("画像", Color.PINK);
+    medOrder("処方", Color.PINK),
+    treatmentOrder("処置", Color.PINK),
+    instructionChargeOrder("指導", Color.PINK),
+    testOrder("ラボテスト", Color.PINK),
+    physiologyOrder("生体検査", Color.PINK),
+    radiologyOrder("放射線", Color.PINK), image("画像", Color.PINK);
+
     private final Color color;
     private final String title;
 

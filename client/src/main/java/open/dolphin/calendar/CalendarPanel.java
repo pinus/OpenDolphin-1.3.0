@@ -12,11 +12,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 
-/**
- * CalendarTable にコントローラーを付けたパネル.
- *
- * @author pns
- */
+/// CalendarTable にコントローラーを付けたパネル.
+///
+/// @author pns
 public class CalendarPanel extends JPanel {
 
     private static final int BUTTON_WIDTH = 12;
@@ -46,17 +44,7 @@ public class CalendarPanel extends JPanel {
         });
 
         // control panel 生成
-        JButton expand = new JButton(GUIConst.ICON_MD_EJECT_16);
-        if (Dolphin.forWin) {
-            expand.setContentAreaFilled(false);
-        } else {
-            expand.setBorderPainted(false);
-        }
-        expand.addActionListener(e -> expand());
-        expand.setPreferredSize(new Dimension(12, 16));
-        expand.setMinimumSize(new Dimension(12, 16));
-        expand.setMaximumSize(new Dimension(12, 16));
-
+        JButton expand = createButton(GUIConst.ICON_MD_EJECT_16, e -> expand());
         JButton nextWeek = createButton(GUIConst.ICON_MD_FORWARD_16, e -> tableModel.nextWeek());
         JButton nextMonth = createButton(GUIConst.ICON_MD_FAST_FORWARD_16, e -> tableModel.nextMonth());
         JButton prevWeek = createButton(GUIConst.ICON_MD_BACKWARD_16, e -> tableModel.previousWeek());
@@ -120,18 +108,14 @@ public class CalendarPanel extends JPanel {
         return button;
     }
 
-    /**
-     * リスナに月が切り替わったことを知らせる.
-     */
+    /// リスナに月が切り替わったことを知らせる.
     private void fireCalendarChanged() {
         if (listener != null) {
             listener.dateSelected(new SimpleDate(tableModel.getYear(), tableModel.getMonth(), 1));
         }
     }
 
-    /**
-     * １年分のカレンダーをポップアップする.
-     */
+    /// １年分のカレンダーをポップアップする.
     private void expand() {
         JDialog dialog = new JDialog();
         dialog.getRootPane().putClientProperty("Window.style", "small");
@@ -184,44 +168,36 @@ public class CalendarPanel extends JPanel {
         dialog.setVisible(true);
     }
 
-    /**
-     * バックグラウンド色を設定する.
-     *
-     * @param bg background
-     */
+    /// バックグラウンド色を設定する.
+    ///
+    /// @param bg background
     public void setCalendarBackground(Color bg) {
         table.setBackground(bg);
         controlPanel.setBackground(bg);
     }
 
-    /**
-     * 表示年月変更のリスナ.
-     *
-     * @param l listener
-     */
+    /// 表示年月変更のリスナ.
+    ///
+    /// @param l listener
     public void addCalendarListener(CalendarListener l) {
         listener = l;
     }
 
-    /**
-     * CalendarTable を返す.
-     *
-     * @return CalendarTable
-     */
+    /// CalendarTable を返す.
+    ///
+    /// @return CalendarTable
     public CalendarTable getTable() {
         return table;
     }
 
-    /**
-     * CalendarTableModel を返す.
-     *
-     * @return CalendarTableModel
-     */
+    /// CalendarTableModel を返す.
+    ///
+    /// @return CalendarTableModel
     public CalendarTableModel getModel() {
         return tableModel;
     }
 
-    public static void main(String[] arg) {
+    static void main(String[] arg) {
         open.dolphin.client.ClientContext.setClientContextStub(new open.dolphin.client.ClientContextStub());
 
         JFrame f = new JFrame();

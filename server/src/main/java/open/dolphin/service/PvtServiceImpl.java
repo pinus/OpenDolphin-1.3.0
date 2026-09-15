@@ -10,10 +10,8 @@ import open.dolphin.util.DateUtils;
 import open.dolphin.util.JsonUtils;
 import org.jboss.logging.Logger;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -278,7 +276,7 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
     public List<PvtStateSpec> getPvtStateList() {
 
         String fid = getCallersFacilityId();
-        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String date = LocalDate.now().toString();
         List<PatientVisitModel> result = em.createQuery(
                 "select p from PatientVisitModel p where p.facilityId = :fid and p.pvtDate >= :date order by p.pvtDate", PatientVisitModel.class)
                 .setParameter("fid", fid)
@@ -315,7 +313,7 @@ public class PvtServiceImpl extends DolphinService implements PvtService {
     @Override
     public List<PatientVisitModel> getPvtOf(PatientModel patient) {
         String fid = getCallersFacilityId();
-        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String date = LocalDate.now().toString();
         return em.createQuery(
                 "select p from PatientVisitModel p where p.facilityId = :fid and p.pvtDate >= :date and p.patient = :patient", PatientVisitModel.class)
                 .setParameter("fid", fid)

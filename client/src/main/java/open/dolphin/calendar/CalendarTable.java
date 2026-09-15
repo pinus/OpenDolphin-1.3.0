@@ -19,11 +19,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Calendar を表示する JTable.
- *
- * @author pns
- */
+/// Calendar を表示する JTable.
+///
+/// @author pns
 public class CalendarTable extends JTable {
     //private static final String[] MONTH_NAME = new String[] {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
     private static final String[] MONTH_NAME = new String[]{"睦月", "如月", "弥生", "卯月", "皐月", "水無月", "文月", "葉月", "長月", "神無月", "霜月", "師走"};
@@ -52,11 +50,9 @@ public class CalendarTable extends JTable {
         this(LocalDate.now());
     }
 
-    /**
-     *  指定された月のカレンダーを作る.
-     *
-     * @param localDate LocalDate
-     */
+    /// 指定された月のカレンダーを作る.
+    ///
+    /// @param localDate LocalDate
     public CalendarTable(LocalDate localDate) {
         // TableModel をセット
         tableModel = new CalendarTableModel(localDate.getYear(), localDate.getMonthValue());
@@ -127,20 +123,16 @@ public class CalendarTable extends JTable {
         calendarPanel.add(this, BorderLayout.CENTER);
     }
 
-    /**
-     * 曜日ヘッダ付きのカレンダーを返す.
-     *
-     * @return calendar panel
-     */
+    /// 曜日ヘッダ付きのカレンダーを返す.
+    ///
+    /// @return calendar panel
     public JPanel getPanel() {
         return calendarPanel;
     }
 
-    /**
-     * タイトル部分に年月ラベルを付けた，TitledBorder 付きカレンダーを返す.
-     *
-     * @return titled calendar panel
-     */
+    /// タイトル部分に年月ラベルを付けた，TitledBorder 付きカレンダーを返す.
+    ///
+    /// @return titled calendar panel
     public JPanel getTitledPanel() {
         // タイトルを変えるためにリスナを付ける
         tableModel.addTableModelListener(e -> setCalendarTitle());
@@ -155,9 +147,7 @@ public class CalendarTable extends JTable {
         return calendarPanel;
     }
 
-    /**
-     * カレンダーのタイトル部分を描画する.
-     */
+    /// カレンダーのタイトル部分を描画する.
     private void setCalendarTitle() {
         String title = String.format("%d年%d月", tableModel.getYear(), tableModel.getMonth());
 
@@ -180,48 +170,38 @@ public class CalendarTable extends JTable {
         calendarPanel.repaint();
     }
 
-    /**
-     * 日付選択リスナーを登録する.
-     *
-     * @param l CalendarListener
-     */
+    /// 日付選択リスナーを登録する.
+    ///
+    /// @param l CalendarListener
     public void addCalendarListener(CalendarListener l) {
         listener = l;
     }
 
-    /**
-     * 日付選択リスナーを返す.
-     *
-     * @return Calendar Listener
-     */
+    /// 日付選択リスナーを返す.
+    ///
+    /// @return Calendar Listener
     public CalendarListener getCalendarListener() {
         return listener;
     }
 
-    /**
-     * リスナに日付選択を通知する.
-     */
+    /// リスナに日付選択を通知する.
     private void fireDateSelected(SimpleDate date) {
         if (listener != null) {
             listener.dateSelected(date);
         }
     }
 
-    /**
-     * バックグランドに月と年を出すかどうか.
-     *
-     * @param b true to show background
-     */
+    /// バックグランドに月と年を出すかどうか.
+    ///
+    /// @param b true to show background
     public void setShowBackgroundTitle(boolean b) {
         showBackgroundTitle = b;
     }
 
-    /**
-     * SimpleDate の Event 名を表示する.
-     *
-     * @param e MouseEvent
-     * @return tool tip text
-     */
+    /// SimpleDate の Event 名を表示する.
+    ///
+    /// @param e MouseEvent
+    /// @return tool tip text
     @Override
     public String getToolTipText(MouseEvent e) {
         int row = rowAtPoint(e.getPoint());
@@ -230,11 +210,9 @@ public class CalendarTable extends JTable {
         return CalendarEvent.getTitle(d.getEventCode());
     }
 
-    /**
-     * バックグランドに月と年を出す.
-     *
-     * @param graphics Graphics
-     */
+    /// バックグランドに月と年を出す.
+    ///
+    /// @param graphics Graphics
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -269,11 +247,9 @@ public class CalendarTable extends JTable {
         g.drawString(year, x2, y + fm.getHeight() + fm.getAscent());
     }
 
-    /**
-     * バックグランドタイトル表示用に年号型式の年を作る.
-     *
-     * @return Gengo year
-     */
+    /// バックグランドタイトル表示用に年号型式の年を作る.
+    ///
+    /// @return Gengo year
     private String getNengo() {
         SimpleDate date = new SimpleDate(tableModel.getYear(), tableModel.getMonth(), 1);
         String mmlDate = date.toIsoDate();
@@ -287,9 +263,7 @@ public class CalendarTable extends JTable {
         return nengo + (year == 1 ? "元" : year);
     }
 
-    /**
-     * Custom table cell renderer for CalendarTable.
-     */
+    /// Custom table cell renderer for CalendarTable.
     private class DateRenderer extends DefaultTableCellRenderer {
 
         private Color eventColor;
@@ -305,9 +279,7 @@ public class CalendarTable extends JTable {
             setHorizontalAlignment(SwingConstants.CENTER);
         }
 
-        /**
-         * Event の色を，円のバックグランドで描く.
-         */
+        /// Event の色を，円のバックグランドで描く.
         @Override
         public void paintComponent(Graphics graphics) {
             //super.paintComponent(graphics);
