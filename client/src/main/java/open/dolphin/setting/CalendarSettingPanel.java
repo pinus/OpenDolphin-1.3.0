@@ -36,8 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -273,8 +272,12 @@ public class CalendarSettingPanel extends AbstractSettingPanel {
                 }
                 logger.info("Event fetch succeeded.");
             }
+//            Arrays.stream(calendarData)
+//                    .sorted(Comparator.comparing(arr -> arr[0])) // Sort by the first element (date)
+//                    .forEach(entry -> logger.info("Date: {}, Event: {}", entry[0], entry[1]));
 
             showMessage("Google Calendar からデータを取得しました", PNSOptionPane.INFORMATION_MESSAGE);
+            bindViewToModel();
         }
 
         @Override

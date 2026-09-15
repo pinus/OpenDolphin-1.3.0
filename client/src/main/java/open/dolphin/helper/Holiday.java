@@ -51,7 +51,7 @@ public class Holiday {
      * @return key
      */
     private static String createKey(SimpleDate sd) {
-        return String.format("%d%02d%02d", sd.getYear(), sd.getMonth() + 1, sd.getDay());
+        return String.format("%d%02d%02d", sd.getYear(), sd.getMonth(), sd.getDay());
     }
 
     /**

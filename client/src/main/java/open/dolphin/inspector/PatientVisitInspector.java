@@ -75,7 +75,7 @@ public class PatientVisitInspector implements IInspector {
         CalendarTableModel tableModel = (CalendarTableModel) calendarPanel.getTable().getModel();
         int year = tableModel.getYear();
         int month = tableModel.getMonth();
-        titleText = String.format("%s %d年%d月", CATEGORY.title(), year, month + 1);
+        titleText = String.format("%s %d年%d月", CATEGORY.title(), year, month);
 
         // 月の第1週だった場合、2週戻す、第2週だった場合、1週戻す
         Calendar today = Calendar.getInstance();
@@ -129,7 +129,7 @@ public class PatientVisitInspector implements IInspector {
      */
     public void calendarUpdated(SimpleDate date) {
         if (border != null) {
-            titleText = String.format("%s %d年%d月", CATEGORY.title(), date.getYear(), date.getMonth() + 1);
+            titleText = String.format("%s %d年%d月", CATEGORY.title(), date.getYear(), date.getMonth());
             border.setTitle(titleText);
             context.getFrame().repaint();
         }

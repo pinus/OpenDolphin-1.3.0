@@ -1,6 +1,5 @@
 package open.dolphin.calendar;
 
-import open.dolphin.client.Dolphin;
 import open.dolphin.client.GUIConst;
 import open.dolphin.infomodel.SimpleDate;
 
@@ -96,11 +95,10 @@ public class CalendarPanel extends JPanel {
         button.setMinimumSize(size);
         button.setMaximumSize(size);
 
-        if (Dolphin.forWin) {
-            button.setContentAreaFilled(false);
-        } else {
-            button.setBorderPainted(false);
-        }
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+
         button.addActionListener(e -> {
             l.actionPerformed(e);
             fireCalendarChanged();
