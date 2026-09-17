@@ -65,7 +65,7 @@ public class PatientSearchPanel extends MainComponentPanel {
         CalendarPanel cp = new CalendarPanel();
         cp.setPreferredSize(new Dimension(200, 150));
         cp.getTable().addCalendarListener(date -> {
-            keywordFld.setText(String.format("%d-%02d-%02d", date.getYear(), date.getMonth() + 1, date.getDay()));
+            keywordFld.setText(String.format("%d-%02d-%02d", date.getYear(), date.getMonth(), date.getDay()));
             popup.setVisible(false);
             keywordFld.postActionEvent();
         });

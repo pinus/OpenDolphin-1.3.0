@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /// DateUtils
 /// - isoDate: yyyy-MM-dd
@@ -23,7 +24,7 @@ public class DateUtils {
     public static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ISO_DATE);
     public static final DateTimeFormatter ISO_TIME_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ISO_TIME);
     public static final DateTimeFormatter ISO_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ISO_DATE_TIME);
-    public static final DateTimeFormatter KARTE_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.KARTE_DATE); // yyyy年M月d日(E) HH:mm
+    public static final DateTimeFormatter KARTE_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.KARTE_DATE, Locale.JAPAN); // yyyy年M月d日(E) HH:mm
     public static final DateTimeFormatter ORCA_DATE_FORMATTER = DateTimeFormatter.ofPattern(IInfoModel.ORCA_DATE); // yyyyMMdd
 
     /// ISO-DATE または ISO-DATE-TIME 型式から LocalDateTime を作る.
