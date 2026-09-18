@@ -4,11 +4,9 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import open.dolphin.client.AbstractMainComponent;
 import open.dolphin.client.Dolphin;
 import open.dolphin.client.GUIConst;
-import open.dolphin.client.ImageBox;
 import open.dolphin.event.BadgeEvent;
 import open.dolphin.event.BadgeListener;
 import open.dolphin.helper.WindowHolder;
-import open.dolphin.stampbox.StampBoxPlugin;
 import open.dolphin.ui.PNSBadgeTabbedPane;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.slf4j.Logger;
@@ -38,7 +36,6 @@ public class OrcaController extends AbstractMainComponent {
     private OrconPanel orconPanel;
     private OrconProperties orconProps;
     private OrconMacro orconMacro;
-    private OrconKeyDispatcher keyDispatcher;
     private WindowListener windowListener;
     private BadgeListener badgeListener;
     private BadgeEvent badgeEvent;
@@ -82,7 +79,7 @@ public class OrcaController extends AbstractMainComponent {
         getContext().getFrame().getRootPane().setDefaultButton(orconPanel.getLoginButton());
 
         // key dispatcher の動き
-        keyDispatcher = new OrconKeyDispatcher(this);
+        OrconKeyDispatcher keyDispatcher = new OrconKeyDispatcher(this);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyDispatcher);
         // login したら　enables する
         orconPanel.getLoginButton().addActionListener(e -> {
@@ -148,12 +145,12 @@ public class OrcaController extends AbstractMainComponent {
      * @param hide to hide windows
      */
     public void hideWindowsAsPossible(boolean hide) {
-        StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
-        stampBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
-        ImageBox imageBox = getContext().getPlugin(ImageBox.class);
-        if (imageBox != null && imageBox.getFrame().isVisible()) {
-            imageBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
-        }
+        //StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
+        //stampBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
+        //ImageBox imageBox = getContext().getPlugin(ImageBox.class);
+        //if (imageBox != null && imageBox.getFrame().isVisible()) {
+        //    imageBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
+        //}
         WindowHolder.allCharts().forEach(c -> c.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL));
         WindowHolder.allEditorFrames().forEach(c -> c.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL));
         SwingUtilities.invokeLater(() -> getContext().getFrame().toFront());
