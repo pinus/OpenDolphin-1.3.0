@@ -732,6 +732,7 @@ public class StampBoxPlugin extends AbstractMainTool {
     @Override
     public void enter() {
         if (frame != null) {
+            frame.setVisible(true);
             frame.toFront();
             frame.setState(Frame.NORMAL);
         }

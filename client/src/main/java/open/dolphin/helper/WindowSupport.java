@@ -76,6 +76,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         windowAction = new AbstractAction(title) {
             @Override
             public void actionPerformed(ActionEvent e) {
+                frame.setVisible(true);
                 frame.toFront();
             }
         };

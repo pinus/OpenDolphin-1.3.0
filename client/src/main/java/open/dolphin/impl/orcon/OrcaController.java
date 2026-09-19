@@ -4,9 +4,11 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import open.dolphin.client.AbstractMainComponent;
 import open.dolphin.client.Dolphin;
 import open.dolphin.client.GUIConst;
+import open.dolphin.client.ImageBox;
 import open.dolphin.event.BadgeEvent;
 import open.dolphin.event.BadgeListener;
 import open.dolphin.helper.WindowHolder;
+import open.dolphin.stampbox.StampBoxPlugin;
 import open.dolphin.ui.PNSBadgeTabbedPane;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.slf4j.Logger;
@@ -14,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.desktop.AppReopenedEvent;
+import java.awt.desktop.AppReopenedListener;
 import java.awt.event.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,6 +52,13 @@ public class OrcaController extends AbstractMainComponent {
             logger.info("Setting up chrome driver...");
             WebDriverManager.chromedriver().setup();
             logger.info("Chrome driver setting up done");
+        });
+
+        Desktop.getDesktop().addAppEventListener(new AppReopenedListener() {
+            @Override
+            public void appReopened(AppReopenedEvent e) {
+                hideWindowsAsPossible(false);
+            }
         });
     }
 
@@ -145,15 +156,16 @@ public class OrcaController extends AbstractMainComponent {
      * @param hide to hide windows
      */
     public void hideWindowsAsPossible(boolean hide) {
-        //StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
-        //stampBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
-        //ImageBox imageBox = getContext().getPlugin(ImageBox.class);
-        //if (imageBox != null && imageBox.getFrame().isVisible()) {
-        //    imageBox.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL);
-        //}
-        WindowHolder.allCharts().forEach(c -> c.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL));
-        WindowHolder.allEditorFrames().forEach(c -> c.getFrame().setState(hide ? Frame.ICONIFIED : Frame.NORMAL));
-        SwingUtilities.invokeLater(() -> getContext().getFrame().toFront());
+
+        StampBoxPlugin stampBox = getContext().getPlugin(StampBoxPlugin.class);
+        stampBox.getFrame().setVisible(!hide);
+        ImageBox imageBox = getContext().getPlugin(ImageBox.class);
+        if (imageBox != null) {
+            imageBox.getFrame().setVisible(!hide);
+        }
+        WindowHolder.allCharts().forEach(c -> c.getFrame().setVisible(!hide));
+        WindowHolder.allEditorFrames().forEach(c -> c.getFrame().setVisible(!hide));
+        //SwingUtilities.invokeLater(() -> getContext().getFrame().toFront());
     }
 
     /**

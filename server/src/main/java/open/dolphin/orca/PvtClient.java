@@ -78,7 +78,7 @@ public class PvtClient {
         Instant requestTime = Instant.now();
         pushApi.subscribe(SubscriptionEvent.ALL);
 
-        // 3秒後にチェックを実行する単発タスクをスケジュール
+        // 5秒後にチェックを実行する単発タスクをスケジュール
         executor.schedule(() -> {
             // 条件を満たしていれば正常終了（何もせず抜ける）
             if (lastSubscriptionResponseTime != null && lastSubscriptionResponseTime.isAfter(requestTime)) {
