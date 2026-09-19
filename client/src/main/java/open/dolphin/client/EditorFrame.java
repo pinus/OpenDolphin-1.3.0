@@ -60,10 +60,7 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
      * @param pvt PatientVisitModel
      */
     public static void toFront(PatientVisitModel pvt) {
-        if (pvt == null) {
-            return;
-        }
-        toFront(pvt.getPatient());
+        if (Objects.nonNull(pvt)) { toFront(pvt.getPatient()); }
     }
 
     /**
@@ -75,7 +72,10 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
         if (Objects.nonNull(patient)) {
             WindowHolder.allEditorFrames().stream()
                 .filter(chart -> Objects.nonNull(chart.getPatient()) && chart.getPatient().getId() == patient.getId())
-                .findAny().ifPresent(chart -> chart.getFrame().toFront());
+                    .findAny().ifPresent(chart -> {
+                        chart.getFrame().setVisible(true);
+                        chart.getFrame().toFront();
+                    });
         }
     }
 

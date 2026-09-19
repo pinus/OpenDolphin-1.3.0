@@ -193,7 +193,10 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         if (Objects.nonNull(patient)) {
             WindowHolder.allCharts().stream()
                 .filter(chart -> Objects.nonNull(chart.getPatient()) && chart.getPatient().getId() == patient.getId())
-                .findAny().ifPresent(chart -> chart.getFrame().toFront());
+                .findAny().ifPresent(chart -> {
+                    chart.getFrame().setVisible(true);
+                    chart.getFrame().toFront();
+                });
         }
     }
 
@@ -626,7 +629,6 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         // 全体をレイアウトする
         JPanel inspectorPanel = new JPanel() {
             // 右側の境界線を描く
-
             @Override
             public void paint(Graphics g) {
                 super.paint(g);
