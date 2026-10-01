@@ -150,8 +150,8 @@ public class MenuFactory {
     }
 
     @MenuAction
-    public void setKarteEnviroment() {
-        main.sendToChain(GUIConst.ACTION_SET_KARTE_ENVIROMENT);
+    public void setKarteEnvironment() {
+        main.sendToChain(GUIConst.ACTION_SET_KARTE_ENVIRONMENT);
     }
 
     @MenuAction
@@ -447,7 +447,7 @@ public class MenuFactory {
 
         // 環境設定. Mac の場合は SettingForMac で設定済み.
         if (Dolphin.forWin) {
-            karte.add(createMenuItem("環境設定...", GUIConst.ACTION_SET_KARTE_ENVIROMENT));
+            karte.add(createMenuItem("環境設定...", GUIConst.ACTION_SET_KARTE_ENVIRONMENT));
         }
 
         // スタンプの簡易表示

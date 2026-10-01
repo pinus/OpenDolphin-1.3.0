@@ -44,7 +44,7 @@ public class GUIConst {
     public static final String ACTION_ASCENDING = "ascending";
     public static final String ACTION_DESCENDING = "descending";
     public static final String ACTION_SHOW_MODIFIED = "showModified";
-    public static final String ACTION_SET_KARTE_ENVIROMENT = "setKarteEnviroment";
+    public static final String ACTION_SET_KARTE_ENVIRONMENT = "setKarteEnvironment";
 
     public static final String ACTION_INSERT_MENU = "insertMenu";
     public static final String ACTION_INSERT_DISEASE = "insertDisease";

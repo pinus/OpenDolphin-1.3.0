@@ -59,7 +59,7 @@ public class PvtClient {
     @Resource
     private ManagedScheduledExecutorService executor;
     private volatile Instant lastSubscriptionResponseTime;
-    private static final int MAX_ATTEMPTS = 10;
+    private static final int MAX_ATTEMPTS = 30;
 
     public PvtClient() {
         pvtBuilder = new PvtBuilder();
