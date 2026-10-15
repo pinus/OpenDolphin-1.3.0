@@ -304,13 +304,8 @@ public class KarteDocumentViewer extends AbstractChartDocument {
                     karteViewerList.add(karteViewer);
                 }
             }
-
             // 時間軸でソート
-            if (ascending) {
-                karteViewerList.sort(Comparator.naturalOrder());
-            } else {
-                karteViewerList.sort(Comparator.reverseOrder());
-            }
+            karteViewerList.sort(ascending? Comparator.naturalOrder() : Comparator.reverseOrder());
         }
 
         // karteViewerList の内容を scrollerPanel に反映する
@@ -334,7 +329,10 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             }
 
             // repaint
-            SwingUtilities.invokeLater(() -> scrollerPanel.revalidate());
+            SwingUtilities.invokeLater(() -> {
+                scrollerPanel.revalidate();
+                scrollerPanel.repaint();
+            });
         }
     }
 
@@ -552,13 +550,17 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     }
 
     /// 文書をデータベースから取得するタスククラス.
-    /// TIME-FOR-SWING 200 msec での 190件のカルテ表示時間. 40以上はロード中に表示乱れあり.
-    /// FRACTION 10: 5837, 20: 3234, 30: 2536, 40: 2211, 50: 2319
+    /// TIME-FOR-SWING 0, FRACTION=300 での 290件のカルテ表示時間 2350
+    /// TIME-FOR-SWING 200 msec での 290件のカルテ表示時間.
+    /// FRACTION を大きくすると速くなる. 小さくするとロード中の操作がしやすくなる.
+    /// FRACTION 10: 8578, 20: 4863, 30: 3394, 40: 2903, 50: 2640, 60: 2636
+    /// FRACTION 40 での表示時間
+    /// TIME-FORSWING 50: 2300, 100: 2394, 200:2986
     private class KarteTask extends SwingWorker<Integer, List<DocumentModel>> {
         // FRACTION 数ごとに取得、描画の処理をする
-        private final int FRACTION = 30;
-        // Millisecond to yield for Swing
-        private final int TIME_FOR_SWING = 200;
+        private final int FRACTION = 40;
+        // time to yield for Swing (msec)
+        private final int TIME_FOR_SWING = 100;
         private JProgressBar progressBar;
         //private long lap;
 
@@ -582,6 +584,8 @@ public class KarteDocumentViewer extends AbstractChartDocument {
 
             if (!added.isEmpty()) {
                 progressBar.setMaximum(added.size());
+                // 描画時のパタ付きを防ぐためにソートしておく
+                added.sort(ascending ? Comparator.naturalOrder() : Comparator.reverseOrder());
 
                 DocumentDelegater ddl = new DocumentDelegater();
                 int count = 0;
