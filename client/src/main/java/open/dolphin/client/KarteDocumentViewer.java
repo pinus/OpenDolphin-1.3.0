@@ -60,6 +60,8 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     private String todayDateAsString;
     // 検索用
     private FindAndView findAndView;
+    // showDocument の Worker
+    private KarteTask currentTask;
 
     /// DocumentViewerオブジェクトを生成する.
     public KarteDocumentViewer() {
@@ -224,8 +226,12 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         }
 
         // KarteTask でデータベースから DocumentModel を取ってきて EDT で addKarteViewer を呼ぶ
-        KarteTask task = new KarteTask();
-        task.execute();
+        if (currentTask != null && !currentTask.isDone()) {
+            // 実行中のタスクがあればキャンセル
+            currentTask.cancel(true);
+        }
+        currentTask = new KarteTask();
+        currentTask.execute();
     }
 
     /// データベースで検索した KarteModelを Viewer で表示する.
@@ -555,7 +561,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     /// FRACTION を大きくすると速くなる. 小さくするとロード中の操作がしやすくなる.
     /// FRACTION 10: 8578, 20: 4863, 30: 3394, 40: 2903, 50: 2640, 60: 2636
     /// FRACTION 40 での表示時間
-    /// TIME-FORSWING 50: 2300, 100: 2394, 200:2986
+    /// TIME-FOR-SWING 50: 2300, 100: 2394, 200:2986
     private class KarteTask extends SwingWorker<Integer, List<DocumentModel>> {
         // FRACTION 数ごとに取得、描画の処理をする
         private final int FRACTION = 40;
@@ -569,11 +575,9 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             //lap = System.currentTimeMillis();
             progressBar = getContext().getStatusPanel().getProgressBar();
 
-            Set<DocInfoModel> savedSelectedHistories = new HashSet<>(selectedHistoryMap.values());
-            Set<String> karteListIdSet = karteViewerList.stream().map(viewer -> viewer.getDocument().getDocInfo().getDocId()).collect(Collectors.toSet());
-
             // 選択リストにあって 現在の karteList にないものは追加する
             List<DocInfoModel> added = new ArrayList<>(); // 追加されたもの
+            Set<String> karteListIdSet = karteViewerList.stream().map(viewer -> viewer.getDocument().getDocInfo().getDocId()).collect(Collectors.toSet());
 
             for (DocInfoModel selectedDocInfo : selectedHistoryMap.values()) {
                 if (!karteListIdSet.contains(selectedDocInfo.getDocId())) {
@@ -601,9 +605,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
                     }
                     //logger.info("count = " + count);
                     // 途中で選択が変わったり，ウインドウが閉じられている可能性がある
-                    if (savedSelectedHistories.equals(new HashSet<>(selectedHistoryMap.values()))
-                            && getContext().getFrame().isVisible()) {
-
+                    if (!isCancelled() && getContext().getFrame().isVisible()) {
                         List<DocumentModel> dm = ddl.getDocuments(pkList);
                         publish(dm);
                         progressBar.setValue(count);
@@ -611,7 +613,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
                         try { Thread.sleep(TIME_FOR_SWING); } catch (InterruptedException ex) {}
 
                     } else {
-                        //logger.info("selection has changed");
+                        logger.info("selection has changed");
                         break;
                     }
                 }
@@ -635,7 +637,9 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         @Override
         protected void process(List<List<DocumentModel>> chunks) {
             //logger.info("process published chunks: " + chunks.size());
-            chunks.forEach(KarteDocumentViewer.this::addKarteViewer);
+            if (!isCancelled()) {
+                chunks.forEach(KarteDocumentViewer.this::addKarteViewer);
+            }
         }
     }
 
