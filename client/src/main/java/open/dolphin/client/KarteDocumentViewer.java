@@ -240,6 +240,22 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     /// @param models List of DocumentModel
     private void addKarteViewer(List<DocumentModel> models) {
 
+        long lap = System.currentTimeMillis();
+        updateKarteViewerList(models);
+        logger.info("update1: " + (System.currentTimeMillis() - lap));
+
+        // karteViewerList の内容を scrollerPanel に反映する
+        List<Component> currentViewerUIs = new ArrayList<>();
+        for (KarteViewer2 viewer : karteViewerList) {
+            currentViewerUIs.add(viewer.getUI());
+        }
+        lap = System.currentTimeMillis();
+        updateScrollerPanel(currentViewerUIs);
+        logger.info("update2: " + (System.currentTimeMillis()-lap));
+    }
+
+    /// KarteViewerList を更新する
+    private void updateKarteViewerList(List<DocumentModel> models) {
         // 選択解除された KarteViewer2 のリストを作る
         List<KarteViewer2> removed = new ArrayList<>(); // 選択が解除されているもの
 
@@ -309,24 +325,22 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         }
         // 時間軸でソート
         karteViewerList.sort(ascending ? Comparator.naturalOrder() : Comparator.reverseOrder());
+    }
 
-
-        // karteViewerList の内容を scrollerPanel に反映する
-        Set<Component> currentViewers = new HashSet<>();
-        for (KarteViewer2 viewer : karteViewerList) {
-            currentViewers.add(viewer.getUI());
-        }
+    /// karteViewerList の内容を scrollerPanel に反映する
+    private void updateScrollerPanel(List<Component> currentViewerUIs) {
+        Set<Component> currentViewersSet = new HashSet<>(currentViewerUIs);
 
         //remove
         for (Component comp : scrollerPanel.getComponents()) {
-            if (!currentViewers.contains(comp)) {
+            if (!currentViewersSet.contains(comp)) {
                 scrollerPanel.remove(comp);
             }
         }
 
         // add
-        for (int i = 0; i < karteViewerList.size(); i++) {
-            Component comp = karteViewerList.get(i).getUI();
+        for (int i = 0; i < currentViewerUIs.size(); i++) {
+            Component comp = currentViewerUIs.get(i);
             if (comp.getParent() == scrollerPanel) {
                 scrollerPanel.setComponentZOrder(comp, i);
             } else {
