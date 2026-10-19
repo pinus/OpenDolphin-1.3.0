@@ -234,6 +234,89 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         currentTask.execute();
     }
 
+    /// 文書をデータベースから取得するタスククラス.
+    /// TIME-FOR-SWING 0, FRACTION=300 での 290件のカルテ表示時間 2350
+    /// TIME-FOR-SWING 200 msec での 290件のカルテ表示時間.
+    /// FRACTION を大きくすると速くなる. 小さくするとロード中の操作がしやすくなる.
+    /// FRACTION 10: 8578, 20: 4863, 30: 3394, 40: 2903, 50: 2640, 60: 2636
+    /// FRACTION 40 での表示時間
+    private class KarteTask extends SwingWorker<Integer, List<DocumentModel>> {
+        // FRACTION 数ごとに取得、描画の処理をする
+        private final int FRACTION = 40;
+        private JProgressBar progressBar;
+        private long lap;
+
+        @Override
+        protected Integer doInBackground() {
+            lap = System.currentTimeMillis();
+            progressBar = getContext().getStatusPanel().getProgressBar();
+
+            // 選択リストにあって 現在の karteList にないものは追加する
+            List<DocInfoModel> added = new ArrayList<>(); // 追加されたもの
+            Set<String> karteListIdSet = karteViewerList.stream().map(viewer -> viewer.getDocument().getDocInfo().getDocId()).collect(Collectors.toSet());
+
+            for (DocInfoModel selectedDocInfo : selectedHistoryMap.values()) {
+                if (!karteListIdSet.contains(selectedDocInfo.getDocId())) {
+                    //logger.info("added: " + selectedDocInfo.getDocId());
+                    added.add(selectedDocInfo);
+                }
+            }
+
+            if (!added.isEmpty()) {
+                progressBar.setMaximum(added.size());
+                // 描画時のパタ付きを防ぐためにソートしておく
+                added.sort(ascending ? Comparator.naturalOrder() : Comparator.reverseOrder());
+
+                DocumentDelegater ddl = new DocumentDelegater();
+                int count = 0;
+                boolean hasNext = true;
+                while (hasNext) {
+                    List<Long> pkList = new ArrayList<>(FRACTION);
+                    for (int i = 0; i < FRACTION; i++) {
+                        pkList.add(added.get(count++).getDocPk());
+                        if (count >= added.size()) {
+                            hasNext = false;
+                            break;
+                        }
+                    }
+                    //logger.info("count = " + count);
+                    // 途中で選択が変わったり，ウインドウが閉じられている可能性がある
+                    if (!isCancelled() && getContext().getFrame().isVisible()) {
+                        List<DocumentModel> dm = ddl.getDocuments(pkList);
+                        publish(dm);
+                        progressBar.setValue(count);
+
+                    } else {
+                        logger.info("selection has changed");
+                        break;
+                    }
+                }
+            } else {
+                // removed 処理のために空の addKarteViewer 呼ぶ必要有り
+                addKarteViewer(new ArrayList<>(1));
+            }
+            return added.size();
+        }
+
+        @Override
+        protected void process(List<List<DocumentModel>> chunks) {
+            //logger.info("process published chunks: " + chunks.size());
+            if (!isCancelled()) {
+                chunks.forEach(KarteDocumentViewer.this::addKarteViewer);
+            }
+        }
+
+        @Override
+        protected void done() {
+            progressBar.setValue(0);
+            // リスト先頭のカルテを選択状態に
+            if (!karteViewerList.isEmpty()) {
+                setSelectedKarteViewer(karteViewerList.getFirst());
+            }
+            logger.info("lap time: " + (System.currentTimeMillis() - lap));
+        }
+    }
+
     /// データベースで検索した KarteModelを Viewer で表示する.
     /// KarteTask から呼ばれる
     ///
@@ -242,7 +325,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
 
         long lap = System.currentTimeMillis();
         updateKarteViewerList(models);
-        logger.info("update1: " + (System.currentTimeMillis() - lap));
+        long lap1 = System.currentTimeMillis() - lap;
 
         // karteViewerList の内容を scrollerPanel に反映する
         List<Component> currentViewerUIs = new ArrayList<>();
@@ -251,7 +334,9 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         }
         lap = System.currentTimeMillis();
         updateScrollerPanel(currentViewerUIs);
-        logger.info("update2: " + (System.currentTimeMillis()-lap));
+        long lap2 = System.currentTimeMillis() - lap;
+
+        logger.info("viewer: {}, pane {} ", lap1, lap2);
     }
 
     /// KarteViewerList を更新する
@@ -564,94 +649,6 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     /// State Interface.
     private interface BrowserState {
         void enter();
-    }
-
-    /// 文書をデータベースから取得するタスククラス.
-    /// TIME-FOR-SWING 0, FRACTION=300 での 290件のカルテ表示時間 2350
-    /// TIME-FOR-SWING 200 msec での 290件のカルテ表示時間.
-    /// FRACTION を大きくすると速くなる. 小さくするとロード中の操作がしやすくなる.
-    /// FRACTION 10: 8578, 20: 4863, 30: 3394, 40: 2903, 50: 2640, 60: 2636
-    /// FRACTION 40 での表示時間
-    /// TIME-FOR-SWING 50: 2300, 100: 2394, 200:2986
-    private class KarteTask extends SwingWorker<Integer, List<DocumentModel>> {
-        // FRACTION 数ごとに取得、描画の処理をする
-        private final int FRACTION = 40;
-        // time to yield for Swing (msec)
-        private final int TIME_FOR_SWING = 100;
-        private JProgressBar progressBar;
-        private long lap;
-
-        @Override
-        protected Integer doInBackground() {
-            lap = System.currentTimeMillis();
-            progressBar = getContext().getStatusPanel().getProgressBar();
-
-            // 選択リストにあって 現在の karteList にないものは追加する
-            List<DocInfoModel> added = new ArrayList<>(); // 追加されたもの
-            Set<String> karteListIdSet = karteViewerList.stream().map(viewer -> viewer.getDocument().getDocInfo().getDocId()).collect(Collectors.toSet());
-
-            for (DocInfoModel selectedDocInfo : selectedHistoryMap.values()) {
-                if (!karteListIdSet.contains(selectedDocInfo.getDocId())) {
-                    //logger.info("added: " + selectedDocInfo.getDocId());
-                    added.add(selectedDocInfo);
-                }
-            }
-
-            if (!added.isEmpty()) {
-                progressBar.setMaximum(added.size());
-                // 描画時のパタ付きを防ぐためにソートしておく
-                added.sort(ascending ? Comparator.naturalOrder() : Comparator.reverseOrder());
-
-                DocumentDelegater ddl = new DocumentDelegater();
-                int count = 0;
-                boolean hasNext = true;
-                while (hasNext) {
-                    List<Long> pkList = new ArrayList<>(FRACTION);
-                    for (int i = 0; i < FRACTION; i++) {
-                        pkList.add(added.get(count++).getDocPk());
-                        if (count >= added.size()) {
-                            hasNext = false;
-                            break;
-                        }
-                    }
-                    //logger.info("count = " + count);
-                    // 途中で選択が変わったり，ウインドウが閉じられている可能性がある
-                    if (!isCancelled() && getContext().getFrame().isVisible()) {
-                        List<DocumentModel> dm = ddl.getDocuments(pkList);
-                        publish(dm);
-                        progressBar.setValue(count);
-                        // Swing が途中までのレンダリング結果を表示するのを待つ時間
-                        try { Thread.sleep(TIME_FOR_SWING); } catch (InterruptedException ex) {}
-
-                    } else {
-                        logger.info("selection has changed");
-                        break;
-                    }
-                }
-            } else {
-                // removed 処理のために空の addKarteViewer 呼ぶ必要有り
-                addKarteViewer(new ArrayList<>(1));
-            }
-            return added.size();
-        }
-
-        @Override
-        protected void done() {
-            progressBar.setValue(0);
-            // リスト先頭のカルテを選択状態に
-            if (!karteViewerList.isEmpty()) {
-                setSelectedKarteViewer(karteViewerList.getFirst());
-            }
-            logger.info("lap time: " + (System.currentTimeMillis() - lap));
-        }
-
-        @Override
-        protected void process(List<List<DocumentModel>> chunks) {
-            //logger.info("process published chunks: " + chunks.size());
-            if (!isCancelled()) {
-                chunks.forEach(KarteDocumentViewer.this::addKarteViewer);
-            }
-        }
     }
 
     /// カルテの削除タスククラス.
