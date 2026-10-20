@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /// An infinite progress panel displays a rotating figure and
 /// a message to notice the user of a long and duration unknown
@@ -370,6 +371,8 @@ public class BlockGlass2 extends JComponent implements MouseListener {
 
     /// Animation thread.
     private class Animator implements Runnable {
+        private static final String[] spinner = new String[] {"★", "☆", "✧", "✦", "(^_^)", "(^-^;", "(^.-)", "(^O^)"};
+
         public boolean rampUp;
 
         protected Animator(boolean rampUp) {
@@ -444,8 +447,8 @@ public class BlockGlass2 extends JComponent implements MouseListener {
                     break;
                 }
                 Thread.yield();
-                if (rampUp) System.out.print(".");
-                else System.out.print(",");
+                if (rampUp) IO.print("\r" + spinner[ThreadLocalRandom.current().nextInt(4)]);
+                else IO.print("\r" + spinner[ThreadLocalRandom.current().nextInt(4, 7)]);
             }
             // System.out.println("blocking animation done");
 
