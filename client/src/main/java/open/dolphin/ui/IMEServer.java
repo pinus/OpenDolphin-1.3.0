@@ -270,18 +270,18 @@ public class IMEServer {
     }
 
     /// Main part
+    static String japaneseId;
+    static String romanId;
     static String abcId;
     static String usId;
     static String usExtendedId;
-    static String japaneseId;
     static String katakanaId;
-    static String romanId;
 
     static boolean initialized() {
         if (abcId != null || usId != null || usExtendedId != null || japaneseId != null || katakanaId != null || romanId != null) {
             return true;
         }
-        String atokId = null, kotoeriId = null;
+        String atokId = null, atokRomanId = null, kotoeriId = null;
         for (String sourceId : keyboardInputSources()) {
             if ("com.apple.keylayout.ABC".equals(sourceId)) {
                 abcId = sourceId;
@@ -293,7 +293,7 @@ public class IMEServer {
                 if (sourceId.endsWith(".Japanese")) {
                     atokId = sourceId;
                 } else if (sourceId.endsWith(".Roman")) {
-                    romanId = sourceId;
+                    atokRomanId = sourceId;
                 } else if (sourceId.endsWith(".Katakana")) {
                     katakanaId = sourceId;
                 }
@@ -303,11 +303,21 @@ public class IMEServer {
                 }
             }
         }
-        // atok を優先
+        // japaneseId は atok を優先
         if (atokId != null) {
             japaneseId = atokId;
         } else if (kotoeriId != null) {
             japaneseId = kotoeriId;
+        }
+        // romanId 選択
+        if (usExtendedId != null) {
+            romanId = usExtendedId;
+        } else if (usId != null) {
+            romanId = usId;
+        } else if (abcId != null) {
+            romanId = abcId;
+        } else if (atokRomanId != null) {
+            romanId = atokRomanId;
         }
         return false;
     }
@@ -324,10 +334,10 @@ public class IMEServer {
         });
     }
 
-    static void selectABC() { select(abcId); }
     static void selectJapanese() { select(japaneseId); }
-    static void selectKatakana() { select(katakanaId); }
     static void selectRoman() { select(romanId); }
+    static void selectABC() { select(abcId); }
+    static void selectKatakana() { select(katakanaId); }
     static void selectUS() { select(usId); }
     static void selectUSExtended() { select(usExtendedId); }
 }

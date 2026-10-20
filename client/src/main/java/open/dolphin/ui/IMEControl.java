@@ -18,7 +18,7 @@ import java.util.Objects;
 /// - ver 4: enableInputMethod(true/false) バージョン: short-cut が効かなくなったり不安定
 /// - ver 5: Robot version 復活. 物理キーが押されていると誤動作するのでキー入力でフォーカスが当たるところには使えない
 /// - ver 6: key combination での robot 入力うまくいかず, F12, F13 キーで切り替えるように ATOK 側で設定することにした
-/// - ver 7: im-select 呼び出し法 (https://github.com/daipeihust/im-select)
+/// - ver 7: im-select 呼び出し法 ([...](https://github.com/daipeihust/im-select))
 /// - ver 8: FocusManger で一元管理バージョン
 /// - ver 9: TISServer (TextInputSources Server) バージョン
 /// - ver 10: TISServer (TextInputSources Server) - FFM API で作った実験的バージョン
@@ -38,12 +38,12 @@ public class IMEControl {
             if (Objects.nonNull(e.getNewValue())) {
                 if (e.getNewValue() instanceof JTextComponent c) {
                     if (c instanceof JPasswordField || Objects.nonNull(c.getClientProperty(Project.ATOK_ROMAN_KEY))) {
-                        IMEServer.selectABC();
+                        IMEServer.selectRoman();
                     } else {
                         IMEServer.selectJapanese();
                     }
                 } else {
-                    IMEServer.selectABC();
+                    IMEServer.selectRoman();
                 }
             }
         });
