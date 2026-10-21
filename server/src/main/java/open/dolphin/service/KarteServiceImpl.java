@@ -215,7 +215,9 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
 
     /**
      * 文書(DocumentModel Object)を取得する.
-     * try CREATE INDEX idx_d_module_doc_id_id ON d_module(doc_id, id);
+     * index を作ると高速になる
+     * CREATE INDEX idx_d_module_doc_id_id ON d_module(doc_id, id);
+     * CREATE INDEX idx_d_image_doc_id_id ON d_image(doc_id, id);
      *
      * @param ids List of DocumentModel pk
      * @return List of DocumentModel
