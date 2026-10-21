@@ -1,5 +1,8 @@
 package open.dolphin.client;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.status.Status;
+import ch.qos.logback.core.status.StatusManager;
 import open.dolphin.helper.*;
 import open.dolphin.impl.labrcv.LaboTestImporter;
 import open.dolphin.impl.login.LoginDialog;
@@ -72,7 +75,7 @@ public class Dolphin implements MainWindow {
     public Dolphin() {
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         // コンソールのリダイレクト
         redirectConsole();
 
@@ -164,7 +167,16 @@ public class Dolphin implements MainWindow {
         // ロガーを取得する
         logger = LoggerFactory.getLogger(Dolphin.class);
         logger.info("selected logger = {}", logger.getClass());
-
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        StatusManager statusManager = context.getStatusManager();
+        if (statusManager != null) {
+            for (Status status : statusManager.getCopyOfStatusList()) {
+                String msg = status.getMessage();
+                if (msg.contains("Found resource")) {
+                    logger.info(msg);
+                }
+            }
+        }
         // ドキュメントフォルダの有無をチェック
         checkDocumentFolder();
     }

@@ -60,7 +60,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
 
         for (DocInfoModel selectedDocInfo : selectedHistoryMap.values()) {
             if (!karteListIdSet.contains(selectedDocInfo.getDocId())) {
-                //logger.info("added: " + selectedDocInfo.getDocId());
+                //logger.debug("added: " + selectedDocInfo.getDocId());
                 added.add(selectedDocInfo);
             }
         }
@@ -82,7 +82,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
                         break;
                     }
                 }
-                //logger.info("count = " + count);
+                logger.debug("count = {}", count);
                 // 途中で選択が変わったり，ウインドウが閉じられている可能性がある
                 if (!isCancelled() && chart.getFrame().isVisible()) {
                     List<DocumentModel> dm = ddl.getDocuments(pkList);
@@ -90,7 +90,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
                     progressBar.setValue(count);
 
                 } else {
-                    logger.info("selection has changed");
+                    logger.debug("selection has changed");
                     break;
                 }
             }
@@ -103,7 +103,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
 
     @Override
     protected void process(List<List<DocumentModel>> chunks) {
-        //logger.info("process published chunks: " + chunks.size());
+        logger.debug("process published chunks: {}", chunks.size());
         if (!isCancelled()) {
             for (List<DocumentModel> models : chunks ) {
                 addKarteViewer(models);
@@ -118,7 +118,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
         if (!karteViewerList.isEmpty()) {
             context.setSelectedKarteViewer(karteViewerList.getFirst());
         }
-        logger.info("lap time: {}", System.currentTimeMillis() - lap);
+        logger.debug("lap time: {}", System.currentTimeMillis() - lap);
     }
 
     private void addKarteViewer(List<DocumentModel> models) {
@@ -136,7 +136,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
         updateScrollerPanel(currentViewerUIs);
         long lap2 = System.currentTimeMillis() - lap;
 
-        //logger.info("viewer: {}, pane {} ", lap1, lap2);
+        logger.debug("viewer: {}, pane {} ", lap1, lap2);
     }
 
     /// KarteViewerList を更新する
@@ -173,7 +173,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
                     dm.setDocInfo(foundInfo);
                 } else {
                     // 選択が変化して，せっかく取ってきた DocumentModel が無駄になった
-                    //logger.info("selection changed, document fetched in vain");
+                    logger.debug("selection changed, document fetched in vain");
                     break;
                 }
 

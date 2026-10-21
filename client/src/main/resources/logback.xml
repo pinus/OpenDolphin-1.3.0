@@ -9,4 +9,5 @@
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
+    <logger name="open.dolphin.client.KarteDocumentViewerWorker" level="DEBUG" />
 </configuration>
