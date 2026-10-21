@@ -183,7 +183,7 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
     public PatientMemoModel getPatientMemo(Long karteId) {
         List<PatientMemoModel> memo = em.createQuery("select p from PatientMemoModel p where p.karte.id = :karteId", PatientMemoModel.class)
                 .setParameter("karteId", karteId).getResultList();
-        return memo.isEmpty() ? null : memo.get(0);
+        return memo.isEmpty() ? null : memo.getFirst();
     }
 
     /**
@@ -215,6 +215,7 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
 
     /**
      * 文書(DocumentModel Object)を取得する.
+     * try CREATE INDEX idx_d_module_doc_id_id ON d_module(doc_id, id);
      *
      * @param ids List of DocumentModel pk
      * @return List of DocumentModel
@@ -225,9 +226,11 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
         // まとめて query
         List<ModuleModel> mods = em.createQuery("select m from ModuleModel m where m.document.id in (:ids) order by m.id", ModuleModel.class)
                 .setParameter("ids", ids)
+                .setHint(org.hibernate.jpa.HibernateHints.HINT_READ_ONLY, true)
                 .getResultList();
         List<SchemaModel> imgs = em.createQuery("select m from SchemaModel m where m.document.id in (:ids) order by m.id", SchemaModel.class)
                 .setParameter("ids", ids)
+                .setHint(org.hibernate.jpa.HibernateHints.HINT_READ_ONLY, true)
                 .getResultList();
 
         // とってきた ModuleModel を id 毎に分ける
