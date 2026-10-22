@@ -75,7 +75,7 @@ public class Dolphin implements MainWindow {
     public Dolphin() {
     }
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         // コンソールのリダイレクト
         redirectConsole();
 
