@@ -8,15 +8,14 @@ import javax.swing.text.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * KartePane の StyledDocument class.
- *
- * @author Kazushi Minagawa, Digital Globe, Inc.
- */
+/// KartePane の StyledDocument class.
+///
+/// @author Kazushi Minagawa, Digital Globe, Inc.
+/// @author pns
 public class KarteStyledDocument extends DefaultStyledDocument {
     private static final String STAMP_STYLE = "stampHolder";
     private static final String SCHEMA_STYLE = "schemaHolder";
-    private Logger logger = LoggerFactory.getLogger(KarteStyledDocument.class);
+    private final Logger logger = LoggerFactory.getLogger(KarteStyledDocument.class);
 
     private KartePane kartePane;
     private boolean simplifyStamp = false;
@@ -27,34 +26,26 @@ public class KarteStyledDocument extends DefaultStyledDocument {
         this.kartePane = kartePane;
     }
 
-    /**
-     * スタンプ簡易表示設定.
-     *
-     * @param simplify true to simplify
-     */
+    /// スタンプ簡易表示設定.
+    ///
+    /// @param simplify true to simplify
     public void setSimplifyStamp(boolean simplify) { simplifyStamp = simplify; }
 
-    /**
-     * スタンプ簡易表示をするかどうか.
-     *
-     * @return simplified if true
-     */
+    /// スタンプ簡易表示をするかどうか.
+    ///
+    /// @return simplified if true
     public boolean isSimplifyStamp() { return simplifyStamp; }
 
-    /**
-     * 最後に改行を挿入する.
-     */
+    /// 最後に改行を挿入する.
     public void makeParagraph() {
         try {
             insertString(getLength(), "\n", null);
         } catch (BadLocationException ex) { processError(ex); }
     }
 
-    /**
-     * Stamp を挿入する. DnD の場合.
-     *
-     * @param sh 挿入するスタンプホルダ
-     */
+    /// Stamp を挿入する. DnD の場合.
+    ///
+    /// @param sh 挿入するスタンプホルダ
     public void stamp(final StampHolder sh) {
 
         try {
@@ -69,7 +60,9 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             if (toPutTopCr(start)) { insertString(start++, "\n", null); }
             insertString(start, " ", runStyle);
             // 改行をつけないとテキスト入力制御がやりにくくなる
-            insertString(start + 1, "\n", null);
+            if (Project.getProjectStub().isStampSpace()) {
+                insertString(start + 1, "\n", null);
+            }
             // スタンプの開始と終了位置を生成して保存する
             sh.setEntry(createPosition(start), createPosition(start + 1));
             // 簡易表示
@@ -78,11 +71,9 @@ public class KarteStyledDocument extends DefaultStyledDocument {
         } catch (BadLocationException ex) { processError(ex); }
     }
 
-    /**
-     * Stamp を挿入する. Rendering から呼ばれる場合.
-     *
-     * @param sh 挿入するスタンプホルダ
-     */
+    /// Stamp を挿入する. Rendering から呼ばれる場合.
+    ///
+    /// @param sh 挿入するスタンプホルダ
     public void flowStamp(final StampHolder sh) {
 
         try {
@@ -97,40 +88,30 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             // Stamp を挿入する
             insertString(start, " ", runStyle);
             sh.setEntry(createPosition(start), createPosition(start + 1));
-            if (Project.getProjectStub().isStampSpace()) {
-                insertString(start + 1, "\n", null);
-            }
             // 簡易表示
             sh.setSimplify(simplifyStamp);
 
         } catch (BadLocationException ex) { processError(ex); }
     }
 
-    /**
-     * Stampを削除する.
-     *
-     * @param start 削除開始のオフセット位置
-     * @param len length
-     */
-    public void removeStamp(int start, int len) {
+    /// Stampを削除する.
+    ///
+    /// @param start 削除開始のオフセット位置
+    public void removeStamp(int start) {
         try {
-//masuda^   Stamp/Schemaをremoveするときは直後の改行も削除する
-            // Stamp は一文字で表されている
-            //remove(start, 1);
+            //masuda^ Stamp/Schemaをremoveするときは直後の改行も削除する
             if (start < getLength() - 1 && "\n".equals(getText(start + 1, 1))) {
                 remove(start, 2);
             } else {
                 remove(start, 1);
             }
-//masuda$
+            //masuda$
         } catch (BadLocationException ex) { processError(ex); }
     }
 
-    /**
-     * Schema を挿入する.
-     *
-     * @param sc SchemaHolder
-     */
+    /// Schema を挿入する.
+    ///
+    /// @param sc SchemaHolder
     public void stampSchema(SchemaHolder sc) {
         try {
             Style runStyle = this.getStyle(SCHEMA_STYLE);
@@ -150,10 +131,9 @@ public class KarteStyledDocument extends DefaultStyledDocument {
         } catch (BadLocationException ex) { processError(ex); }
     }
 
-    /**
-     * Schema を挿入する. Rendering から呼ばれる場合.
-     * @param sh SchemaHolder
-     */
+    /// Schema を挿入する. Rendering から呼ばれる場合.
+    ///
+    /// @param sh SchemaHolder
     public void flowSchema(final SchemaHolder sh) {
         try {
             Style runStyle = this.getStyle(SCHEMA_STYLE);
@@ -176,11 +156,9 @@ public class KarteStyledDocument extends DefaultStyledDocument {
         } catch (BadLocationException ex) { processError(ex); }
     }
 
-    /**
-     * 現在位置に Text を挿入する.
-     *
-     * @param text 文字列
-     */
+    /// 現在位置に Text を挿入する.
+    ///
+    /// @param text 文字列
     public void insertTextStamp(String text) {
         try {
             int pos = kartePane.getTextPane().getCaretPosition();
@@ -189,24 +167,20 @@ public class KarteStyledDocument extends DefaultStyledDocument {
         } catch (BadLocationException ex) { processError(ex); }
     }
 
-    /**
-     * 現在位置に Attribute 付きの Text を挿入する.
-     *
-     * @param text 文字列
-     * @param a AttributeSet
-     */
+    /// 現在位置に Attribute 付きの Text を挿入する.
+    ///
+    /// @param text 文字列
+    /// @param a AttributeSet
     public void insertFreeString(String text, AttributeSet a) {
         try {
             insertString(getLength(), text, a);
         } catch (BadLocationException ex) { processError(ex); }
     }
 
-    /**
-     * スタンプの直前に Cr を挿入するかどうか.
-     *
-     * @param pos 挿入しようとしている場所
-     * @return スペースを挿入する場合 true
-     */
+    /// スタンプの直前に Cr を挿入するかどうか.
+    ///
+    /// @param pos 挿入しようとしている場所
+    /// @return スペースを挿入する場合 true
     private boolean toPutTopCr(int pos) throws BadLocationException {
         // Preferences で挿入しない設定になっていたら false
         if (!Project.getProjectStub().isStampSpace()) { return false; }
@@ -229,7 +203,7 @@ public class KarteStyledDocument extends DefaultStyledDocument {
         return list;
     }
 
-    // 最終の改行を取り除く
+    /// 最終の改行を取り除く
     public void removeLastCr() {
         int endPos = getLength() - 1;
         if (endPos > 0) {
@@ -245,10 +219,8 @@ public class KarteStyledDocument extends DefaultStyledDocument {
         }
     }
 
-    /**
-     * 文頭・文末の無駄な改行文字を削除する.
-     * original by masuda-sensei
-     */
+    /// 文頭・文末の無駄な改行文字を削除する.
+    /// original by masuda-sensei
     public void removeExtraCr() {
         // これが一番速い！ 20個の改行削除に2msec!!
         try {
@@ -276,10 +248,8 @@ public class KarteStyledDocument extends DefaultStyledDocument {
         } catch (BadLocationException ex) { processError(ex); }
     }
 
-    /**
-     * 3個以上連続する改行を2個にする.
-     * つまり，２つ以上連続する空行を１つにする.
-     */
+    /// 3個以上連続する改行を2個にする.
+    /// つまり，２つ以上連続する空行を１つにする.
     public void removeRepeatedCr() {
         int pos = 0;
         int crPos = 0;

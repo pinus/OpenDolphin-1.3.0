@@ -47,15 +47,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.prefs.Preferences;
 
-/**
- * KarteComposite の一つで，内部に JTextPane を１つ保持している.
- * 保持している JTextPane は，{@link open.dolphin.client.KartePane#setTextPane setTextPane} されるときに
- * client property "kartePane" に親の KartePane を入れる.
- * ２号カルテはこれを２枚 KarteViewer / KarteEditor に入れて使う.
- *
- * @author Kazushi Minagawa, Digital Globe, inc.
- * @author pns
- */
+/// KarteComposite の一つで，内部に JTextPane を１つ保持している.
+/// 保持している JTextPane は，[`setTextPane`][open.dolphin.client.KartePane#setTextPane] されるときに
+/// client property "kartePane" に親の KartePane を入れる.
+/// ２号カルテはこれを２枚 KarteViewer / KarteEditor に入れて使う.
+///
+/// @author Kazushi Minagawa, Digital Globe, inc.
+/// @author pns
 public class KartePane implements KarteComposite<JTextPane>, DocumentListener, MouseListener, CaretListener, PropertyChangeListener {
     private final Logger logger = LoggerFactory.getLogger(KartePane.class);
 
@@ -99,101 +97,79 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
 
     public KartePane() { }
 
-    /**
-     * このPaneのオーナを返す.
-     *
-     * @return KarteEditorオーナ
-     */
+    /// このPaneのオーナを返す.
+    ///
+    /// @return KarteEditorオーナ
     public ChartDocument getParent() {
         return parent;
     }
 
-    /**
-     * このPaneのオーナを設定する.
-     *
-     * @param parent KarteEditorオーナ
-     */
+    /// このPaneのオーナを設定する.
+    ///
+    /// @param parent KarteEditorオーナ
     public void setParent(ChartDocument parent) {
         this.parent = parent;
     }
 
-    /**
-     * 編集不可を表すカラーを返す.
-     *
-     * @return 編集不可を表すカラー
-     */
+    /// 編集不可を表すカラーを返す.
+    ///
+    /// @return 編集不可を表すカラー
     public Color getUneditableColor() {
         return uneditableColor;
     }
 
-    /**
-     * 編集不可を表すカラーを設定する.
-     *
-     * @param uneditableColor 編集不可を表すカラー
-     */
+    /// 編集不可を表すカラーを設定する.
+    ///
+    /// @param uneditableColor 編集不可を表すカラー
     public void setUneditableColor(Color uneditableColor) {
         this.uneditableColor = uneditableColor;
     }
 
-    /**
-     * このPaneで生成するDocumentModelの文書IDを返す.
-     *
-     * @return 文書ID
-     */
+    /// このPaneで生成するDocumentModelの文書IDを返す.
+    ///
+    /// @return 文書ID
     protected String getDocId() {
         return docId;
     }
 
-    /**
-     * このPaneで生成するDocumentModelの文書IDを設定する.
-     *
-     * @param docId 文書ID
-     */
+    /// このPaneで生成するDocumentModelの文書IDを設定する.
+    ///
+    /// @param docId 文書ID
     protected void setDocId(String docId) {
         this.docId = docId;
     }
 
-    /**
-     * ChartMediatorを返す.
-     *
-     * @return ChartMediator
-     */
+    /// ChartMediatorを返す.
+    ///
+    /// @return ChartMediator
     protected ChartMediator getMediator() {
         return mediator;
     }
 
-    /**
-     * このPaneのロールを返す.
-     *
-     * @return SOAまたはPのロール
-     */
+    /// このPaneのロールを返す.
+    ///
+    /// @return SOAまたはPのロール
     public String getMyRole() {
         return myRole;
     }
 
-    /**
-     * このPaneのロールを設定する.
-     *
-     * @param myRole SOAまたはPのロール
-     */
+    /// このPaneのロールを設定する.
+    ///
+    /// @param myRole SOAまたはPのロール
     public void setMyRole(String myRole) {
         this.myRole = myRole;
     }
 
-    /**
-     * JTextPaneを返す.
-     *
-     * @return JTextPane
-     */
+    /// JTextPaneを返す.
+    ///
+    /// @return JTextPane
     public JTextPane getTextPane() {
         return textPane;
     }
 
-    /**
-     * JTextPaneを設定する.
-     *
-     * @param tp JTextPane
-     */
+    /// JTextPaneを設定する.
+    ///
+    /// @param tp JTextPane
     public void setTextPane(JTextPane tp) {
         textPane = tp;
         if (textPane != null) {
@@ -207,94 +183,74 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         }
     }
 
-    /**
-     * JTextPaneのStyledDocumentを返す.
-     *
-     * @return JTextPaneのStyledDocument
-     */
+    /// JTextPaneのStyledDocumentを返す.
+    ///
+    /// @return JTextPaneのStyledDocument
     public KarteStyledDocument getDocument() {
         return (KarteStyledDocument) getTextPane().getDocument();
     }
 
-    /**
-     * 初期長を返す.
-     *
-     * @return Documentの初期長
-     */
+    /// 初期長を返す.
+    ///
+    /// @return Documentの初期長
     public int getInitialLength() {
         return initialLength;
     }
 
-    /**
-     * 初期長を設定する.
-     *
-     * @param initialLength Documentの初期長
-     */
+    /// 初期長を設定する.
+    ///
+    /// @param initialLength Documentの初期長
     public void setInitialLength(int initialLength) {
         this.initialLength = initialLength;
     }
 
-    /**
-     * このPaneからDragされたスタンプ数を返す.
-     *
-     * @return このPaneからDragされたスタンプ数
-     */
+    /// このPaneからDragされたスタンプ数を返す.
+    ///
+    /// @return このPaneからDragされたスタンプ数
     public int getDraggedCount() {
         return draggedCount;
     }
 
-    /**
-     * このPaneからDragされたスタンプ数を設定する.
-     *
-     * @param draggedCount このPaneからDragされたスタンプ数
-     */
+    /// このPaneからDragされたスタンプ数を設定する.
+    ///
+    /// @param draggedCount このPaneからDragされたスタンプ数
     public void setDraggedCount(int draggedCount) {
         this.draggedCount = draggedCount;
     }
 
-    /**
-     * このPaneにDropされたスタンプ数を返す.
-     *
-     * @return このPaneにDropされたスタンプ数
-     */
+    /// このPaneにDropされたスタンプ数を返す.
+    ///
+    /// @return このPaneにDropされたスタンプ数
     public int getDroppedCount() {
         return droppedCount;
     }
 
-    /**
-     * このPaneにDropされたスタンプ数を設定する.
-     *
-     * @param droppedCount このPaneにDropされたスタンプ数
-     */
+    /// このPaneにDropされたスタンプ数を設定する.
+    ///
+    /// @param droppedCount このPaneにDropされたスタンプ数
     public void setDroppedCount(int droppedCount) {
         this.droppedCount = droppedCount;
     }
 
-    /**
-     * このPaneからDragされたスタンプを返す.
-     *
-     * @return このPaneからDragされたスタンプ配列
-     */
+    /// このPaneからDragされたスタンプを返す.
+    ///
+    /// @return このPaneからDragされたスタンプ配列
     public ComponentHolder<?>[] getDraggedStamp() {
         return draggedStamp;
     }
 
-    /**
-     * このPaneからDragされたスタンプを設定（記録）する.
-     *
-     * @param drragedStamp このPaneからDragされたスタンプ配列
-     */
+    /// このPaneからDragされたスタンプを設定（記録）する.
+    ///
+    /// @param drragedStamp このPaneからDragされたスタンプ配列
     public void setDraggedStamp(ComponentHolder<?>[] drragedStamp) {
         this.draggedStamp = drragedStamp;
     }
 
-    /**
-     * 初期化する.
-     * KarteViewer, KarteEditor から呼ばれる.
-     *
-     * @param editable      編集可能かどうかのフラグ
-     * @param chartMediator チャートメディエータ（メニューサポート）
-     */
+    /// 初期化する.
+    /// KarteViewer, KarteEditor から呼ばれる.
+    ///
+    /// @param editable      編集可能かどうかのフラグ
+    /// @param chartMediator チャートメディエータ（メニューサポート）
     public void init(boolean editable, ChartMediator chartMediator) {
         // undo manager
         undoManager = new TextComponentUndoManager(getTextPane());
@@ -332,14 +288,14 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         }
     }
 
-    // JTextPaneへの挿入でdirtyかどうかを判定する
+    /// JTextPaneへの挿入でdirtyかどうかを判定する
     @Override
     public void insertUpdate(DocumentEvent e) {
         boolean newDirty = getDocument().getLength() > getInitialLength();
         setDirty(newDirty);
     }
 
-    // 削除が起こった時dirtyかどうかを判定する
+    /// 削除が起こった時dirtyかどうかを判定する
     @Override
     public void removeUpdate(DocumentEvent e) {
         boolean newDirty = getDocument().getLength() > getInitialLength();
@@ -375,9 +331,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         }
     }
 
-    /**
-     * リソースをclearする.
-     */
+    /// リソースをclearする.
     public void clear() {
         JTextPane pane = getTextPane();
         if (pane == null) {
@@ -400,9 +354,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         setTextPane(null);
     }
 
-    /**
-     * メニューを制御する.
-     */
+    /// メニューを制御する.
     private void controlMenus(ActionMap map) {
         // undo redo
         map.get(GUIConst.ACTION_UNDO).setEnabled(undoManager.canUndo());
@@ -410,36 +362,30 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
 
         // 各Stateはenableになる条件だけを管理する
         switch (curState) {
-
-            case NONE:
-                break;
-
-            case SOA:
+            case SOA -> {
                 // SOAPaneにFocusがありテキスト選択がない状態
                 if (getTextPane().isEditable()) {
                     map.get(GUIConst.ACTION_PASTE).setEnabled(canPaste());
                     map.get(GUIConst.ACTION_INSERT_TEXT).setEnabled(true);
                     map.get(GUIConst.ACTION_INSERT_SCHEMA).setEnabled(true);
                 }
-                break;
-
-            case SOA_TEXT:
-            case P_TEXT:
+            }
+            case SOA_TEXT, P_TEXT -> {
                 // SOAPaneにFocusがありテキスト選択がある状態
                 map.get(GUIConst.ACTION_CUT).setEnabled(getTextPane().isEditable());
                 map.get(GUIConst.ACTION_COPY).setEnabled(true);
                 boolean pasteOk = (getTextPane().isEditable() && canPaste());
                 map.get(GUIConst.ACTION_PASTE).setEnabled(pasteOk);
-                break;
-
-            case P:
+            }
+            case P -> {
                 // PPaneにFocusがありテキスト選択がない状態
                 if (getTextPane().isEditable()) {
                     map.get(GUIConst.ACTION_PASTE).setEnabled(canPaste());
                     map.get(GUIConst.ACTION_INSERT_TEXT).setEnabled(true);
                     map.get(GUIConst.ACTION_INSERT_STAMP).setEnabled(true);
                 }
-                break;
+            }
+            default -> {}
         }
     }
 
@@ -493,45 +439,35 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     public void mouseExited(MouseEvent e) {
     }
 
-    /**
-     * 背景を編集不可カラーに設定する.
-     */
+    /// 背景を編集不可カラーに設定する.
     protected void setBackgroundUneditable() {
         getTextPane().setBackground(getUneditableColor());
         getTextPane().setOpaque(true);
     }
 
-    /**
-     * ロールとパートナを設定する.
-     *
-     * @param role このペインのロール
-     */
+    /// ロールとパートナを設定する.
+    ///
+    /// @param role このペインのロール
     public void setRole(String role) {
         setMyRole(role);
     }
 
-    /**
-     * Dirtyかどうかを返す.
-     *
-     * @return editable かつ dirty の時 true
-     */
+    /// Dirtyかどうかを返す.
+    ///
+    /// @return editable かつ dirty の時 true
     protected boolean isDirty() {
         return getTextPane().isEditable() && dirty;
     }
 
     protected void setDirty(boolean newDirty) {
-        if (dirty ^ newDirty) {
-            dirty = newDirty;
-        }
+        if (dirty ^ newDirty) { dirty = newDirty; }
         // 親の KarteEditor に通知
         getParent().setDirty(dirty);
     }
 
-    /**
-     * 保存時につけるドキュメントのタイトルをDocument Objectから抽出する.
-     *
-     * @return 先頭から指定された長さを切り出した文字列
-     */
+    /// 保存時につけるドキュメントのタイトルをDocument Objectから抽出する.
+    ///
+    /// @return 先頭から指定された長さを切り出した文字列
     protected String getTitle() {
         try {
             KarteStyledDocument doc = getDocument();
@@ -546,122 +482,107 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         return null;
     }
 
-    /**
-     * 段落を構成する.
-     */
+    /// 段落を構成する. EDTで呼び出す.
     public void makeParagraph() {
-        getDocument().makeParagraph();
+        SwingUtilities.invokeLater(() -> getDocument().makeParagraph());
     }
 
-    /**
-     * Documentに文字列を挿入する.
-     *
-     * @param s 挿入する文字列
-     * @param a 属性
-     */
+    /// Documentに文字列を挿入する. EDTで呼び出す.
+    ///
+    /// @param s 挿入する文字列
+    /// @param a 属性
     public void insertFreeString(String s, AttributeSet a) {
-        getDocument().insertFreeString(s, a);
+        SwingUtilities.invokeLater(() -> getDocument().insertFreeString(s, a));
     }
 
-    /**
-     * このペインに Stamp を挿入する. (drag & drop した場合)
-     *
-     * @param stamp ModuleModel
-     */
+    /// このペインに Stamp を挿入する. (drag & drop した場合)
+    /// EDTで呼び出す.
+    ///
+    /// @param stamp ModuleModel
     public void stamp(final ModuleModel stamp) {
-        if (stamp != null) {
-            // text stamp がここに入った時の対策（新規カルテにテキストスタンプ挿入するときここに来る）
-            if (stamp.getModuleInfo().getEntity().equals(IInfoModel.ENTITY_TEXT)) {
-                //insertTextStamp(stamp.getDocument().toString()); ←これだとキャレット位置がおかしくなる
-                insertFreeString(stamp.getModel().toString(), null);
-                return;
-            }
-            // 「月　日」の自動挿入
-            // replace の場合はここに入らないので，StampHolder#importStamp でセット
-            StampModifier.modify(stamp);
-            EventQueue.invokeLater(() -> {
-                StampHolder h = new StampHolder(KartePane.this, stamp);
-                h.setTransferHandler(stampListTransferHandler);
-                KarteStyledDocument doc = getDocument();
-                doc.stamp(h);
-            });
+        if (stamp == null) { return; }
+
+        // text stamp がここに入った時の対策（新規カルテにテキストスタンプ挿入するときここに来る）
+        if (stamp.getModuleInfo().getEntity().equals(IInfoModel.ENTITY_TEXT)) {
+            //insertTextStamp(stamp.getDocument().toString()); ←これだとキャレット位置がおかしくなる
+            insertFreeString(stamp.getModel().toString(), null);
+            return;
         }
+        // 「月　日」の自動挿入
+        // replace の場合はここに入らないので，StampHolder#importStamp でセット
+        StampModifier.modify(stamp);
+        SwingUtilities.invokeLater(() -> {
+            StampHolder h = new StampHolder(KartePane.this, stamp);
+            h.setTransferHandler(stampListTransferHandler);
+            KarteStyledDocument doc = getDocument();
+            doc.stamp(h);
+        });
     }
 
-    /**
-     * 重複をチェックする stamp(ModuleModel) - StampHolder から呼ばれる
-     *
-     * @param stamp ModuleModel
-     */
+    /// 重複をチェックする stamp(ModuleModel) - StampHolder から呼ばれる.
+    ///
+    /// @param stamp ModuleModel
     public void stampWithDuplicateCheck(final ModuleModel stamp) {
         stamp(stamp);
         StampModifier.checkDuplicates(stamp, this);
     }
 
-    /**
-     * このペインに Stamp を挿入する. (KarteRenderer_2 から呼ばれる)
-     *
-     * @param stamp ModuleModel
-     */
+    /// このペインに Stamp を挿入する. (KarteRenderer\_2 から呼ばれる)
+    /// EDTで呼び出す.
+    ///
+    /// @param stamp ModuleModel
     public void flowStamp(ModuleModel stamp) {
-        if (stamp != null && stamp.getModel() != null) {
+        if (stamp == null || stamp.getModel() == null) { return; }
+        
+        SwingUtilities.invokeLater(() -> {
             // 外用剤の bundleNumber を補正する
             StampModifier.adjustNumber(stamp);
             StampHolder h = new StampHolder(this, stamp);
             h.setTransferHandler(stampListTransferHandler);
             KarteStyledDocument doc = getDocument();
             doc.flowStamp(h);
-        }
+        });
     }
 
-    /**
-     * このペインにシェーマを挿入する.
-     *
-     * @param schema シェーマ
-     */
+    /// このペインにシェーマを挿入する. EDTで呼び出す.
+    ///
+    /// @param schema シェーマ
     public void stampSchema(final SchemaModel schema) {
-        if (schema != null) {
-            EventQueue.invokeLater(() -> {
-                SchemaHolder h = new SchemaHolder(KartePane.this, schema);
-                h.setTransferHandler(schemaHolderTransferHandler);
-                KarteStyledDocument doc = getDocument();
-                doc.stampSchema(h);
-            });
-        }
+        if (schema == null) { return; }
+
+        SwingUtilities.invokeLater(() -> {
+            SchemaHolder h = new SchemaHolder(KartePane.this, schema);
+            h.setTransferHandler(schemaHolderTransferHandler);
+            KarteStyledDocument doc = getDocument();
+            doc.stampSchema(h);
+        });
     }
 
-    /**
-     * このペインにシェーマを挿入する.
-     *
-     * @param schema シェーマ
-     */
+    /// このペインにシェーマを挿入する. EDTで呼び出す.
+    ///
+    /// @param schema シェーマ
     public void flowSchema(SchemaModel schema) {
-        if (schema != null) {
+        if (schema == null) { return; }
+
+        SwingUtilities.invokeLater(() -> {
             SchemaHolder h = new SchemaHolder(this, schema);
             h.setTransferHandler(schemaHolderTransferHandler);
             KarteStyledDocument doc = (KarteStyledDocument) getTextPane().getDocument();
             doc.flowSchema(h);
-        }
-    }
-
-    /**
-     * このペインに TextStamp を挿入する.
-     *
-     * @param s TextStamp
-     */
-    public void insertTextStamp(final String s) {
-        EventQueue.invokeLater(() -> {
-            KarteStyledDocument doc = getDocument();
-            doc.insertTextStamp(s);
         });
     }
 
-    /**
-     * StampInfoがDropされた時，そのデータをペインに挿入する.
-     * ドロップされたスタンプが１個の時
-     *
-     * @param stampInfo ドロップされたスタンプ情報
-     */
+    /// このペインに TextStamp を挿入する. EDTで呼び出す.
+    ///
+    /// @param s TextStamp
+    public void insertTextStamp(final String s) {
+        SwingUtilities.invokeLater(() -> getDocument().insertTextStamp(s));
+    }
+
+    /// StampInfoがDropされた時，そのデータをペインに挿入する.
+    /// ドロップされたスタンプが１個の時
+    ///
+    /// @param stampInfo ドロップされたスタンプ情報
     public void stampInfoDropped(ModuleInfoBean stampInfo) {
         // stampInfoDropped(list) で処理してコードを簡略化するため要素１個の List にする
         List<ModuleInfoBean> list = new ArrayList<>(1);
@@ -690,11 +611,9 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         }
     }
 
-    /**
-     * スタンプエディタを起動する.
-     *
-     * @param stampInfo ModuleInfoBean
-     */
+    /// スタンプエディタを起動する.
+    ///
+    /// @param stampInfo ModuleInfoBean
     private void editStamp(ModuleInfoBean stampInfo) {
         logger.info("launch stampEditor entity: {}", stampInfo.getEntity());
         ModuleModel stamp = new ModuleModel();
@@ -705,12 +624,10 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         stampEditor.start();
     }
 
-    /**
-     * StampInfo（スタンプ箱の項目）が 複数 Drop された時，そのデータをペインに挿入する.
-     * 複数がドロップされたときはこちらが呼ばれる
-     *
-     * @param addList スタンプ情報のリスト
-     */
+    /// StampInfo（スタンプ箱の項目）が 複数 Drop された時，そのデータをペインに挿入する.
+    /// 複数がドロップされたときはこちらが呼ばれる
+    ///
+    /// @param addList スタンプ情報のリスト
     public void stampInfoDropped(final List<ModuleInfoBean> addList) {
         // 4 個以上一気にドロップされたら警告を出す
         if (addList.size() >= 4) {
@@ -797,11 +714,9 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         task.execute();
     }
 
-    /**
-     * ORCA の入力セットを取得してこのペインに展開する.
-     *
-     * @param stampInfo ModuleInfoBean
-     */
+    /// ORCA の入力セットを取得してこのペインに展開する.
+    ///
+    /// @param stampInfo ModuleInfoBean
     private void applyOrcaSet(final ModuleInfoBean stampInfo) {
 
         PNSTask<List<ModuleModel>> task = new PNSTask<>(parent.getContext().getFrame()) {
@@ -951,11 +866,9 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         task.execute();
     }
 
-    /**
-     * Schema が DnD された場合，シェーマエディタを開いて編集する.
-     *
-     * @param path path to image
-     */
+    /// Schema が DnD された場合，シェーマエディタを開いて編集する.
+    ///
+    /// @param path path to image
     public void insertImage(String path) {
 
         if (path == null) {
@@ -989,7 +902,6 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
             height = reader.getHeight(0);
 
         } catch (IOException e) {
-            System.out.println("KartePane.java: " + e);
             logger.warn(e.getMessage());
             return;
         }
@@ -1018,12 +930,10 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
             JOptionPane.WARNING_MESSAGE);
     }
 
-    /**
-     * StampEditor の編集が終了するとここへ通知される.
-     * 通知されたスタンプをペインに挿入する.
-     *
-     * @param e PropertyChangeEvent
-     */
+    /// StampEditor の編集が終了するとここへ通知される.
+    /// 通知されたスタンプをペインに挿入する.
+    ///
+    /// @param e PropertyChangeEvent
     @Override
     public void propertyChange(PropertyChangeEvent e) {
 
@@ -1048,69 +958,55 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         this.getParent().getContext().getFrame().toFront();
     }
 
-    /**
-     * メニュー制御のため，ペースト可能かどうかを返す.
-     *
-     * @return ペースト可能な時 true
-     */
+    /// メニュー制御のため，ペースト可能かどうかを返す.
+    ///
+    /// @return ペースト可能な時 true
     protected boolean canPaste() {
         Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
         return getTextPane().getTransferHandler().canImport(
             new TransferHandler.TransferSupport(getTextPane(), t));
     }
 
-    /**
-     * このペインからスタンプを削除する.
-     *
-     * @param sh 削除するスタンプのホルダ
-     */
+    /// このペインからスタンプを削除する. EDTで操作.
+    ///
+    /// @param sh 削除するスタンプのホルダ
     public void removeStamp(StampHolder sh) {
-        getDocument().removeStamp(sh.getStartPos(), 2);
+        SwingUtilities.invokeLater(() -> getDocument().removeStamp(sh.getStartPos()));
     }
 
-    /**
-     * このペインからスタンプを削除する.
-     *
-     * @param sh 削除するスタンプのホルダリスト
-     */
+    /// このペインからスタンプを削除する.
+    ///
+    /// @param sh 削除するスタンプのホルダリスト
     public void removeStamp(StampHolder[] sh) {
-        if (sh != null) {
-            for (StampHolder h : sh) {
-                removeStamp(h);
-            }
+        if (sh == null) { return; }
+        for (StampHolder h : sh) {
+            removeStamp(h); // EDT
         }
     }
 
-    /**
-     * このペインからシェーマを削除する.
-     *
-     * @param sh 削除するシェーマのホルダ
-     */
+    /// このペインからシェーマを削除する. EDTで処理.
+    ///
+    /// @param sh 削除するシェーマのホルダ
     public void removeSchema(SchemaHolder sh) {
-        getDocument().removeStamp(sh.getStartPos(), 2);
+        SwingUtilities.invokeLater(() -> getDocument().removeStamp(sh.getStartPos()));
     }
 
-    /**
-     * このペインからシェーマを削除する.
-     *
-     * @param sh 削除するシェーマのホルダリスト
-     */
+    /// このペインからシェーマを削除する.
+    ///
+    /// @param sh 削除するシェーマのホルダリスト
     public void removeSchema(SchemaHolder[] sh) {
-        if (sh != null) {
-            for (SchemaHolder h : sh) {
-                removeSchema(h);
-            }
+        if (sh == null) { return; }
+        for (SchemaHolder h : sh) {
+            removeSchema(h); // EDT
         }
     }
 
-    /*
-     * ChartMediator で addChain されてここが呼ばれる.
-     */
+    /// ChartMediator で addChain されてここが呼ばれる.
     public void undo() { undoManager.undo(); }
 
     public void redo() { undoManager.redo(); }
 
-    // KartePane の状態　(_TEXT はテキストが選択された状態)
+    /// KartePane の状態　(_TEXT はテキストが選択された状態)
     private enum State {
         NONE, SOA, SOA_TEXT, SCHEMA, P, P_TEXT, STAMP
     }

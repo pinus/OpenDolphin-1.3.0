@@ -118,8 +118,7 @@ public class KarteRenderer_2 {
             soaPane.setDirty(true);
 
         } else {
-            debug("Render SOA Pane");
-            debug("Module count = " + soaModules.size());
+            logger.debug("Render SOA Pane: module count = ", soaModules.size());
             isSoaPane = true;
             thePane = soaPane;
             renderPane(soaSpec);
@@ -156,7 +155,7 @@ public class KarteRenderer_2 {
      * @param xml TextPane Dump の XML
      */
     private void renderPane(String xml) {
-        debug(xml);
+        //logger.debug(xml);
 
         SAXBuilder docBuilder = new SAXBuilder();
         StringReader sr = new StringReader(xml);
@@ -218,7 +217,7 @@ public class KarteRenderer_2 {
                 eType = TT_PROGRESS_COURSE;
                 startProgressCourse();
             }
-            default -> debug("Other element:" + eName);
+            default -> logger.debug("Other element: {}", eName);
         }
 
         // 子を探索するのはパラグフとトップ要素のみ
@@ -294,10 +293,7 @@ public class KarteRenderer_2 {
     }
 
     private void startComponent(String name, String number) {
-        debug("Entering startComponent");
-        debug("Name = " + name);
-        debug("Number = " + number);
-        debug("soaPane = " + isSoaPane);
+        logger.debug("startComponent name: {}, num: {}, soaPane: {} ", name, number, isSoaPane);
 
         int index = Integer.parseInt(number);
 
@@ -331,11 +327,7 @@ public class KarteRenderer_2 {
     private void startIcon(Element current) {
         String name = current.getChildTextTrim("name");
         if (name != null) {
-            debug(name);
+            logger.debug(name);
         }
-    }
-
-    private void debug(String msg) {
-        logger.debug(msg);
     }
 }
