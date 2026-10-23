@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 /// FRACTION を大きくすると速くなる. 小さくするとロード中の操作がしやすくなる.
 /// FRACTION 10: 8578, 20: 4863, 30: 3394, 40: 2903, 50: 2640, 60: 2636
 /// FRACTION 40 での表示時間
-public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<DocumentModel>> {
+public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Component>> {
     // FRACTION 数ごとに取得、描画の処理をする
     private static final int FRACTION = 40;
 
@@ -37,16 +37,12 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
     private final Logger logger = LoggerFactory.getLogger(KarteDocumentViewerWorker.class);
     private long lap;
 
-    public KarteDocumentViewerWorker(KarteDocumentViewer context, List<KarteViewer2> karteViewerList, DocInfoModel[] selected, JPanel scrollerPanel) {
+    public KarteDocumentViewerWorker(KarteDocumentViewer context, List<KarteViewer2> karteViewerList, Map<String, DocInfoModel> selectedHistoryMap, JPanel scrollerPanel) {
         this.context = context;
         this.chart = context.getContext();
         this.scrollerPanel = scrollerPanel;
         this.karteViewerList = karteViewerList;
-        // 選択された History の DocId をキーとした HashMap を作成
-        selectedHistoryMap = new HashMap<>();
-        for (DocInfoModel model : selected) {
-            selectedHistoryMap.put(model.getDocId(), model);
-        }
+        this.selectedHistoryMap = selectedHistoryMap;
         progressBar = chart.getStatusPanel().getProgressBar();
     }
 
@@ -85,8 +81,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
                 logger.debug("count = {}", count);
                 // 途中で選択が変わったり，ウインドウが閉じられている可能性がある
                 if (!isCancelled() && chart.getFrame().isVisible()) {
-                    List<DocumentModel> dm = ddl.getDocuments(pkList);
-                    publish(dm);
+                    addKarteViewer(ddl.getDocuments(pkList));
                     progressBar.setValue(count);
 
                 } else {
@@ -102,12 +97,10 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
     }
 
     @Override
-    protected void process(List<List<DocumentModel>> chunks) {
+    protected void process(List<List<Component>> chunks) {
         logger.debug("process published chunks: {}", chunks.size());
         if (!isCancelled()) {
-            for (List<DocumentModel> models : chunks ) {
-                addKarteViewer(models);
-            }
+            updateScrollerPanel(chunks);
         }
     }
 
@@ -122,21 +115,17 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
     }
 
     private void addKarteViewer(List<DocumentModel> models) {
-
         long lap = System.currentTimeMillis();
         updateKarteViewerList(models);
-        long lap1 = System.currentTimeMillis() - lap;
 
         // karteViewerList の内容を scrollerPanel に反映する
         List<Component> currentViewerUIs = new ArrayList<>();
         for (KarteViewer2 viewer : karteViewerList) {
             currentViewerUIs.add(viewer.getUI());
         }
-        lap = System.currentTimeMillis();
-        updateScrollerPanel(currentViewerUIs);
-        long lap2 = System.currentTimeMillis() - lap;
+        publish(currentViewerUIs);
 
-        logger.debug("viewer: {}, pane {} ", lap1, lap2);
+        logger.debug("viewer: {}", lap);
     }
 
     /// KarteViewerList を更新する
@@ -213,23 +202,25 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Documen
     }
 
     /// karteViewerList の内容を scrollerPanel に反映する
-    private void updateScrollerPanel(List<Component> currentViewerUIs) {
-        Set<Component> currentViewersSet = new HashSet<>(currentViewerUIs);
+    private void updateScrollerPanel(List<List<Component>> chunks) {
+        for (List<Component> currentViewerUIs : chunks) {
+            Set<Component> currentViewersSet = new HashSet<>(currentViewerUIs);
 
-        //remove
-        for (Component comp : scrollerPanel.getComponents()) {
-            if (!currentViewersSet.contains(comp)) {
-                scrollerPanel.remove(comp);
+            //remove
+            for (Component comp : scrollerPanel.getComponents()) {
+                if (!currentViewersSet.contains(comp)) {
+                    scrollerPanel.remove(comp);
+                }
             }
-        }
 
-        // add
-        for (int i = 0; i < currentViewerUIs.size(); i++) {
-            Component comp = currentViewerUIs.get(i);
-            if (comp.getParent() == scrollerPanel) {
-                scrollerPanel.setComponentZOrder(comp, i);
-            } else {
-                scrollerPanel.add(comp, i);
+            // add
+            for (int i = 0; i < currentViewerUIs.size(); i++) {
+                Component comp = currentViewerUIs.get(i);
+                if (comp.getParent() == scrollerPanel) {
+                    scrollerPanel.setComponentZOrder(comp, i);
+                } else {
+                    scrollerPanel.add(comp, i);
+                }
             }
         }
 

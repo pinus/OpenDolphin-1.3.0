@@ -261,8 +261,7 @@ public class DocumentHistory implements IInspector {
      * @param newSelected 選択された文書履歴(複数)
      */
     public void setSelectedHistories(DocInfoModel[] newSelected) {
-
-        DocInfoModel[] old = selectedHistories;
+        //DocInfoModel[] old = selectedHistories;
         selectedHistories = newSelected;
         //
         // リスナへ通知を行う  -> DocumentBridgeImpl

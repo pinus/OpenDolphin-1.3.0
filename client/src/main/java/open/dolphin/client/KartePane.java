@@ -567,7 +567,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         SwingUtilities.invokeLater(() -> {
             SchemaHolder h = new SchemaHolder(this, schema);
             h.setTransferHandler(schemaHolderTransferHandler);
-            KarteStyledDocument doc = (KarteStyledDocument) getTextPane().getDocument();
+            KarteStyledDocument doc = getDocument();
             doc.flowSchema(h);
         });
     }

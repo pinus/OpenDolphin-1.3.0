@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 /// KarteDocumentViewer.
 /// KarteViewer2 をまとめて DocumentBridge の scroller に入れる.
@@ -40,6 +41,8 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     // 上記パネル内でマウスで選択されているカルテ(karteViewer)
     // 前回処方を適用した新規カルテはこの選択されたカルテが元になる
     private KarteViewer2 selectedKarteViewer;
+    // 選択された History の DocId をキーとした Map
+    private Map<String, DocInfoModel> selectedHistoryMap;
     // karteViewer を並べたパネル
     private JPanel scrollerPanel;
     // 文書履を昇順で表示する場合に true
@@ -69,6 +72,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
 
         scrollerPanel = new JPanel();
         scrollerPanel.setLayout(new BoxLayout(scrollerPanel, isVerticalScroll? BoxLayout.Y_AXIS : BoxLayout.X_AXIS));
+        selectedHistoryMap = new HashMap<>();
     }
 
     @Override
@@ -209,12 +213,28 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         scroller.setViewportView(scrollerPanel);
         if (selected == null || selected.length == 0) { return; }
 
+        // 選択が変化していなければ帰る
+        Set<String> selectedIds = new HashSet<>();
+        for (DocInfoModel df : selected) {
+            selectedIds.add(df.getDocId());
+        }
+        if (selectedHistoryMap.keySet().equals(selectedIds)) {
+            logger.debug("selection unchanged");
+            return;
+        }
+
+        // 選択された History の DocId をキーとした HashMap を作成
+        selectedHistoryMap = new HashMap<>();
+        for (DocInfoModel model : selected) {
+            selectedHistoryMap.put(model.getDocId(), model);
+        }
+
         // KarteTask でデータベースから DocumentModel を取ってきて EDT で addKarteViewer を呼ぶ
         if (currentTask != null && !currentTask.isDone()) {
             // 実行中のタスクがあればキャンセル
             currentTask.cancel(true);
         }
-        currentTask = new KarteDocumentViewerWorker(this, karteViewerList, selected, scrollerPanel);
+        currentTask = new KarteDocumentViewerWorker(this, karteViewerList, selectedHistoryMap, scrollerPanel);
         currentTask.execute();
     }
 

@@ -10,5 +10,6 @@
         <appender-ref ref="STDOUT" />
     </root>
     <logger name="open.dolphin.client.KarteDocumentViewerWorker" level="DEBUG" />
-    <logger name="open.dolphin.client.KarteRenderer_2" level="DEBUG" />
+    <logger name="open.dolphin.client.KarteDocumentViewer" level="DEBUG" />
+    <logger name="open.dolphin.client.KarteRenderer_2" level="INFO" />
 </configuration>
