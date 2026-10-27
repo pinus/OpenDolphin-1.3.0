@@ -17,11 +17,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /// 文書をデータベースから取得するタスククラス.
-/// TIME-FOR-SWING 0, FRACTION=300 での 290件のカルテ表示時間 2350
-/// TIME-FOR-SWING 200 msec での 290件のカルテ表示時間.
 /// FRACTION を大きくすると速くなる. 小さくするとロード中の操作がしやすくなる.
-/// FRACTION 10: 8578, 20: 4863, 30: 3394, 40: 2903, 50: 2640, 60: 2636
-/// FRACTION 40 での表示時間
+/// 290件のカルテ表示時間
+/// FRACTION 10: 2358, 20: 1989, 30: 1854, 40: 1795, 50: 1658, 60: 1587
 public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Component>> {
     // FRACTION 数ごとに取得、描画の処理をする
     private static final int FRACTION = 40;
@@ -115,7 +113,6 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
     }
 
     private void addKarteViewer(List<DocumentModel> models) {
-        long lap = System.currentTimeMillis();
         updateKarteViewerList(models);
 
         // karteViewerList の内容を scrollerPanel に反映する
@@ -124,8 +121,6 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
             currentViewerUIs.add(viewer.getUI());
         }
         publish(currentViewerUIs);
-
-        logger.debug("viewer: {}", lap);
     }
 
     /// KarteViewerList を更新する
