@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Component>> {
     // FRACTION 数ごとに取得、描画の処理をする
     private static final int FRACTION = 40;
-    private static Map<String, KarteViewer2> karteViewerCache = new HashMap<>();
+    private static final Map<String, KarteViewer2> karteViewerCache = new HashMap<>();
 
     private final KarteDocumentViewer context;
     private final Chart chart;
@@ -163,7 +163,8 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                 }
 
                 // KarteViewer を生成する
-                if (karteViewerCache.keySet().contains(dm.getDocInfo().getDocId())) {
+                if (karteViewerCache.containsKey(dm.getDocInfo().getDocId())
+                    && karteViewerCache.get(dm.getDocInfo().getDocId()).getDocument().getConfirmed().equals(dm.getConfirmed())) {
                     karteViewerList.add(karteViewerCache.get(dm.getDocInfo().getDocId()));
 
                 } else {
