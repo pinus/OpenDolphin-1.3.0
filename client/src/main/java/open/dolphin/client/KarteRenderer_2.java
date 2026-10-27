@@ -118,7 +118,7 @@ public class KarteRenderer_2 {
             soaPane.setDirty(true);
 
         } else {
-            logger.debug("Render SOA Pane: module count = ", soaModules.size());
+            logger.debug("Render SOA Pane: module count = {} ", soaModules.size());
             isSoaPane = true;
             thePane = soaPane;
             renderPane(soaSpec);
@@ -260,6 +260,7 @@ public class KarteRenderer_2 {
 
     private void startContent(String foreground, String size, String bold,
                               String italic, String underline, String text) {
+        logger.debug("startContent text: {}", text);
         // 特殊文字を戻す
         for (int i = 0; i < REPLACES.length; i++) {
             text = text.replaceAll(MATCHES[i], REPLACES[i]);

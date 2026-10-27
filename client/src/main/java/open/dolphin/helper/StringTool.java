@@ -1,5 +1,6 @@
 package open.dolphin.helper;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -371,6 +372,7 @@ public final class StringTool {
     /**
      * ショウジさんがシヨウジさんになってたりするのを吸収する目的で.
      * カナの大小の組合せの可能性を数え上げて返す.
+     *
      * @param s ソース文字列
      * @return ありうるパターン
      */
@@ -405,6 +407,23 @@ public final class StringTool {
             ret[i] = new String(target);
         }
         return ret;
+    }
+
+    /**
+     * 文字列をバイト文字列に変換する。
+     *
+     * @param s 変換する文字列
+     * @return バイト列を表す文字列
+     */
+    public static String toByteString(String s) {
+        byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            // 16進数2桁でフォーマット
+            sb.append(String.format("%02X ", b));
+        }
+        return sb.toString();
     }
 
     public static void main(String[] arg) {

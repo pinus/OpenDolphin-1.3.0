@@ -12,4 +12,5 @@
     <logger name="open.dolphin.client.KarteDocumentViewerWorker" level="DEBUG" />
     <logger name="open.dolphin.client.KarteDocumentViewer" level="DEBUG" />
     <logger name="open.dolphin.client.KarteRenderer_2" level="INFO" />
+    <logger name="open.dolphin.client.KartePaneDumper_2" level="INFO" />
 </configuration>

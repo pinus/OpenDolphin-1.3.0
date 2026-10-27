@@ -38,13 +38,10 @@ public class KarteStyledDocument extends DefaultStyledDocument {
 
     /// 最後に改行を挿入する.
     public void makeParagraph() {
-        writeLock();
         try {
             insertString(getLength(), "\n", null);
         } catch (BadLocationException ex) {
             processError(ex);
-        } finally {
-            writeUnlock();
         }
     }
 
@@ -52,7 +49,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     ///
     /// @param sh 挿入するスタンプホルダ
     public void stamp(final StampHolder sh) {
-        writeLock();
         try {
             Style runStyle = this.getStyle(STAMP_STYLE);
             if (runStyle == null) {
@@ -75,8 +71,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
 
         } catch (BadLocationException ex) {
             processError(ex);
-        } finally {
-            writeUnlock();
         }
     }
 
@@ -84,7 +78,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     ///
     /// @param sh 挿入するスタンプホルダ
     public void flowStamp(final StampHolder sh) {
-        writeLock();
         try {
             Style runStyle = this.getStyle(STAMP_STYLE);
             if (runStyle == null) {
@@ -102,8 +95,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
 
         } catch (BadLocationException ex) {
             processError(ex);
-        } finally {
-            writeUnlock();
         }
     }
 
@@ -111,7 +102,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     ///
     /// @param start 削除開始のオフセット位置
     public void removeStamp(int start) {
-        writeLock();
         try {
             //masuda^ Stamp/Schemaをremoveするときは直後の改行も削除する
             if (start < getLength() - 1 && "\n".equals(getText(start + 1, 1))) {
@@ -122,8 +112,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             //masuda$
         } catch (BadLocationException ex) {
             processError(ex);
-        } finally {
-            writeUnlock();
         }
     }
 
@@ -131,7 +119,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     ///
     /// @param sc SchemaHolder
     public void stampSchema(SchemaHolder sc) {
-        writeLock();
         try {
             Style runStyle = this.getStyle(SCHEMA_STYLE);
             if (runStyle == null) {
@@ -149,8 +136,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
 
         } catch (BadLocationException ex) {
             processError(ex);
-        } finally {
-            writeUnlock();
         }
     }
 
@@ -158,7 +143,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     ///
     /// @param sh SchemaHolder
     public void flowSchema(final SchemaHolder sh) {
-        writeLock();
         try {
             Style runStyle = this.getStyle(SCHEMA_STYLE);
             if (runStyle == null) {
@@ -179,8 +163,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
 
         } catch (BadLocationException ex) {
             processError(ex);
-        } finally {
-            writeUnlock();
         }
     }
 
@@ -188,14 +170,11 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     ///
     /// @param text 文字列
     public void insertTextStamp(String text) {
-        writeLock();
         try {
             int pos = kartePane.getTextPane().getCaretPosition();
             insertString(pos, text, null);
         } catch (BadLocationException ex) {
             processError(ex);
-        } finally {
-            writeUnlock();
         }
     }
 
@@ -204,13 +183,10 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     /// @param text 文字列
     /// @param a AttributeSet
     public void insertFreeString(String text, AttributeSet a) {
-        writeLock();
         try {
             insertString(getLength(), text, a);
         } catch (BadLocationException ex) {
             processError(ex);
-        } finally {
-            writeUnlock();
         }
     }
 
@@ -244,7 +220,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     public void removeLastCr() {
         int endPos = getLength() - 1;
         if (endPos > 0) {
-            writeLock();
             try {
                 String last = getText(endPos, 1);
                 if ("\n".equals(last)) {
@@ -253,8 +228,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
 
             } catch (BadLocationException ex) {
                 processError(ex);
-            } finally {
-                writeUnlock();
             }
         }
     }
@@ -264,7 +237,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
     public void removeExtraCr() {
         // これが一番速い！ 20個の改行削除に2msec!!
         try {
-            writeLock();
             int len = getLength();
             int pos;
             // 改行文字以外が出てくるまで文頭からスキャン
@@ -288,8 +260,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
             }
         } catch (BadLocationException ex) {
             processError(ex);
-        } finally {
-            writeUnlock();
         }
     }
 
@@ -300,7 +270,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
         int crPos = 0;
 
         while (pos < getLength()) {
-            writeLock();
             try {
                 if (crPos == 0 && "\n".equals(getText(pos, 1))) {
                     crPos = pos;
@@ -317,8 +286,6 @@ public class KarteStyledDocument extends DefaultStyledDocument {
 
             } catch (BadLocationException ex) {
                 processError(ex);
-            } finally {
-                writeUnlock();
             }
         }
     }
