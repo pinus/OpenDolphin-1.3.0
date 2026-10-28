@@ -1,14 +1,13 @@
 package open.dolphin.impl.pvt;
 
-import open.dolphin.infomodel.PatientVisitModel;
-import open.dolphin.util.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.Endpoint;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.Session;
+import open.dolphin.infomodel.PatientVisitModel;
+import open.dolphin.util.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author pns
@@ -36,12 +35,12 @@ public class PvtEndpoint extends Endpoint {
 
     @Override
     public void onError(Session session, Throwable t) {
-        logger.info("websocket error");
+        logger.error("websocket error");
         t.printStackTrace(System.err);
     }
 
     @Override
     public void onClose(Session session, CloseReason reason) {
-        logger.info("websocket closed: {}", reason.getReasonPhrase());
+        logger.error("websocket closed: {}", reason.getReasonPhrase());
     }
 }

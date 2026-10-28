@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Component>> {
     // FRACTION 数ごとに取得、描画の処理をする
     private static final int FRACTION = 40;
+    // 作った KarteViewer を捨てないでキャッシュする
     private static final Map<String, KarteViewer2> karteViewerCache = new HashMap<>();
 
     private final KarteDocumentViewer context;
@@ -70,17 +71,34 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
             boolean hasNext = true;
             while (hasNext) {
                 List<Long> pkList = new ArrayList<>(FRACTION);
+                List<DocumentModel> toAdd = new ArrayList<>();
+
                 for (int i = 0; i < FRACTION; i++) {
-                    pkList.add(added.get(count++).getDocPk());
+                    DocInfoModel test = added.get(count++);
+                    // DocumentModel の cache をチェック
+                    DocumentModel dm = DocumentModelCache.get(test.getDocId());
+                    if (dm == null || !test.getConfirmDate().equals(dm.getDocInfo().getConfirmDate())) {
+                        // DocumentModel がキャッシュに無ければ取りに行く分のリストに追加
+                        pkList.add(test.getDocPk());
+                    } else {
+                        logger.debug("cache hit");
+                        toAdd.add(dm);
+                    }
                     if (count >= added.size()) {
                         hasNext = false;
                         break;
                     }
                 }
-                logger.debug("count = {}", count);
+                logger.debug("total count = {}, pkList count = {}", count, pkList.size());
                 // 途中で選択が変わったり，ウインドウが閉じられている可能性がある
                 if (!isCancelled() && chart.getFrame().isVisible()) {
-                    addKarteViewer(ddl.getDocuments(pkList));
+                    if (!pkList.isEmpty()) {
+                        logger.debug("fetching {} documents", pkList.size());
+                        List<DocumentModel> fetchedModels = ddl.getDocuments(pkList);
+                        toAdd.addAll(fetchedModels);
+                        DocumentModelCache.addAll(fetchedModels); // DocumentModel キャッシュに保存
+                    }
+                    addKarteViewer(toAdd);
                     progressBar.setValue(count);
 
                 } else {
@@ -165,6 +183,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                 // KarteViewer を生成する
                 if (karteViewerCache.containsKey(dm.getDocInfo().getDocId())
                     && karteViewerCache.get(dm.getDocInfo().getDocId()).getDocument().getConfirmed().equals(dm.getConfirmed())) {
+                    // docID と confirmed が一致する KarteViewer をキャッシュから取り出す
                     karteViewerList.add(karteViewerCache.get(dm.getDocInfo().getDocId()));
 
                 } else {
@@ -232,7 +251,9 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         scrollerPanel.repaint();
     }
 
+    /// KarteViewer をキャッシュを消去してリソースを開放する
     public void clearCache() {
         karteViewerCache.values().stream().forEach(KarteViewer2::stop);
+        karteViewerCache.clear();
     }
 }

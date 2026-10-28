@@ -684,6 +684,9 @@ public class WaitingListImpl extends AbstractMainComponent {
             }
 
         } else if (hostPvt.getState() != KarteState.CANCEL_PVT){
+            // pvt の DocumentModel を取ってきて cache に入れる (同期処理)
+            DocumentModelCache.add(hostPvt.getPatient().getId());
+
             // localPvt がなければ, それは追加である
             row = pvtTableModel.getObjectCount();
             // 番号付加
