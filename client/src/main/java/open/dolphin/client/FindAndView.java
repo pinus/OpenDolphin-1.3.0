@@ -64,15 +64,15 @@ public class FindAndView {
 
         int kpHeight = 0; // 後でソートするために，scrollerPanel 上の y 座標を記録するとき使う
         defaultAttr.addAttribute(StyleConstants.Background,
-                ((KartePanel) panel.getComponent(0)).getSoaTextPane().getBackground());
+                ((KartePanel) panel.getComponent(0)).getSoaKartePane().getTextPane().getBackground());
 
         // 前回検索のマーキング全部クリアする
         clearMarking(panel);
 
         for (int i = 0; i < kpCount; i++) {
             KartePanel kp = (KartePanel) panel.getComponent(i);
-            JTextPane soaPane = kp.getSoaTextPane();
-            JTextPane pPane = kp.getPTextPane();
+            JTextPane soaPane = kp.getSoaKartePane().getTextPane();
+            JTextPane pPane = kp.getPKartePane().getTextPane();
 
             try {
                 // soa Pane の text 検索 --------------------------------------------
@@ -300,8 +300,8 @@ public class FindAndView {
         for (int i = 0; i < kpCount; i++) {
             // text
             KartePanel kp = (KartePanel) panel.getComponent(i);
-            JTextPane soaPane = kp.getSoaTextPane();
-            JTextPane pPane = kp.getPTextPane();
+            JTextPane soaPane = kp.getSoaKartePane().getTextPane();
+            JTextPane pPane = kp.getPKartePane().getTextPane();
 
             soaPane.getStyledDocument().setCharacterAttributes(0, soaPane.getText().length(), defaultAttr, false);
             pPane.getStyledDocument().setCharacterAttributes(0, pPane.getText().length(), defaultAttr, false);

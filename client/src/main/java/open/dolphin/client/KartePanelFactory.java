@@ -18,8 +18,8 @@ public class KartePanelFactory {
     private static final Font KARTE_FONT = GUIFactory.getFont(Dolphin.forMac? 13 : 12);
 
     private final KartePanel kartePanel;
-    private JTextPane soaTextPane;
-    private JTextPane pTextPane;
+    private KartePane soaKartePane;
+    private KartePane pKartePane;
     private JLabel timeStampLabel;
     private JPanel timeStampPanel;
     private JPanel textPanePanel;
@@ -41,21 +41,25 @@ public class KartePanelFactory {
     }
 
     private void initComponents() {
-        soaTextPane = new JTextPane();
+        soaKartePane = new KartePane();
+        JTextPane soaTextPane = new JTextPane();
         soaTextPane.setFont(KARTE_FONT);
         soaTextPane.setEditorKit(new WrapEditorKit());
         soaTextPane.setMargin(new Insets(10, 10, 10, 10));
         soaTextPane.setMinimumSize(new Dimension(340, 1));
         //soaTextPane.setPreferredSize(new Dimension(340, 500));
         soaTextPane.setSize(1, 1); // なぜかこれでうまくいく。謎.
+        soaKartePane.setTextPane(soaTextPane);
 
-        pTextPane = new JTextPane();
+        pKartePane = new KartePane();
+        JTextPane pTextPane = new JTextPane();
         pTextPane.setFont(KARTE_FONT);
         pTextPane.setEditorKit(new WrapEditorKit());
         pTextPane.setMargin(new Insets(10, 10, 10, 10));
         pTextPane.setMinimumSize(new Dimension(340, 1));
         //pTextPane.setPreferredSize(new Dimension(340, 500));
         pTextPane.setSize(1, 1);
+        pKartePane.setTextPane(pTextPane);
 
         // これをセットしないと，勝手に cut copy paste のポップアップがセットされてしまう.
         soaTextPane.putClientProperty("Quaqua.TextComponent.showPopup", false);
@@ -98,11 +102,11 @@ public class KartePanelFactory {
             initComponents();
 
             // workaround http://ron.shoutboot.com/2010/05/23/swing-jscrollpane-scrolls-to-bottom/
-            soaTextPane.setCaret(new MyCaret());
-            pTextPane.setCaret(new MyCaret());
+            soaKartePane.getTextPane().setCaret(new MyCaret());
+            pKartePane.getTextPane().setCaret(new MyCaret());
 
-            textPanePanel.add(soaTextPane);
-            textPanePanel.add(pTextPane);
+            textPanePanel.add(soaKartePane.getTextPane());
+            textPanePanel.add(pKartePane.getTextPane());
 
             setLayout(new BorderLayout(0, 0));
             add(timeStampPanel, BorderLayout.NORTH);
@@ -124,7 +128,7 @@ public class KartePanelFactory {
             //} catch (Exception e) {}
 
             // h は textPane の高さ これに timeStamp 部分足すと1枚のカルテの高さ. ぎりぎりにならないように 10 だけ余裕
-            d.height = Math.max(soaTextPane.getPreferredSize().height, pTextPane.getPreferredSize().height)
+            d.height = Math.max(soaKartePane.getTextPane().getPreferredSize().height, pKartePane.getTextPane().getPreferredSize().height)
                     + TIMESTAMP_PANEL_HEIGHT + 10;
             return d;
         }
@@ -141,13 +145,13 @@ public class KartePanelFactory {
         //}
 
         @Override
-        public JTextPane getPTextPane() {
-            return pTextPane;
+        public KartePane getPKartePane() {
+            return pKartePane;
         }
 
         @Override
-        public JTextPane getSoaTextPane() {
-            return soaTextPane;
+        public KartePane getSoaKartePane() {
+            return soaKartePane;
         }
 
         @Override
@@ -175,12 +179,12 @@ public class KartePanelFactory {
             initComponents();
 
             PNSScrollPane soaScrollPane = new PNSScrollPane();
-            soaScrollPane.setViewportView(soaTextPane);
+            soaScrollPane.setViewportView(soaKartePane.getTextPane());
             soaScrollPane.setHorizontalScrollBarPolicy(PNSScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             soaScrollPane.setVerticalScrollBarPolicy(PNSScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
             PNSScrollPane pScrollPane = new PNSScrollPane();
-            pScrollPane.setViewportView(pTextPane);
+            pScrollPane.setViewportView(pKartePane.getTextPane());
             pScrollPane.setHorizontalScrollBarPolicy(PNSScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             pScrollPane.setVerticalScrollBarPolicy(PNSScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
@@ -194,13 +198,13 @@ public class KartePanelFactory {
         }
 
         @Override
-        public JTextPane getPTextPane() {
-            return pTextPane;
+        public KartePane getPKartePane() {
+            return pKartePane;
         }
 
         @Override
-        public JTextPane getSoaTextPane() {
-            return soaTextPane;
+        public KartePane getSoaKartePane() {
+            return soaKartePane;
         }
 
         @Override

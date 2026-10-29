@@ -10,9 +10,9 @@ import javax.swing.*;
  */
 public abstract class KartePanel extends PrintablePanel {
     
-    public abstract JTextPane getPTextPane();
+    public abstract KartePane getPKartePane();
 
-    public abstract JTextPane getSoaTextPane();
+    public abstract KartePane getSoaKartePane();
 
     public abstract JLabel getTimeStampLabel();
 

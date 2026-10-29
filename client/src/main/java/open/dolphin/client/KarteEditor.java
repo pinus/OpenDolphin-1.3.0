@@ -224,8 +224,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         kartePanel = KartePanelFactory.createEditorPanel();
 
         // SOA Pane を生成する
-        soaPane = new KartePane();
-        soaPane.setTextPane(kartePanel.getSoaTextPane());
+        soaPane = kartePanel.getSoaKartePane();
         soaPane.setParent(this);
         soaPane.setRole(ROLE_SOA);
         soaPane.getTextPane().setTransferHandler(new KartePaneTransferHandler(soaPane));
@@ -236,8 +235,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         }
 
         // P Pane を生成する
-        pPane = new KartePane();
-        pPane.setTextPane(kartePanel.getPTextPane());
+        pPane = kartePanel.getPKartePane();
         pPane.setParent(this);
         pPane.setRole(ROLE_P);
         pPane.getTextPane().setTransferHandler(new KartePaneTransferHandler(pPane));
@@ -245,7 +243,8 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         // ctrl-¥ で soaPane, PPane 間を移動する
         KeyListener l = new KeyAdapter() {
             final KeyStroke CTRL_YEN = KeyStroke.getKeyStroke("ctrl BACK_SLASH");
-            final JTextPane SOA = kartePanel.getSoaTextPane(), P = kartePanel.getPTextPane();
+            final JTextPane SOA = soaPane.getTextPane();
+            final JTextPane P = pPane.getTextPane();
             @Override
             public void keyPressed(KeyEvent e) {
                 if (KeyStroke.getKeyStrokeForEvent(e).equals(CTRL_YEN)) {
@@ -253,8 +252,8 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
                 }
             }
         };
-        kartePanel.getSoaTextPane().addKeyListener(l);
-        kartePanel.getPTextPane().addKeyListener(l);
+        soaPane.getTextPane().addKeyListener(l);
+        pPane.getTextPane().addKeyListener(l);
 
         setUI(kartePanel);
 

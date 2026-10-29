@@ -38,10 +38,6 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
 
     // タイムスタンプラベル
     private JLabel timeStampLabel;
-    // SOA Pane
-    private KartePane soaPane;
-    // P Pane
-    private KartePane pPane;
     // 2号カルテ
     private KartePanel kartePanel;
 
@@ -60,7 +56,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
      * @return soaPane
      */
     public KartePane getSOAPane() {
-        return soaPane;
+        return kartePanel.getSoaKartePane();
     }
 
     /**
@@ -69,7 +65,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
      * @return pPane
      */
     public KartePane getPPane() {
-        return pPane;
+        return kartePanel.getPKartePane();
     }
 
     /**
@@ -90,8 +86,8 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
 
         // viewer では編集不可: start() でも init(false,mediator) しているが，
         // 表示直後の ChartImpl の ToolBar の制御に間に合わない.
-        kartePanel.getSoaTextPane().setEditable(false);
-        kartePanel.getPTextPane().setEditable(false);
+        kartePanel.getSoaKartePane().getTextPane().setEditable(false);
+        kartePanel.getPKartePane().getTextPane().setEditable(false);
 
         // TimeStampLabel を生成する
         timeStampLabel = kartePanel.getTimeStampLabel();
@@ -100,24 +96,23 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         timeStampLabel.setFont(TIMESTAMP_FONT);
 
         // SOA Pane を生成する
-        soaPane = new KartePane();
-        soaPane.setTextPane(kartePanel.getSoaTextPane());
+        KartePane soaPane = kartePanel.getSoaKartePane();
         soaPane.getTextPane().setTransferHandler(new KartePaneTransferHandler(soaPane));
         soaPane.setRole(IInfoModel.ROLE_SOA);
         soaPane.setParent(this);
-        if (Objects.nonNull(getDocument())) {
-            // Schema 画像にファイル名を付けるのために必要
-            String docId = getDocument().getDocInfo().getDocId();
-            soaPane.setDocId(docId);
-        }
 
         // P Pane を生成する
-        pPane = new KartePane();
-        pPane.setTextPane(kartePanel.getPTextPane());
+        KartePane pPane = kartePanel.getPKartePane();
         pPane.getTextPane().setTransferHandler(new KartePaneTransferHandler(pPane));
         pPane.setRole(IInfoModel.ROLE_P);
         pPane.setParent(this);
 
+        if (Objects.nonNull(getDocument())) {
+            // Schema 画像にファイル名を付けるのために必要
+            String docId = getDocument().getDocInfo().getDocId();
+            soaPane.setDocId(docId);
+            pPane.setDocId(docId);
+        }
         setUI(kartePanel);
     }
 
@@ -163,26 +158,26 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
             timeStamp.append(drName);
 
             timeStampLabel.setText(timeStamp.toString());
-            KarteRenderer_2 renderer = new KarteRenderer_2(soaPane, pPane);
+            KarteRenderer_2 renderer = new KarteRenderer_2(kartePanel.getSoaKartePane(), kartePanel.getPKartePane());
             renderer.render(document);
         }
 
         // モデル表示後にリスナ等を設定する init(editable, mediator)
         ChartMediator mediator = getContext().getChartMediator();
-        soaPane.init(false, mediator);
-        pPane.init(false, mediator);
+        kartePanel.getSoaKartePane().init(false, mediator);
+        kartePanel.getPKartePane().init(false, mediator);
         enter();
     }
 
     @Override
     public void stop() {
-        soaPane.clear();
-        pPane.clear();
+        kartePanel.getSoaKartePane().clear();
+        kartePanel.getPKartePane().clear();
     }
 
     public void addMouseListener(MouseListener ml) {
-        soaPane.getTextPane().addMouseListener(ml);
-        pPane.getTextPane().addMouseListener(ml);
+        kartePanel.getSoaKartePane().getTextPane().addMouseListener(ml);
+        kartePanel.getPKartePane().getTextPane().addMouseListener(ml);
     }
 
     public String getDocType() {
