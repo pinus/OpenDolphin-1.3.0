@@ -77,11 +77,11 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                     DocInfoModel test = added.get(count++);
                     // DocumentModel の cache をチェック
                     DocumentModel dm = DocumentModelCache.get(test.getDocId());
-                    if (dm == null || !test.getConfirmDate().equals(dm.getDocInfo().getConfirmDate())) {
+                    if (dm == null) {
                         // DocumentModel がキャッシュに無ければ取りに行く分のリストに追加
                         pkList.add(test.getDocPk());
                     } else {
-                        logger.debug("cache hit");
+                        logger.debug("DocumentModel cache hit");
                         toAdd.add(dm);
                     }
                     if (count >= added.size()) {
@@ -181,9 +181,8 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                 }
 
                 // KarteViewer を生成する
-                if (karteViewerCache.containsKey(dm.getDocInfo().getDocId())
-                    && karteViewerCache.get(dm.getDocInfo().getDocId()).getDocument().getConfirmed().equals(dm.getConfirmed())) {
-                    // docID と confirmed が一致する KarteViewer をキャッシュから取り出す
+                if (karteViewerCache.containsKey(dm.getDocInfo().getDocId())) {
+                    logger.debug("KarteViewer cache hit");
                     karteViewerList.add(karteViewerCache.get(dm.getDocInfo().getDocId()));
 
                 } else {

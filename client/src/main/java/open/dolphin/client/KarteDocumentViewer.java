@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 /// KarteDocumentViewer.
 /// KarteViewer2 をまとめて DocumentBridge の scroller に入れる.
@@ -138,7 +137,9 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             karteViewerList.stream().forEach(KarteViewer2::stop);
             karteViewerList.clear();
         }
-        currentTask.clearCache();
+        if (currentTask != null) {
+            currentTask.clearCache();
+        }
     }
 
     @Override

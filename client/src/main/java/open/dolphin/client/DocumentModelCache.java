@@ -1,13 +1,12 @@
 package open.dolphin.client;
 
 import open.dolphin.delegater.DocumentDelegater;
-import open.dolphin.infomodel.DocInfoModel;
-import open.dolphin.infomodel.DocumentModel;
-import open.dolphin.infomodel.KarteBean;
+import open.dolphin.infomodel.*;
 import open.dolphin.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -75,6 +74,10 @@ public class DocumentModelCache {
             if (models == null) { return; }
             for (DocumentModel model : models) {
                 if (model != null && model.getDocInfo() != null) {
+                    // ImageIcon は作り直す必要あり
+                    for (SchemaModel schema : model.getSchema()) {
+                        schema.setIcon(new ImageIcon(schema.getJpegByte()));
+                    }
                     cache.put(model.getDocInfo().getDocId(), model);
                 }
             }
@@ -129,13 +132,10 @@ public class DocumentModelCache {
 
     /// 受付時に DocumentModel を全部取ってきてキャッシュしてしまう.
     /// ORCA で受付してから OpenDolphin に表示されるまでの時間が多少遅くなっても実用上問題ない.
-    ///
-    /// @param patientPk the primary key (identifier) of the patient whose documents
-    ///                  are to be added to the cache
-    /// @throws RuntimeException if an error occurs during execution, including timeout,
-    ///                          interruption, or other execution failures
-    public static void add(long patientPk) {
+    public static void add(PatientVisitModel pvt) {
+        long patientPk = pvt.getPatient().getId();
         logger.info("add patientPk {}", patientPk);
+
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             long lap = System.currentTimeMillis();
 
@@ -143,6 +143,8 @@ public class DocumentModelCache {
             LocalDateTime from = LocalDate.now().atStartOfDay().minusMonths(360);
             DocumentDelegater ddl = new DocumentDelegater();
             KarteBean karte = ddl.getKarte(patientPk, from);
+            karte.setPatient(pvt.getPatient());
+
             // DocumentModel 取得のための pk list を作り, 同時に DocInfoModel の map を作る
             List<Long> docIds = new ArrayList<>();
             Map<String, DocInfoModel> docInfoMap = new HashMap<>();

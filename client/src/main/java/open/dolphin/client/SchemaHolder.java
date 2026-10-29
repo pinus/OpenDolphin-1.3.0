@@ -24,7 +24,7 @@ import java.util.Objects;
  * @author pns
  */
 public final class SchemaHolder extends AbstractComponentHolder<SchemaModel> {
-        private static final Dimension INITIAL_SIZE = new Dimension(192, 192);
+    private static final Dimension INITIAL_SIZE = new Dimension(192, 192);
     private static final Border MY_SELECTED_BORDER = PNSBorderFactory.createSelectedBorder();
     private static final Border MY_CLEAR_BORDER = PNSBorderFactory.createClearBorder();
     private final KartePane kartePane;
@@ -69,7 +69,7 @@ public final class SchemaHolder extends AbstractComponentHolder<SchemaModel> {
 
             JTextPane pane = kartePane.getTextPane();
             if (pane != null) {
-                // kartePane の back ground color は invokeLater しないと取れない
+                // kartePane の background color は invokeLater しないと取れない
                 setBackground(pane.getBackground());
             }
         });
@@ -114,7 +114,7 @@ public final class SchemaHolder extends AbstractComponentHolder<SchemaModel> {
     }
 
     /**
-     * Set scaled icon image.
+     * Set the scaled icon image.
      *
      * @param image java.awt.image
      * @param w scaled width
