@@ -56,7 +56,6 @@ public class KartePanelFactory {
 
     /// Editor と Viewer の共通項目の初期化
     private void initComponents() {
-        soaKartePane = new KartePane();
         JTextPane soaTextPane = new JTextPane();
         soaTextPane.setFont(KARTE_FONT);
         soaTextPane.setEditorKit(new WrapEditorKit());
@@ -64,11 +63,10 @@ public class KartePanelFactory {
         soaTextPane.setMinimumSize(new Dimension(340, 1));
         //soaTextPane.setPreferredSize(new Dimension(340, 500));
         soaTextPane.setSize(1, 1); // なぜかこれでうまくいく。謎.
-        soaKartePane.setTextPane(soaTextPane);
+        soaKartePane = new KartePane(soaTextPane);
         soaKartePane.getTextPane().setTransferHandler(new KartePaneTransferHandler(soaKartePane));
         soaKartePane.setRole(IInfoModel.ROLE_SOA);
 
-        pKartePane = new KartePane();
         JTextPane pTextPane = new JTextPane();
         pTextPane.setFont(KARTE_FONT);
         pTextPane.setEditorKit(new WrapEditorKit());
@@ -76,7 +74,7 @@ public class KartePanelFactory {
         pTextPane.setMinimumSize(new Dimension(340, 1));
         //pTextPane.setPreferredSize(new Dimension(340, 500));
         pTextPane.setSize(1, 1);
-        pKartePane.setTextPane(pTextPane);
+        pKartePane = new KartePane(pTextPane);
         pKartePane.getTextPane().setTransferHandler(new KartePaneTransferHandler(pKartePane));
         pKartePane.setRole(IInfoModel.ROLE_P);
 

@@ -48,8 +48,7 @@ import java.util.Objects;
 import java.util.prefs.Preferences;
 
 /// KarteComposite の一つで，内部に JTextPane を１つ保持している.
-/// 保持している JTextPane は，[`setTextPane`][open.dolphin.client.KartePane#setTextPane] されるときに
-/// client property "kartePane" に親の KartePane を入れる.
+/// 保持している JTextPane は client property "kartePane" に親の KartePane を入れる.
 /// ２号カルテはこれを２枚 KarteViewer / KarteEditor に入れて使う.
 ///
 /// @author Kazushi Minagawa, Digital Globe, inc.
@@ -71,9 +70,9 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     // この KartePaneのオーナ
     private ChartDocument parent;
     // StampHolderのTransferHandler
-    private StampListTransferHandler stampListTransferHandler;
+    private final StampListTransferHandler stampListTransferHandler;
     // SchemaHolderのTransferHandler
-    private SchemaHolderTransferHandler schemaHolderTransferHandler;
+    private final SchemaHolderTransferHandler schemaHolderTransferHandler;
     // SchemaModel にファイル名を付けるときの Id (インクリメントする)
     private int stampId;
     // Dirty Flag
@@ -95,7 +94,16 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     private int draggedCount;
     private int droppedCount;
 
-    public KartePane() { }
+    public KartePane(JTextPane tp) {
+        textPane = tp;
+        KarteStyledDocument doc = new KarteStyledDocument();
+        textPane.setDocument(doc);
+        textPane.putClientProperty("kartePane", this);
+
+        doc.setParent(this);
+        stampListTransferHandler = new StampListTransferHandler();
+        schemaHolderTransferHandler = new SchemaHolderTransferHandler();
+    }
 
     /// このPaneのオーナを返す.
     ///
@@ -165,22 +173,6 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     /// @return JTextPane
     public JTextPane getTextPane() {
         return textPane;
-    }
-
-    /// JTextPaneを設定する.
-    ///
-    /// @param tp JTextPane
-    public void setTextPane(JTextPane tp) {
-        textPane = tp;
-        if (textPane != null) {
-            KarteStyledDocument doc = new KarteStyledDocument();
-            textPane.setDocument(doc);
-            textPane.putClientProperty("kartePane", this);
-
-            doc.setParent(this);
-            stampListTransferHandler = new StampListTransferHandler();
-            schemaHolderTransferHandler = new SchemaHolderTransferHandler();
-        }
     }
 
     /// JTextPaneのStyledDocumentを返す.
@@ -351,7 +343,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
             e.printStackTrace(System.err);
         }
 
-        setTextPane(null);
+        textPane = null;
     }
 
     /// メニューを制御する.
