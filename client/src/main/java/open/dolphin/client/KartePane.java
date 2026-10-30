@@ -99,10 +99,18 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         KarteStyledDocument doc = new KarteStyledDocument();
         textPane.setDocument(doc);
         textPane.putClientProperty("kartePane", this);
+        // リスナを登録する
+        textPane.addMouseListener(this);
+        textPane.addCaretListener(this);
+        textPane.getDocument().addDocumentListener(this);
+        textPane.getDocument().addUndoableEditListener(undoManager);
 
         doc.setParent(this);
         stampListTransferHandler = new StampListTransferHandler();
         schemaHolderTransferHandler = new SchemaHolderTransferHandler();
+
+        // undo manager
+        undoManager = new TextComponentUndoManager(getTextPane());
     }
 
     /// このPaneのオーナを返す.
@@ -244,21 +252,10 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     /// @param editable      編集可能かどうかのフラグ
     /// @param chartMediator チャートメディエータ（メニューサポート）
     public void init(boolean editable, ChartMediator chartMediator) {
-        // undo manager
-        undoManager = new TextComponentUndoManager(getTextPane());
         // Mediatorを保存する
         mediator = chartMediator;
         // 入れておかないと最初に focus 取る前に Drop したときヌルポが出る
         enter(mediator.getActions());
-
-        // Drag は editable に関係なく可能
-        //getTextPane().setDragEnabled(true);
-
-        // リスナを登録する
-        getTextPane().addMouseListener(this);
-        getTextPane().addCaretListener(this);
-        getTextPane().getDocument().addDocumentListener(this);
-        getTextPane().getDocument().addUndoableEditListener(undoManager);
 
         getTextPane().setEditable(editable);
         // ChartImpl で DocumentHistory が focus を取れないことがあるのの workaround
@@ -454,7 +451,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     protected void setDirty(boolean newDirty) {
         if (dirty ^ newDirty) { dirty = newDirty; }
         // 親の KarteEditor に通知
-        getParent().setDirty(dirty);
+        if (parent != null) { parent.setDirty(dirty);}
     }
 
     /// 保存時につけるドキュメントのタイトルをDocument Objectから抽出する.
