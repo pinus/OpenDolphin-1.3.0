@@ -2,14 +2,12 @@ package open.dolphin.client;
 
 import javax.swing.*;
 
-/**
- * KartePanel abstract for KarteViewer and KarteEditor.
- * 実体は KartePanelFactory で作る.
- *
- * @author pns
- */
+/// KartePanel abstract for KarteViewer and KarteEditor.
+/// 実体は KartePanelFactory で作る.
+///
+/// @author pns
 public abstract class KartePanel extends PrintablePanel {
-    
+
     public abstract KartePane getPKartePane();
 
     public abstract KartePane getSoaKartePane();
@@ -19,4 +17,14 @@ public abstract class KartePanel extends PrintablePanel {
     public abstract int getTimeStampPanelHeight();
 
     public abstract JPanel getTimeStampPanel();
+
+    public abstract void setSelected(boolean selected);
+
+    public abstract void setTimeStamp(String label);
+
+    public abstract void setParent(ChartDocument parent);
+
+    public abstract void setDocId(String docId);
+
+    public abstract String getDocId();
 }

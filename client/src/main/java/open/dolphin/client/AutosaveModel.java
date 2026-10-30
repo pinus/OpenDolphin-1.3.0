@@ -55,7 +55,7 @@ public class AutosaveModel {
         documentModel = editor.getDocument();
         patientId = editor.getContext().getKarte().getPatient().getPatientId();
 
-        DefaultStyledDocument soa = (DefaultStyledDocument) editor.getSOAPane().getTextPane().getDocument();
+        DefaultStyledDocument soa = (DefaultStyledDocument) editor.getSoaPane().getTextPane().getDocument();
         DefaultStyledDocument p = (DefaultStyledDocument) editor.getPPane().getTextPane().getDocument();
 
         moduleList = new ArrayList<>();

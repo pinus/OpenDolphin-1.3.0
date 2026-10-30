@@ -105,7 +105,7 @@ public class ChartToolBar extends JToolBar {
 
         // CaretListener
         CaretListener caretListener = e -> feedback((JTextPane) e.getSource());
-        karteEditor.getSOAPane().getTextPane().addCaretListener(caretListener);
+        karteEditor.getSoaPane().getTextPane().addCaretListener(caretListener);
         karteEditor.getPPane().getTextPane().addCaretListener(caretListener);
 
         // DocumentListener
@@ -113,7 +113,7 @@ public class ChartToolBar extends JToolBar {
             JComponent c = mediator.getCurrentComponent();
             if (c instanceof JTextPane) { feedback((JTextPane) c); }
         };
-        karteEditor.getSOAPane().getTextPane().getDocument().addDocumentListener(documentListener);
+        karteEditor.getSoaPane().getTextPane().getDocument().addDocumentListener(documentListener);
         karteEditor.getPPane().getTextPane().getDocument().addDocumentListener(documentListener);
 
         // FocusListener
@@ -126,7 +126,7 @@ public class ChartToolBar extends JToolBar {
             @Override
             public void focusLost(FocusEvent e) { }
         };
-        karteEditor.getSOAPane().getTextPane().addFocusListener(focusListener);
+        karteEditor.getSoaPane().getTextPane().addFocusListener(focusListener);
         karteEditor.getPPane().getTextPane().addFocusListener(focusListener);
     }
 

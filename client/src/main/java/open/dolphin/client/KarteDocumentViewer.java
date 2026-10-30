@@ -137,9 +137,6 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             karteViewerList.stream().forEach(KarteViewer2::stop);
             karteViewerList.clear();
         }
-        if (currentTask != null) {
-            currentTask.clearCache();
-        }
     }
 
     @Override

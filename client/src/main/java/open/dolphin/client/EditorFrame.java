@@ -413,7 +413,7 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
             public Component getDefaultComponent(Container aContainer) {
                 // 最初にフォーカスを取る component
                 if (isSaving) { return aContainer; }
-                return editor.getSOAPane().getTextPane();
+                return editor.getSoaPane().getTextPane();
             }
 
             @Override

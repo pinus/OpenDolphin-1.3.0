@@ -257,7 +257,7 @@ public final class ChartMediator extends MenuSupport implements PropertyChangeLi
      */
     private void adjustStyleMenu() {
         boolean enabled = getChartDocumentChain() instanceof KarteEditor editor
-            && editor.getSOAPane().getTextPane().isEditable();
+            && editor.getSoaPane().getTextPane().isEditable();
         for (String actionKey : FONT_FORMAT_ACTION_KEYS) {
             getAction(actionKey).setEnabled(enabled);
         }
@@ -323,7 +323,7 @@ public final class ChartMediator extends MenuSupport implements PropertyChangeLi
         KartePane kartePane = null;
 
         if (getChartDocumentChain() instanceof KarteEditor editor) {
-            kartePane = editor.getSOAPane();
+            kartePane = editor.getSoaPane();
             if (kartePane != null) {
                 enabled = kartePane.getTextPane().isEditable();
             }
@@ -366,7 +366,7 @@ public final class ChartMediator extends MenuSupport implements PropertyChangeLi
         KartePane kartePane = null;
 
         if (getChartDocumentChain() instanceof KarteEditor editor) {
-            kartePane = editor.getSOAPane();
+            kartePane = editor.getSoaPane();
             if (kartePane != null) {
                 enabled = kartePane.getTextPane().isEditable();
             }

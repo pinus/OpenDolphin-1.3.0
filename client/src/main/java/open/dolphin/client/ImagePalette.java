@@ -162,7 +162,7 @@ public class ImagePalette extends JPanel {
                     List<EditorFrame> allFrames = WindowHolder.allEditorFrames();
                     if (!allFrames.isEmpty()) {
                         EditorFrame frame = allFrames.getFirst();
-                        KartePane pane = frame.getEditor().getSOAPane();
+                        KartePane pane = frame.getEditor().getSoaPane();
                         // caret を最後に送ってから import する
                         JTextPane textPane = pane.getTextPane();
                         KarteStyledDocument doc = pane.getDocument();

@@ -2,7 +2,6 @@ package open.dolphin.client;
 
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.delegater.OrcaDelegater;
-import open.dolphin.dnd.KartePaneTransferHandler;
 import open.dolphin.event.CompletionListener;
 import open.dolphin.helper.ChartTask;
 import open.dolphin.helper.StringTool;
@@ -32,19 +31,12 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.prefs.Preferences;
 
-/**
- * 2号カルテクラス.
- *
- * @author Kazushi Minagawa
- * @author pns
- */
+/// 2号カルテクラス.
+///
+/// @author Kazushi Minagawa
+/// @author pns
 public class KarteEditor extends AbstractChartDocument implements IInfoModel {
-        private static final String DEFAULT_TITLE = "経過記録";
-
-    // SOA Pane
-    private KartePane soaPane;
-    // P Pane
-    private KartePane pPane;
+    private static final String DEFAULT_TITLE = "経過記録";
     // 2号カルテ JPanel
     private KartePanel kartePanel;
     // 編集可能かどうかのフラグ. このフラグで KartePane を初期化する
@@ -76,20 +68,16 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         autosave = new Autosave(this);
     }
 
-    /**
-     * エディタ終了を知らせるリスナを登録.
-     * EditorFrame に知らせる.
-     *
-     * @param listener CompletionListener
-     */
+    /// エディタ終了を知らせるリスナを登録.
+    /// EditorFrame に知らせる.
+    ///
+    /// @param listener CompletionListener
     public void addFinishListener(CompletionListener listener) {
         completionListener = listener;
     }
 
-    /**
-     * Save 時ではなくメニューから CLAIM 送信する.
-     * EditorFrame で編集中の場合はここが呼ばれる.
-     */
+    /// Save 時ではなくメニューから CLAIM 送信する.
+    /// EditorFrame で編集中の場合はここが呼ばれる.
     public void sendClaim() {
         logger.error("sendClaim() in KarteEditor called.");
     }
@@ -98,28 +86,24 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         logger.error("selectAll selected");
     }
 
-    /**
-     * スタンプ標準表示/簡易表示を切り替える.
-     */
+    /// スタンプ標準表示/簡易表示を切り替える.
     public void simplifyStamp() { toggleSimplifyStamp(getPPane().getDocument()); }
 
-    /**
-     * KarteEditor の実際の高さを返す.
-     *
-     * @return 高さ
-     */
+    /// KarteEditor の実際の高さを返す.
+    ///
+    /// @return 高さ
     public double getActualHeight() {
         try {
-            JTextPane pane = soaPane.getTextPane();
+            JTextPane pane = getSoaPane().getTextPane();
             int pos = pane.getDocument().getLength();
             Rectangle2D r = pane.modelToView2D(pos);
             double hsoa = r.getHeight();
 
-            if (pPane == null) {
+            if (getPPane() == null) {
                 return hsoa;
             }
 
-            pane = pPane.getTextPane();
+            pane = getPPane().getTextPane();
             pos = pane.getDocument().getLength();
             r = pane.modelToView2D(pos);
             double hp = r.getHeight();
@@ -132,9 +116,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         return 0;
     }
 
-    /**
-     * 2号カルテ kartePanel を印刷する.
-     */
+    /// 2号カルテ kartePanel を印刷する.
     @Override
     public void print() {
         PageFormat pageFormat = getContext().getContext().getPageFormat();
@@ -147,43 +129,35 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         int selected = chooser.showOpenDialog(getContext().getFrame());
         if (selected == JFileChooser.APPROVE_OPTION) {
             String path = chooser.getSelectedFile().getPath();
-            this.getSOAPane().insertImage(path);
+            getSoaPane().insertImage(path);
 
         }
     }
 
-    /**
-     * SOAPaneを返す.
-     *
-     * @return SOAPane
-     */
-    protected KartePane getSOAPane() {
-        return soaPane;
+    /// SOAPaneを返す.
+    ///
+    /// @return SOAPane
+    protected KartePane getSoaPane() {
+        return kartePanel.getSoaKartePane();
     }
 
-    /**
-     * PPaneを返す.
-     *
-     * @return PPane
-     */
+    /// PPaneを返す.
+    ///
+    /// @return PPane
     public KartePane getPPane() {
-        return pPane;
+        return kartePanel.getPKartePane();
     }
 
-    /**
-     * 編集可能属性を設定する.
-     *
-     * @param b 編集可能な時true
-     */
+    /// 編集可能属性を設定する.
+    ///
+    /// @param b 編集可能な時true
     protected void setEditable(boolean b) {
         editable = b;
     }
 
-    /**
-     * 修正属性を設定する.
-     *
-     * @param b 修正する時true
-     */
+    /// 修正属性を設定する.
+    ///
+    /// @param b 修正する時true
     protected void setModify(boolean b) {
         modify = b;
     }
@@ -201,11 +175,9 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         return stateMgr.isDirty();
     }
 
-    /**
-     * KartePane から dirty の通知を受ける.
-     *
-     * @param newDirty セットする dirty
-     */
+    /// KartePane から dirty の通知を受ける.
+    ///
+    /// @param newDirty セットする dirty
     @Override
     public void setDirty(boolean newDirty) {
         if (dirty ^ newDirty) {
@@ -216,35 +188,23 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         autosave.setDirty(newDirty);
     }
 
-    /**
-     * 2号カルテモードで初期化する.
-     */
+    /// 2号カルテモードで初期化する.
     public void initialize() {
         stateMgr = new StateMgr();
         kartePanel = KartePanelFactory.createEditorPanel();
+        kartePanel.setParent(this);
 
-        // SOA Pane を生成する
-        soaPane = kartePanel.getSoaKartePane();
-        soaPane.setParent(this);
-        soaPane.setRole(ROLE_SOA);
-        soaPane.getTextPane().setTransferHandler(new KartePaneTransferHandler(soaPane));
         if (Objects.nonNull(getDocument())) {
             // Schema 画像にファイル名を付けるのために必要
             String docId = getDocument().getDocInfo().getDocId();
-            soaPane.setDocId(docId);
+            kartePanel.setDocId(docId);
         }
-
-        // P Pane を生成する
-        pPane = kartePanel.getPKartePane();
-        pPane.setParent(this);
-        pPane.setRole(ROLE_P);
-        pPane.getTextPane().setTransferHandler(new KartePaneTransferHandler(pPane));
 
         // ctrl-¥ で soaPane, PPane 間を移動する
         KeyListener l = new KeyAdapter() {
             final KeyStroke CTRL_YEN = KeyStroke.getKeyStroke("ctrl BACK_SLASH");
-            final JTextPane SOA = soaPane.getTextPane();
-            final JTextPane P = pPane.getTextPane();
+            final JTextPane SOA = getSoaPane().getTextPane();
+            final JTextPane P = getPPane().getTextPane();
             @Override
             public void keyPressed(KeyEvent e) {
                 if (KeyStroke.getKeyStrokeForEvent(e).equals(CTRL_YEN)) {
@@ -252,8 +212,8 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
                 }
             }
         };
-        soaPane.getTextPane().addKeyListener(l);
-        pPane.getTextPane().addKeyListener(l);
+        getSoaPane().getTextPane().addKeyListener(l);
+        getPPane().getTextPane().addKeyListener(l);
 
         setUI(kartePanel);
 
@@ -262,20 +222,18 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         displayModel();
     }
 
-    /**
-     * ２号カルテモードを開始する. 初期化の後コールされる.
-     */
+    /// ２号カルテモードを開始する. 初期化の後コールされる.
     @Override
     public void start() {
         ChartMediator mediator = getContext().getChartMediator();
-        soaPane.init(editable, mediator);
-        pPane.init(editable, mediator);
+        getSoaPane().init(editable, mediator);
+        getPPane().init(editable, mediator);
 
         SwingUtilities.invokeLater(() -> {
             // キャレットを先頭にリセット.
+            getSoaPane().getTextPane().setCaretPosition(0);
             getPPane().getTextPane().setCaretPosition(0);
-            getSOAPane().getTextPane().setCaretPosition(0);
-            Focuser.requestFocus(getSOAPane().getTextPane());
+            Focuser.requestFocus(getSoaPane().getTextPane());
         });
         enter();
 
@@ -284,20 +242,16 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         logger.info("autosave start");
     }
 
-    /**
-     * KarteEditor の終了処理. EditorFrame から呼ばれる.
-     */
+    /// KarteEditor の終了処理. EditorFrame から呼ばれる.
     @Override
     public void stop() {
         logger.info("autosave stop");
         autosave.stop();
-        soaPane.clear();
-        pPane.clear();
+        getSoaPane().clear();
+        getPPane().clear();
     }
 
-    /**
-     * DocumentModelを表示する.
-     */
+    /// DocumentModelを表示する.
     private void displayModel() {
         // Timestamp を表示する
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy年M月d日(E) HH:mm"));
@@ -310,7 +264,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
 
         // 内容を表示する
         if (Objects.nonNull(getDocument().getModules())) {
-            KarteRenderer_2 renderer = new KarteRenderer_2(soaPane, pPane);
+            KarteRenderer_2 renderer = new KarteRenderer_2(getSoaPane(), getPPane());
             renderer.render(getDocument());
         }
 
@@ -375,16 +329,14 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         getContext().getFrame().setTitle(sb.toString());
     }
 
-    /**
-     * 保存ダイアログを表示し保存時のパラメータ (SaveParams) 作成する.
-     *
-     * @return SaveParams
-     */
+    /// 保存ダイアログを表示し保存時のパラメータ (SaveParams) 作成する.
+    ///
+    /// @return SaveParams
     private SaveParams getSaveParams() {
         // Title の設定
         String title = StringTool.isEmpty(getDocument().getDocInfo().getTitle()) ?
                 Project.getProjectStub().isUseTop15AsTitle() ?
-                        soaPane.getTitle() : Project.getProjectStub().getDefaultKarteTitle()
+                       getSoaPane().getTitle() : Project.getProjectStub().getDefaultKarteTitle()
                 : getDocument().getDocInfo().getTitle();
 
         // DocInfoModel
@@ -429,8 +381,8 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         Window parent = SwingUtilities.getWindowAncestor(this.getUI());
 
         // save dialog が出ている間, JTextPane を disable する
-        soaPane.getTextPane().setEnabled(false);
-        pPane.getTextPane().setEnabled(false);
+        getSoaPane().getTextPane().setEnabled(false);
+        getPPane().getTextPane().setEnabled(false);
 
         SaveDialog sd = new SaveDialog(parent);
         params.setAllowPatientRef(false);    // 患者の参照
@@ -439,8 +391,8 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         sd.start();
 
         // save dialog が消えたら JTextPane を eable する
-        soaPane.getTextPane().setEnabled(true);
-        pPane.getTextPane().setEnabled(true);
+        getSoaPane().getTextPane().setEnabled(true);
+        getPPane().getTextPane().setEnabled(true);
 
         params = sd.getValue();
 
@@ -452,9 +404,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         return params;
     }
 
-    /**
-     * カルテを保存する.
-     */
+    /// カルテを保存する.
     @Override
     public void save() {
 
@@ -482,9 +432,9 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         getContext().getFrame().getJMenuBar().setEnabled(false);
 
         // 文書末の余分な改行文字を削除する by masuda-senesi
-        KarteStyledDocument doc = (KarteStyledDocument) soaPane.getTextPane().getDocument();
+        KarteStyledDocument doc = (KarteStyledDocument) getSoaPane().getTextPane().getDocument();
         doc.removeExtraCr();
-        doc = (KarteStyledDocument) pPane.getTextPane().getDocument();
+        doc = (KarteStyledDocument) getPPane().getTextPane().getDocument();
         doc.removeExtraCr();
         doc.removeRepeatedCr();
 
@@ -560,11 +510,9 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         task.execute();
     }
 
-    /**
-     * save および claim 送信のために DocumentModel を compose する.
-     *
-     * @param params SaveParams
-     */
+    /// save および claim 送信のために DocumentModel を compose する.
+    ///
+    /// @param params SaveParams
     private void composeModel(SaveParams params) {
         //
         // DocInfoに値を設定する
@@ -708,7 +656,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         // SOAPane をダンプし model に追加する
         //
         KartePaneDumper_2 dumper = new KartePaneDumper_2();
-        KarteStyledDocument doc = (KarteStyledDocument) soaPane.getTextPane().getDocument();
+        KarteStyledDocument doc = (KarteStyledDocument) getSoaPane().getTextPane().getDocument();
 
         dumper.dump(doc);
         dumper.getModule().forEach(document::addModule);
@@ -729,7 +677,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         //
         // PPane をダンプし model に追加する
         //
-        KarteStyledDocument pdoc = (KarteStyledDocument) pPane.getTextPane().getDocument();
+        KarteStyledDocument pdoc = (KarteStyledDocument) getPPane().getTextPane().getDocument();
         dumper.dump(pdoc);
         dumper.getModule().forEach(document::addModule);
 
@@ -858,26 +806,18 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         }
     }
 
-    /**
-     * このエディタの状態インターフェース.
-     */
+    /// このエディタの状態インターフェース.
     private interface EditorState {
-        /**
-         * Dirty かどうか.
-         *
-         * @return Dirty
-         */
+        /// Dirty かどうか.
+        ///
+        /// @return Dirty
         boolean isDirty();
 
-        /**
-         * Menu 項目のコントロール.
-         */
+        /// Menu 項目のコントロール.
         void controlMenu();
     }
 
-    /**
-     * No dirty 状態クラス.
-     */
+    /// No dirty 状態クラス.
     private final class NoDirtyState implements EditorState {
 
         @Override
@@ -906,9 +846,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         }
     }
 
-    /**
-     * Dirty 状態クラス.
-     */
+    /// Dirty 状態クラス.
     private final class DirtyState implements EditorState {
 
         @Override
@@ -928,9 +866,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         }
     }
 
-    /**
-     * EmptyNew 状態クラス.
-     */
+    /// EmptyNew 状態クラス.
     private final class SavedState implements EditorState {
 
         @Override
@@ -958,9 +894,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         }
     }
 
-    /**
-     * 状態マネージャ.
-     */
+    /// 状態マネージャ.
     private final class StateMgr {
 
         private final EditorState noDirtyState = new NoDirtyState();

@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Component>> {
     // FRACTION 数ごとに取得、描画の処理をする
     private static final int FRACTION = 40;
-    // 作った KarteViewer を捨てないでキャッシュする
-    private static final Map<String, KarteViewer2> karteViewerCache = new HashMap<>();
 
     private final KarteDocumentViewer context;
     private final Chart chart;
@@ -181,41 +179,33 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                 }
 
                 // KarteViewer を生成する
-                if (karteViewerCache.containsKey(dm.getDocInfo().getDocId())) {
-                    logger.debug("KarteViewer cache hit");
-                    karteViewerList.add(karteViewerCache.get(dm.getDocInfo().getDocId()));
+                final KarteViewer2 karteViewer = new KarteViewer2();
+                karteViewer.setContext(chart);
+                karteViewer.setDocument(dm);
 
-                } else {
-                    final KarteViewer2 karteViewer = new KarteViewer2();
-                    karteViewer.setContext(chart);
-                    karteViewer.setDocument(dm);
-                    karteViewer.setAvoidEnter(true);
-
-                    // このコールでモデルのレンダリングが開始される
-                    karteViewer.start();
-                    // ダブルクリックされたカルテを別画面で表示する MouseListener を生成して KarteViewer の Pane にアタッチする
-                    if (docInfo.getDocType().equals(IInfoModel.DOCTYPE_KARTE)) {
-                        final MouseListener ml = new MouseAdapter() {
-                            @Override
-                            public void mouseClicked(MouseEvent e) {
-                                int cnt = e.getClickCount();
-                                if (cnt == 2) {
-                                    // 選択した Karte を EditorFrame で開く
-                                    context.setSelectedKarteViewer(karteViewer);
-                                    context.openKarte();
-                                } else if (cnt == 1) {
-                                    context.setSelectedKarteViewer(karteViewer);
-                                }
+                // このコールでモデルのレンダリングが開始される
+                karteViewer.start();
+                // ダブルクリックされたカルテを別画面で表示する MouseListener を生成して KarteViewer の Pane にアタッチする
+                if (docInfo.getDocType().equals(IInfoModel.DOCTYPE_KARTE)) {
+                    final MouseListener ml = new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            int cnt = e.getClickCount();
+                            if (cnt == 2) {
+                                // 選択した Karte を EditorFrame で開く
+                                context.setSelectedKarteViewer(karteViewer);
+                                context.openKarte();
+                            } else if (cnt == 1) {
+                                context.setSelectedKarteViewer(karteViewer);
                             }
-                        };
-                        karteViewer.addMouseListener(ml);
-                    }
-                    // ボーダーをあらかじめ付けておく
-                    karteViewer.getKartePanel().setBackground(karteViewer.getSOAPane().getTextPane().getBackground());
-                    karteViewer.setSelected(false);
-                    karteViewerList.add(karteViewer);
-                    karteViewerCache.put(dm.getDocInfo().getDocId(), karteViewer);
+                        }
+                    };
+                    karteViewer.addMouseListener(ml);
                 }
+                // ボーダーをあらかじめ付けておく
+                karteViewer.getKartePanel().setBackground(karteViewer.getSOAPane().getTextPane().getBackground());
+                karteViewer.setSelected(false);
+                karteViewerList.add(karteViewer);
             }
         }
         // 時間軸でソート
@@ -248,11 +238,5 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         // repaint
         scrollerPanel.revalidate();
         scrollerPanel.repaint();
-    }
-
-    /// KarteViewer をキャッシュを消去してリソースを開放する
-    public void clearCache() {
-        karteViewerCache.values().stream().forEach(KarteViewer2::stop);
-        karteViewerCache.clear();
     }
 }
