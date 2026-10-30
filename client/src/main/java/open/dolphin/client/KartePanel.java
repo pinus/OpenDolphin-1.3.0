@@ -7,6 +7,7 @@ import javax.swing.*;
 ///
 /// @author pns
 public abstract class KartePanel extends PrintablePanel {
+    private String docId;
 
     public abstract KartePane getPKartePane();
 
@@ -14,17 +15,28 @@ public abstract class KartePanel extends PrintablePanel {
 
     public abstract JLabel getTimeStampLabel();
 
-    public abstract int getTimeStampPanelHeight();
+    public void setSelected(boolean selected) {
+        getTimeStampLabel().setFont(selected
+                ? KartePanelFactory.TIMESTAMP_FONT_BOLD
+                : KartePanelFactory.TIMESTAMP_FONT);
+    }
 
-    public abstract JPanel getTimeStampPanel();
+    public void setTimeStamp(String label) {
+        getTimeStampLabel().setText(label);
+    }
 
-    public abstract void setSelected(boolean selected);
+    public void setParent(ChartDocument parent) {
+        getSoaKartePane().setParent(parent);
+        getPKartePane().setParent(parent);
+    }
 
-    public abstract void setTimeStamp(String label);
+    public void setDocId(String id) {
+        docId = id;
+        getSoaKartePane().setDocId(id);
+        getPKartePane().setDocId(id);
+    }
 
-    public abstract void setParent(ChartDocument parent);
-
-    public abstract void setDocId(String docId);
-
-    public abstract String getDocId();
+    public String getDocId() {
+        return docId;
+    }
 }

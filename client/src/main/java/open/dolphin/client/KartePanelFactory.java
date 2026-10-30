@@ -15,17 +15,17 @@ import java.awt.*;
 /// Each of KartePane contains JTextPane.
 ///
 /// @author pns
-    public class KartePanelFactory {
+public class KartePanelFactory {
     private static final int TIMESTAMP_PANEL_HEIGHT = 22; // 22で固定
     // タイムスタンプの foreground カラー
     private static final Color TIMESTAMP_FORE = Color.BLUE;
     // タイムスタンプのフォントサイズ
     private static final int TIMESTAMP_FONT_SIZE = 12;
     // タイムスタンプフォント
-    private static final Font TIMESTAMP_FONT = GUIFactory.getFont(TIMESTAMP_FONT_SIZE);
-    private static final Font TIMESTAMP_FONT_BOLD = GUIFactory.getBoldFont(TIMESTAMP_FONT_SIZE);
+    public static final Font TIMESTAMP_FONT = GUIFactory.getFont(TIMESTAMP_FONT_SIZE);
+    public static final Font TIMESTAMP_FONT_BOLD = GUIFactory.getBoldFont(TIMESTAMP_FONT_SIZE);
 
-    private static final Font KARTE_FONT = GUIFactory.getFont(Dolphin.forMac? 13 : 12);
+    private static final Font KARTE_FONT = GUIFactory.getFont(Dolphin.forMac ? 13 : 12);
 
     private final KartePanel kartePanel;
     private KartePane soaKartePane;
@@ -33,24 +33,28 @@ import java.awt.*;
     private JLabel timeStampLabel;
     private JPanel timeStampPanel;
     private JPanel textPanePanel;
-    private String docId;
 
+    /// Construct KartePanel either for Editor or Viewer
     private KartePanelFactory(boolean editor) {
         kartePanel = (editor) ? new EditorPanel() : new ViewerPanel();
     }
 
+    /// create KartePanel for Viewer
     public static KartePanel createViewerPanel() {
         return new KartePanelFactory(false).getProduct();
     }
 
+    /// create KartePanel for Editor
     public static KartePanel createEditorPanel() {
         return new KartePanelFactory(true).getProduct();
     }
 
+    /// できあがった KartePanel を返す
     private KartePanel getProduct() {
         return kartePanel;
     }
 
+    /// Editor と Viewer の共通項目の初期化
     private void initComponents() {
         soaKartePane = new KartePane();
         JTextPane soaTextPane = new JTextPane();
@@ -177,44 +181,6 @@ import java.awt.*;
         public JLabel getTimeStampLabel() {
             return timeStampLabel;
         }
-
-        @Override
-        public int getTimeStampPanelHeight() {
-            return TIMESTAMP_PANEL_HEIGHT;
-        }
-
-        @Override
-        public JPanel getTimeStampPanel() {
-            return timeStampPanel;
-        }
-
-        @Override
-        public void setSelected(boolean selected) {
-            timeStampLabel.setFont(selected? TIMESTAMP_FONT_BOLD : TIMESTAMP_FONT);
-        }
-
-        @Override
-        public void setTimeStamp(String label) {
-            timeStampLabel.setText(label);
-        }
-
-        @Override
-        public void setParent(ChartDocument parent) {
-            soaKartePane.setParent(parent);
-            pKartePane.setParent(parent);
-        }
-
-        @Override
-        public void setDocId(String id) {
-            docId = id;
-            soaKartePane.setDocId(id);
-            pKartePane.setDocId(id);
-        }
-
-        @Override
-        public String getDocId() {
-            return docId;
-        }
     }
 
     /// Editor 用の KartePanel.
@@ -255,44 +221,6 @@ import java.awt.*;
         @Override
         public JLabel getTimeStampLabel() {
             return timeStampLabel;
-        }
-
-        @Override
-        public int getTimeStampPanelHeight() {
-            return TIMESTAMP_PANEL_HEIGHT;
-        }
-
-        @Override
-        public JPanel getTimeStampPanel() {
-            return timeStampPanel;
-        }
-
-        @Override
-        public void setSelected(boolean selected) {
-            timeStampLabel.setFont(selected? TIMESTAMP_FONT_BOLD : TIMESTAMP_FONT);
-        }
-
-        @Override
-        public void setTimeStamp(String label) {
-            timeStampLabel.setText(label);
-        }
-
-        @Override
-        public void setParent(ChartDocument parent) {
-            soaKartePane.setParent(parent);
-            pKartePane.setParent(parent);
-        }
-
-        @Override
-        public void setDocId(String id) {
-            docId = id;
-            soaKartePane.setDocId(id);
-            pKartePane.setDocId(id);
-        }
-
-        @Override
-        public String getDocId() {
-            return docId;
         }
     }
 
