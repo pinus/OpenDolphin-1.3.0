@@ -220,6 +220,14 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         // 初期化の前にモデルがセットしてある.
         // Model を表示する
         displayModel();
+
+        // dirty フラグ, undo 履歴の初期化
+        SwingUtilities.invokeLater(() -> {
+            kartePanel.getSoaKartePane().setDirty(false);
+            kartePanel.getSoaKartePane().getUndoManager().discardAllEdits();
+            kartePanel.getPKartePane().setDirty(false);
+            kartePanel.getPKartePane().getUndoManager().discardAllEdits();
+        });
     }
 
     /// ２号カルテモードを開始する. 初期化の後コールされる.

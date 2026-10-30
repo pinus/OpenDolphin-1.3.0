@@ -103,14 +103,12 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         textPane.addMouseListener(this);
         textPane.addCaretListener(this);
         textPane.getDocument().addDocumentListener(this);
-        textPane.getDocument().addUndoableEditListener(undoManager);
+        // undo manager
+        undoManager = new TextComponentUndoManager(textPane);
 
         doc.setParent(this);
         stampListTransferHandler = new StampListTransferHandler();
         schemaHolderTransferHandler = new SchemaHolderTransferHandler();
-
-        // undo manager
-        undoManager = new TextComponentUndoManager(getTextPane());
     }
 
     /// このPaneのオーナを返す.
@@ -246,6 +244,11 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         this.draggedStamp = drragedStamp;
     }
 
+    /// UndoManager を返す
+    public TextComponentUndoManager getUndoManager() {
+        return undoManager;
+    }
+
     /// 初期化する.
     /// KarteViewer, KarteEditor から呼ばれる.
     ///
@@ -264,6 +267,9 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         getTextPane().setFocusable(editable);
 
         if (editable) {
+            // undo listener は editable だけ登録
+            getTextPane().getDocument().addUndoableEditListener(getUndoManager());
+
             if (myRole.equals(IInfoModel.ROLE_SOA)) {
                 SOACodeHelper helper = new SOACodeHelper(this, getMediator());
             } else {
@@ -280,15 +286,19 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     /// JTextPaneへの挿入でdirtyかどうかを判定する
     @Override
     public void insertUpdate(DocumentEvent e) {
-        boolean newDirty = getDocument().getLength() > getInitialLength();
-        setDirty(newDirty);
+        //boolean newDirty = getDocument().getLength() > getInitialLength();
+        //setDirty(newDirty);
+        // 1回でも操作したら dirty にする
+        setDirty(true);
     }
 
     /// 削除が起こった時dirtyかどうかを判定する
     @Override
     public void removeUpdate(DocumentEvent e) {
-        boolean newDirty = getDocument().getLength() > getInitialLength();
-        setDirty(newDirty);
+        //boolean newDirty = getDocument().getLength() > getInitialLength();
+        //setDirty(newDirty);
+        // 1回でも操作したら dirty にする
+        setDirty(true);
     }
 
     @Override
