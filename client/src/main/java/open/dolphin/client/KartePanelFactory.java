@@ -5,6 +5,8 @@ import open.dolphin.helper.GUIFactory;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.inspector.IInspector;
 import open.dolphin.ui.PNSScrollPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -33,6 +35,8 @@ public class KartePanelFactory {
     private JLabel timeStampLabel;
     private JPanel timeStampPanel;
     private JPanel textPanePanel;
+
+    private final Logger logger = LoggerFactory.getLogger(KartePanelFactory.class);
 
     /// Construct KartePanel either for Editor or Viewer
     private KartePanelFactory(boolean editor) {

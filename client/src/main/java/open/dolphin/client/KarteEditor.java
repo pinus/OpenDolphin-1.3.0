@@ -304,7 +304,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
                     if (Objects.nonNull(pubs)) {
                         String[] items = Arrays.stream(pubs)
                                 .map(PVTPublicInsuranceItemModel::toString)
-                                .map(str -> str.replaceAll("独自", ""))
+                                .map(str -> str.replace("独自", ""))
                                 .map(str -> str.length() > 2 ? str.substring(0, 2) : str)
                                 .toArray(String[]::new);
                         if (items.length > 0) {
@@ -322,7 +322,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
                 }).orElse(null);
 
         StringBuilder sb = new StringBuilder();
-        sb.append(getContext().getPatient().getKanaName().replaceAll("　", " "));
+        sb.append(getContext().getPatient().getKanaName().replace("　", " "));
         sb.append("：");
         sb.append(getContext().getPatient().getPatientId());
         sb.append(" ");
@@ -531,7 +531,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         // 現在時刻を ConfirmDate にする
         LocalDateTime confirmed = LocalDateTime.now();
         docInfo.setConfirmDate(confirmed);
-        logger.debug("composeModel confirmed = " + docInfo.getConfirmDate());
+        logger.debug("composeModel confirmed = {}", docInfo.getConfirmDate());
 
         //
         // 修正でない場合は FirstConfirmDate = ConfirmDate にする
@@ -541,7 +541,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         if (docInfo.getParentId() == null) {
             docInfo.setFirstConfirmDate(confirmed);
         }
-        logger.debug("docInfo.firstConfirmDate = " + docInfo.getFirstConfirmDate());
+        logger.debug("docInfo.firstConfirmDate = {}", docInfo.getFirstConfirmDate());
 
         //
         // Status 仮保存か確定保存かを設定する
@@ -559,21 +559,21 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
                     // NONEから確定への遷移 newSave
                     //
                     sendClaim = params.isSendClaim();
-                    logger.debug("NONEから確定 : " + sendClaim);
+                    logger.debug("NONEから確定 : {}", sendClaim);
                 }
                 case STATUS_TMP -> {
                     //
                     // 仮保存から確定へ遷移する場合   saveFromTmp
                     //
                     sendClaim = params.isSendClaim();
-                    logger.debug("仮保存から確定 : " + sendClaim);
+                    logger.debug("仮保存から確定 : {}", sendClaim);
                 }
                 default -> {
                     //
                     // 確定から確定（修正の場合に相当する）以前は sendClaim = false;
                     //
                     sendClaim = params.isSendClaim();
-                    logger.debug("修正 : " + sendClaim);
+                    logger.debug("修正 : {}", sendClaim);
                 }
             }
 
@@ -587,7 +587,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
             // 仮保存の場合 CLAIM 送信しない
             //
             sendClaim = false;
-            logger.debug("仮保存 : " + sendClaim);
+            logger.debug("仮保存 : {}", sendClaim);
 
             docInfo.setStatus(STATUS_TMP);
         }

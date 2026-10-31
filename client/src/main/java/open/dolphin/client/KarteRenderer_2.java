@@ -263,7 +263,7 @@ public class KarteRenderer_2 {
         logger.debug("startContent text: {}", text);
         // 特殊文字を戻す
         for (int i = 0; i < REPLACES.length; i++) {
-            text = text.replaceAll(MATCHES[i], REPLACES[i]);
+            text = text.replace(MATCHES[i], REPLACES[i]);
         }
 
         // このコンテントに設定する AttributeSet

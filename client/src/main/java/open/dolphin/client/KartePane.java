@@ -88,7 +88,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     // 保存後及びブラウズ時の編集不可を表すカラー
     private Color uneditableColor = UNEDITABLE_COLOR;
     // KartePane の UndoManager
-    private TextComponentUndoManager undoManager;
+    private final TextComponentUndoManager undoManager;
     // このペインからDragg及びDroppされたスタンプの情報
     private ComponentHolder<?>[] draggedStamp;
     private int draggedCount;
