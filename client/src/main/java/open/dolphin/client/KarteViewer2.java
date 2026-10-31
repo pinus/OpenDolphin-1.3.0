@@ -33,14 +33,12 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
     /// SOA Pane を返す.
     ///
     /// @return soaPane
-    public KartePane getSOAPane() {
-        return kartePanel.getSoaKartePane();
-    }
+    public KartePane getSoaKartePane() { return kartePanel.getSoaKartePane(); }
 
     /// P Pane を返す.
     ///
     /// @return pPane
-    public KartePane getPPane() {
+    public KartePane getPKartePane() {
         return kartePanel.getPKartePane();
     }
 
@@ -59,7 +57,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
 
         // Creates GUI
         kartePanel = KartePanelFactory.createViewerPanel();
-        KarteRenderer_2 renderer = new KarteRenderer_2(kartePanel.getSoaKartePane(), kartePanel.getPKartePane());
+        KarteRenderer_2 renderer = new KarteRenderer_2(getSoaKartePane(), getPKartePane());
         renderer.render(document);
 
         kartePanel.setParent(this);
@@ -97,8 +95,8 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
 
         // モデル表示後にリスナ等を設定する init(editable, mediator)
         ChartMediator mediator = getContext().getChartMediator();
-        kartePanel.getSoaKartePane().init(false, mediator);
-        kartePanel.getPKartePane().init(false, mediator);
+        getSoaKartePane().init(false, mediator);
+        getPKartePane().init(false, mediator);
 
         setUI(kartePanel);
         enter();

@@ -107,7 +107,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     /// スタンプ標準表示/簡易表示を切り替える.
     public void simplifyStamp() {
         //toggleSimplifyStamp(selectedKarte.getPPane().getDocument());
-        karteViewerList.stream().map(KarteViewer2::getPPane).map(KartePane::getDocument).forEach(this::toggleSimplifyStamp);
+        karteViewerList.stream().map(KarteViewer2::getPKartePane).map(KartePane::getDocument).forEach(this::toggleSimplifyStamp);
     }
 
     /// "全てを選択" の動作.
@@ -287,10 +287,8 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         // 背景色が緑だとインクがもったいないので白にする. 選択も解除しておく.
         karteViewerList.forEach((kv) -> {
             //kv.panel2.setBorder(BorderFactory.createEmptyBorder());
-            KartePane kp = kv.getSOAPane();
-            kp.getTextPane().setBackground(Color.WHITE);
-            kp = kv.getPPane();
-            kp.getTextPane().setBackground(Color.WHITE);
+            kv.getSoaKartePane().getTextPane().setBackground(Color.WHITE);
+            kv.getPKartePane().getTextPane().setBackground(Color.WHITE);
         });
 
         // 患者名を取得
@@ -305,10 +303,8 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             if (kv.isSelected()) {
                 setSelectedKarteViewer(kv);
             }
-            KartePane kp = kv.getSOAPane();
-            kp.getTextPane().setBackground(KartePane.UNEDITABLE_COLOR);
-            kp = kv.getPPane();
-            kp.getTextPane().setBackground(KartePane.UNEDITABLE_COLOR);
+            kv.getSoaKartePane().getTextPane().setBackground(KartePane.UNEDITABLE_COLOR);
+            kv.getPKartePane().getTextPane().setBackground(KartePane.UNEDITABLE_COLOR);
         });
     }
 

@@ -203,7 +203,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                     karteViewer.addMouseListener(ml);
                 }
                 // ボーダーをあらかじめ付けておく
-                karteViewer.getKartePanel().setBackground(karteViewer.getSOAPane().getTextPane().getBackground());
+                karteViewer.getKartePanel().setBackground(karteViewer.getSoaKartePane().getTextPane().getBackground());
                 karteViewer.setSelected(false);
                 karteViewerList.add(karteViewer);
             }
