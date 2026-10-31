@@ -708,8 +708,7 @@
   -fx-background-color: transparent;
   -fx-border-color: -pns-selected-mark;
   -fx-border-width: 1.2;
-  -fx-shape: "M 0 4 L 4  0 L 4  2 L 1 5 z   M 8 4 L 4  0 L 4  2 L 7 5 z
-              M 0 8 L 4 12 L 4 10 L 1 7 z   M 8 8 L 4 12 L 4 10 L 7 7 z";
+  -fx-shape: "M 0 4 L 4  0 L 4  2 L 1 5 z   M 8 4 L 4  0 L 4  2 L 7 5 z M 0 8 L 4 12 L 4 10 L 1 7 z   M 8 8 L 4 12 L 4 10 L 7 7 z";
   -fx-scale-shape: false;
   -fx-position-shape: true;
   -fx-padding: 0; /* scale-shape true の時，padding で shape の大きさを変化させられる */

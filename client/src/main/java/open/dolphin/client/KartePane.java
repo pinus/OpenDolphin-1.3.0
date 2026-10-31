@@ -160,6 +160,11 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         return mediator;
     }
 
+    /// ChartMediatorをセットする.
+    protected void setMediator(ChartMediator mediator) {
+        this.mediator = mediator;
+    }
+
     /// このPaneのロールを返す.
     ///
     /// @return SOAまたはPのロール
@@ -256,9 +261,9 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     /// @param chartMediator チャートメディエータ（メニューサポート）
     public void init(boolean editable, ChartMediator chartMediator) {
         // Mediatorを保存する
-        mediator = chartMediator;
+        setMediator(chartMediator);
         // 入れておかないと最初に focus 取る前に Drop したときヌルポが出る
-        enter(mediator.getActions());
+        enter(getMediator().getActions());
 
         getTextPane().setEditable(editable);
         // ChartImpl で DocumentHistory が focus を取れないことがあるのの workaround

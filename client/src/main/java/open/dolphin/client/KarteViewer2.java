@@ -62,7 +62,6 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         KarteRenderer_2 renderer = new KarteRenderer_2(kartePanel.getSoaKartePane(), kartePanel.getPKartePane());
         renderer.render(document);
 
-
         kartePanel.setParent(this);
         // Schema 画像にファイル名を付けるのために必要
         kartePanel.setDocId(getDocument().getDocInfo().getDocId());
@@ -107,13 +106,11 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
 
     @Override
     public void stop() {
-        kartePanel.getSoaKartePane().clear();
-        kartePanel.getPKartePane().clear();
+        kartePanel.stop();
     }
 
     public void addMouseListener(MouseListener ml) {
-        kartePanel.getSoaKartePane().getTextPane().addMouseListener(ml);
-        kartePanel.getPKartePane().getTextPane().addMouseListener(ml);
+        kartePanel.addMouseListener(ml);
     }
 
     public String getDocType() {

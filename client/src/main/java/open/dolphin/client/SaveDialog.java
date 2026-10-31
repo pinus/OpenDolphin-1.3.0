@@ -121,7 +121,7 @@ public class SaveDialog {
         im.put(KeyStroke.getKeyStroke("meta T"), "tmpSave");
         am.put("tmpSave", new ProxyAction(tmpButton::doClick));
 
-        // Cmd-ESC で破棄
+        // Cmd-D で破棄
         im.put(KeyStroke.getKeyStroke("meta D"), "dispose");
         am.put("dispose", new ProxyAction(disposeButton::doClick));
     }
