@@ -33,7 +33,6 @@ public class KartePanelFactory {
     private KartePane soaKartePane;
     private KartePane pKartePane;
     private JLabel timeStampLabel;
-    private JPanel timeStampPanel;
     private JPanel textPanePanel;
 
     private final Logger logger = LoggerFactory.getLogger(KartePanelFactory.class);
@@ -65,8 +64,7 @@ public class KartePanelFactory {
         soaTextPane.setEditorKit(new WrapEditorKit());
         soaTextPane.setMargin(new Insets(10, 10, 10, 10));
         soaTextPane.setMinimumSize(new Dimension(340, 1));
-        //soaTextPane.setPreferredSize(new Dimension(340, 500));
-        soaTextPane.setSize(1, 0); // なぜかこれでうまくいく
+        //soaTextPane.setSize(1, 0); // なぜかこれでうまくいく
         soaKartePane = new KartePane(soaTextPane);
         soaKartePane.getTextPane().setTransferHandler(new KartePaneTransferHandler(soaKartePane));
         soaKartePane.setRole(IInfoModel.ROLE_SOA);
@@ -76,44 +74,31 @@ public class KartePanelFactory {
         pTextPane.setEditorKit(new WrapEditorKit());
         pTextPane.setMargin(new Insets(10, 10, 10, 10));
         pTextPane.setMinimumSize(new Dimension(340, 1));
-        //pTextPane.setPreferredSize(new Dimension(340, 500));
-        pTextPane.setSize(1, 0);
+        //pTextPane.setSize(1, 0);
         pKartePane = new KartePane(pTextPane);
         pKartePane.getTextPane().setTransferHandler(new KartePaneTransferHandler(pKartePane));
         pKartePane.setRole(IInfoModel.ROLE_P);
 
-        // これをセットしないと，勝手に cut copy paste のポップアップがセットされてしまう.
-        soaTextPane.putClientProperty("Quaqua.TextComponent.showPopup", false);
-        pTextPane.putClientProperty("Quaqua.TextComponent.showPopup", false);
-
-        timeStampPanel = new JPanel() {
-            // フラットなタイトルバー
-
+        timeStampLabel = new JLabel() {
             @Override
             public void paintBorder(Graphics g) {
-                g.setColor(IInspector.BACKGROUND);
-                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paintBorder(g);
                 g.setColor(IInspector.BORDER_COLOR);
                 g.drawLine(0, 0, getWidth() - 1, 0);
                 g.drawLine(0, getHeight() - 1, getWidth() - 1, getHeight() - 1);
             }
         };
-        timeStampPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, TIMESTAMP_PANEL_HEIGHT));
-        timeStampPanel.setMinimumSize(new Dimension(682, TIMESTAMP_PANEL_HEIGHT));
-        timeStampPanel.setPreferredSize(new Dimension(682, TIMESTAMP_PANEL_HEIGHT));
-        timeStampPanel.setLayout(new BorderLayout());
-        //timeStampPanel.setBorder(PNSBorderFactory.createTitleBarBorder(new Insets(0,0,0,0)));
-
-        timeStampLabel = new JLabel();
+        timeStampLabel.setOpaque(true);
+        timeStampLabel.setPreferredSize(new Dimension(10, TIMESTAMP_PANEL_HEIGHT));
+        timeStampLabel.setBackground(IInspector.BACKGROUND);
         timeStampLabel.setHorizontalAlignment(SwingConstants.CENTER);
         timeStampLabel.setForeground(TIMESTAMP_FORE);
         timeStampLabel.setFont(TIMESTAMP_FONT);
-        timeStampPanel.add(timeStampLabel, BorderLayout.CENTER);
 
         textPanePanel = new JPanel();
+        textPanePanel.setOpaque(true);
         textPanePanel.setLayout(new GridLayout(1, 2, 2, 0));
-        textPanePanel.setOpaque(true); // KarteScrollPane で snap 取るとき，境界が黒くならないように
-        textPanePanel.setPreferredSize(new Dimension(682, 500));
+        textPanePanel.setPreferredSize(new Dimension(682, 1));
     }
 
     /// Viewer 用の KartePanel.
@@ -134,7 +119,7 @@ public class KartePanelFactory {
             textPanePanel.add(pKartePane.getTextPane());
 
             setLayout(new BorderLayout(0, 0));
-            add(timeStampPanel, BorderLayout.NORTH);
+            add(timeStampLabel, BorderLayout.NORTH);
             add(textPanePanel, BorderLayout.CENTER);
         }
 
@@ -157,17 +142,6 @@ public class KartePanelFactory {
                     + TIMESTAMP_PANEL_HEIGHT + 10;
             return d;
         }
-
-        //private void revalidateAndRepaint() {
-        //    System.out.println("KartePanelFactory: revalidate and repaint");
-        //    SwingUtilities.invokeLater(new Runnable(){
-        //        @Override
-        //        public void run() {
-        //            revalidate();
-        //            repaint();
-        //        }
-        //    });
-        //}
 
         @Override
         public KartePane getPKartePane() {
@@ -227,14 +201,14 @@ public class KartePanelFactory {
     }
 
     /// workaround caret moving to the end on opening
-    /// http://ron.shoutboot.com/2010/05/23/swing-jscrollpane-scrolls-to-bottom/
+    /// [...](http://ron.shoutboot.com/2010/05/23/swing-jscrollpane-scrolls-to-bottom/)
     private static class MyCaret extends DefaultCaret {
         @Override
         protected void adjustVisibility(Rectangle r) { }
     }
 
     /// workaround for long word wrapping
-    /// http://stackoverflow.com/questions/8666727/wrap-long-words-in-jtextpane-java-7
+    /// [...](http://stackoverflow.com/questions/8666727/wrap-long-words-in-jtextpane-java-7)
     private class WrapEditorKit extends StyledEditorKit {
                 ViewFactory defaultFactory = new WrapColumnFactory();
 
