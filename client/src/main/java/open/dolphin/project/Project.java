@@ -76,6 +76,9 @@ public class Project {
     public static final String ARRANGE_INSPECTOR_DX = "arrange.inspector.dx";
     public static final String ARRANGE_INSPECTOR_DY = "arrange.inspector.dy";
 
+    /// データベースから1回のアクセスで取得するカルテの最大件数
+    public static final String MAX_FRAGMENT = "max.fragment";
+
     /// コンソールのログファイル出力
     public static final String REDIRECT_CONSOLE = "redirect.console";
 

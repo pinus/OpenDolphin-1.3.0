@@ -26,6 +26,8 @@ public class MiscSettingPanel extends AbstractSettingPanel {
     private JSpinner scrollUnitStampSpinner;
     /// ウインドウ整列 in WindowSupport のパラメータ
     private JTextField initX, initY, diffX, diffY;
+    // データベースから1回のアクセスで取得するカルテの最大件数
+    private JTextField maxFragment;
     /// コンソールのログ出力
     private JCheckBox redirectBox;
     /// ORCON 自動起動
@@ -103,6 +105,16 @@ public class MiscSettingPanel extends AbstractSettingPanel {
 
         scrollUnitPanel.add(gbb.getProduct());
 
+        // データベースから1回のアクセスで取得するカルテの最大件数
+        gbb = new GridBagBuilder("データベースから1回のアクセスで取得するカルテの最大件数");
+        label = new JLabel("件数", SwingConstants.RIGHT);
+        maxFragment = new JTextField(3);
+        gbb.add(label, 0, 0, 1, 1, GridBagConstraints.EAST);
+        gbb.add(maxFragment, 1, 0, 1, 1, GridBagConstraints.WEST);
+
+        JPanel maxFragmentPanel = gbb.getProduct();
+        maxFragmentPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
+
         // コンソールのログ出力
         redirectBox = new JCheckBox("<html>コンソールをファイルに出力する<br>" +
             "・user.home/Library/Application Support/OpenDolphin/console.log<br>" +
@@ -123,6 +135,7 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         // 全体のレイアウト
         getUI().setLayout(new BoxLayout(getUI(), BoxLayout.Y_AXIS));
         getUI().add(scrollUnitPanel);
+        getUI().add(maxFragmentPanel);
         getUI().add(redirectPanel);
         getUI().add(orconAutoStartPanel);
         getUI().add(Box.createVerticalStrut(100));
@@ -139,6 +152,7 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         diffX.setText(String.valueOf(prefs.getInt(Project.ARRANGE_INSPECTOR_DX, WindowSupport.INITIAL_DX)));
         diffY.setText(String.valueOf(prefs.getInt(Project.ARRANGE_INSPECTOR_DY, WindowSupport.INITIAL_DY)));
 
+        maxFragment.setText(String.valueOf(prefs.getInt(Project.MAX_FRAGMENT, 40)));
         redirectBox.setSelected(Preferences.userNodeForPackage(Dolphin.class).getBoolean(Project.REDIRECT_CONSOLE, false));
         orconAutoStartBox.setSelected(prefs.getBoolean(Project.ORCON_AUTO_START, false));
     }
@@ -158,6 +172,7 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         prefs.putInt(Project.ARRANGE_INSPECTOR_DX, Integer.parseInt(diffX.getText()));
         prefs.putInt(Project.ARRANGE_INSPECTOR_DY, Integer.parseInt(diffY.getText()));
 
+        prefs.putInt(Project.MAX_FRAGMENT, Integer.parseInt(maxFragment.getText()));
         Preferences.userNodeForPackage(Dolphin.class).putBoolean(Project.REDIRECT_CONSOLE, redirectBox.isSelected());
         prefs.putBoolean(Project.ORCON_AUTO_START, orconAutoStartBox.isSelected());
     }

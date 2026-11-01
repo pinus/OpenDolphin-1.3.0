@@ -4,6 +4,7 @@ import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.infomodel.DocInfoModel;
 import open.dolphin.infomodel.DocumentModel;
 import open.dolphin.infomodel.IInfoModel;
+import open.dolphin.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +23,6 @@ import java.util.stream.Collectors;
 /// 290件のカルテ表示時間
 /// FRACTION 10: 2358, 20: 1989, 30: 1854, 40: 1795, 50: 1658, 60: 1587
 public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Component>> {
-    // FRACTION 数ごとに取得、描画の処理をする
-    private static final int FRACTION = 40;
-
     private final KarteDocumentViewer context;
     private final Chart chart;
     private final List<KarteViewer2> karteViewerList;
@@ -55,7 +53,8 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
 
     @Override
     protected Integer doInBackground() {
-        lap = System.currentTimeMillis();
+        lap = System.nanoTime();
+        int fraction = Project.getPreferences().getInt(Project.MAX_FRAGMENT, 40);
 
         // 選択リストにあって 現在の karteList にないものは追加する
         List<DocInfoModel> added = new ArrayList<>(); // 追加されたもの
@@ -76,10 +75,10 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
             int count = 0;
             boolean hasNext = true;
             while (hasNext) {
-                List<Long> pkList = new ArrayList<>(FRACTION);
+                List<Long> pkList = new ArrayList<>(fraction);
                 List<DocumentModel> toAdd = new ArrayList<>();
 
-                for (int i = 0; i < FRACTION; i++) {
+                for (int i = 0; i < fraction; i++) {
                     DocInfoModel test = added.get(count++);
                     // DocumentModel の cache をチェック
                     DocumentModel dm = DocumentModelCache.get(test.getDocId());
@@ -95,7 +94,8 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                         break;
                     }
                 }
-                logger.debug("total count = {}, pkList count = {}", count, pkList.size());
+                logger.debug("total count = {}, fraction = {}, pkList count = {}", count, fraction, pkList.size());
+
                 // 途中で選択が変わったり，ウインドウが閉じられている可能性がある
                 if (!isCancelled() && chart.getFrame().isVisible()) {
                     if (!pkList.isEmpty()) {
@@ -134,7 +134,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         if (!karteViewerList.isEmpty()) {
             context.setSelectedKarteViewer(karteViewerList.getFirst());
         }
-        logger.debug("lap time: {}", System.currentTimeMillis() - lap);
+        SwingUtilities.invokeLater(() -> logger.debug("lap time later: {}", (System.nanoTime() - lap)/1000000));
     }
 
     private void addKarteViewer(List<DocumentModel> models) {
@@ -239,17 +239,17 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
 
         // 2. 現在コンポーネントを 1 回だけスナップショット
         Component[] current = scrollerPanel.getComponents();
-//        Set<Component> currentSet = new HashSet<>(Arrays.asList(current));
+        Set<Component> currentSet = new HashSet<>(Arrays.asList(current));
 
-        // 3. 差分がゼロなら z-order だけ
-//        if (currentSet.equals(targetSet)) {
-//            for (int i = 0; i < target.size(); i++) {
-//                scrollerPanel.setComponentZOrder(target.get(i), i);
-//            }
-//            scrollerPanel.revalidate();
-//            scrollerPanel.repaint();
-//            return;
-//        }
+         // 3. 差分がゼロなら z-order だけ
+        if (currentSet.equals(targetSet)) {
+            for (int i = 0; i < target.size(); i++) {
+                scrollerPanel.setComponentZOrder(target.get(i), i);
+            }
+            scrollerPanel.revalidate();
+            scrollerPanel.repaint();
+            return;
+        }
 
         // 4. バッチ処理中だけ ContainerListener を一時的に外す
         ContainerListener[] listeners = scrollerPanel.getContainerListeners();

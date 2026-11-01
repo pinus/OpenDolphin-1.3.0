@@ -135,18 +135,6 @@ public class KartePanelFactory {
         @Override
         public Dimension getPreferredSize() {
             Dimension d = super.getPreferredSize();
-            // やっぱり soaTextPane.getPreferredSize().height が正しくない場合がある
-            // その場合，modelToView が null になる. つまり，コンポネントのサイズが決定されていない
-            // eg) 13842, 15571
-            // その場合，コンポネントサイズが決定されるまでやり直しする
-            // ・textPane.setSize(1,1) したら workaround できた
-            // ・やっぱりおかしいことある？　--　復活させて様子を見る → ここではなかった
-
-            //try {
-            //   if (soaTextPane.modelToView(0) == null) { revalidateAndRepaint(); }
-            //} catch (Exception e) {}
-
-            // h は textPane の高さ これに timeStamp 部分足すと1枚のカルテの高さ. ぎりぎりにならないように 10 だけ余裕
             d.height = Math.max(soaKartePane.getTextPane().getPreferredSize().height, pKartePane.getTextPane().getPreferredSize().height)
                     + TIMESTAMP_PANEL_HEIGHT + 10;
             return d;
