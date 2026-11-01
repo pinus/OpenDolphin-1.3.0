@@ -26,6 +26,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
     private KartePanel kartePanel;
     // 選択されているかどうかのフラグ
     private boolean selected;
+
     private final Logger logger = LoggerFactory.getLogger(KarteViewer2.class);
 
     public KarteViewer2() { }
@@ -56,13 +57,23 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         if (document == null) { return; }
 
         // Creates GUI
-        kartePanel = KartePanelFactory.createViewerPanel();
-        KarteRenderer_2 renderer = new KarteRenderer_2(getSoaKartePane(), getPKartePane());
-        renderer.render(document);
+        String docId = document.getDocInfo().getDocId();
+        kartePanel = DocumentModelCache.kartePanelCacheGet(document);
+
+        if (kartePanel == null) {
+            logger.debug("KartePanel cache miss");
+            kartePanel = KartePanelFactory.createViewerPanel();
+            KarteRenderer_2 renderer = new KarteRenderer_2(getSoaKartePane(), getPKartePane());
+            renderer.render(document);
+            DocumentModelCache.kartePanelCacheAdd(docId, kartePanel);
+
+        } else {
+            logger.debug("KartePanel cache hit");
+        }
 
         kartePanel.setParent(this);
         // Schema 画像にファイル名を付けるのために必要
-        kartePanel.setDocId(getDocument().getDocInfo().getDocId());
+        kartePanel.setDocId(docId);
 
         StringBuilder timeStamp = new StringBuilder();
 
@@ -105,6 +116,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
     @Override
     public void stop() {
         kartePanel.stop();
+        kartePanel = null;
     }
 
     public void addMouseListener(MouseListener ml) {

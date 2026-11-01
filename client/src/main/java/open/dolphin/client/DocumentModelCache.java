@@ -21,6 +21,7 @@ import java.util.concurrent.*;
 
 /// DocumentModel Cache.
 /// キャッシュはファイルに保存する.
+/// KartePanelのキャッシュも行う. これはメモリリークするので保存は不可.
 ///
 /// @author pns
 public class DocumentModelCache {
@@ -28,6 +29,7 @@ public class DocumentModelCache {
     private static final long SAVE_DELAY_MILLIS = 1000;
 
     private static final Map<String, DocumentModel> cache = new ConcurrentHashMap<>();
+    private static final Map<String, KartePanel> kartePanelCache = new ConcurrentHashMap<>();
 
     private static final String SUFFIX = "open.dolphin.document.cache";
     private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
@@ -112,6 +114,7 @@ public class DocumentModelCache {
         scheduleSave();
     }
 
+    /// DocumentModel をキャッシュに入れて, cache の内容をファイルに保存する.
     public static void addAll(List<DocumentModel> models) {
         models.forEach(DocumentModelCache::add);
     }
@@ -126,8 +129,20 @@ public class DocumentModelCache {
         return cache.containsKey(docId);
     }
 
-    public static void clear() {
-        cache.clear();
+    /// KartePanel をキャッシュに入れる
+    public static void kartePanelCacheAdd(String docId, KartePanel kartePanel) {
+        kartePanelCache.put(docId, kartePanel);
+    }
+
+    /// KartePanel をキャッシュから取り出す
+    public static KartePanel kartePanelCacheGet(DocumentModel model) {
+        return kartePanelCache.get(model.getDocInfo().getDocId());
+    }
+
+    /// KartePanel キャッシュクリア
+    public static void kartePanelCacheClear() {
+        kartePanelCache.clear();
+        logger.debug("KartePanel cache size = {}", kartePanelCache.size());
     }
 
     /// 受付時に DocumentModel を全部取ってきてキャッシュしてしまう.
@@ -137,7 +152,7 @@ public class DocumentModelCache {
         logger.info("add patientPk {}", patientPk);
 
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            long lap = System.currentTimeMillis();
+            long lap = System.nanoTime();
 
             // KarteBean を取りに行く
             LocalDateTime from = LocalDate.now().atStartOfDay().minusMonths(360);
@@ -159,9 +174,15 @@ public class DocumentModelCache {
             models.forEach(model -> {
                 model.setDocInfo(docInfoMap.get(model.getDocInfo().getDocId()));
                 add(model);
+
+                // ついでに KartePanel をレンダリングしてしまう
+                KartePanel kp = KartePanelFactory.createViewerPanel();
+                KarteRenderer_2 renderer = new KarteRenderer_2(kp.getSoaKartePane(), kp.getPKartePane());
+                renderer.render(model);
+                kartePanelCacheAdd(model.getDocInfo().getDocId(), kp);
             });
 
-            logger.debug("lap = {}", (System.currentTimeMillis() - lap));
+            logger.debug("lap = {}", (System.nanoTime() - lap)/1000000);
         });
 
         try {
