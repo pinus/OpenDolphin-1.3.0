@@ -18,6 +18,7 @@ import java.awt.*;
 ///
 /// @author pns
 public class KartePanelFactory {
+    // タイムスタンプの高さ
     private static final int TIMESTAMP_PANEL_HEIGHT = 22; // 22で固定
     // タイムスタンプの foreground カラー
     private static final Color TIMESTAMP_FORE = Color.BLUE;
@@ -26,8 +27,16 @@ public class KartePanelFactory {
     // タイムスタンプフォント
     public static final Font TIMESTAMP_FONT = GUIFactory.getFont(TIMESTAMP_FONT_SIZE);
     public static final Font TIMESTAMP_FONT_BOLD = GUIFactory.getBoldFont(TIMESTAMP_FONT_SIZE);
-
+    // カルテフォント
     private static final Font KARTE_FONT = GUIFactory.getFont(Dolphin.forMac ? 13 : 12);
+    // Text Pane のデフォルト幅
+    private static final int TEXT_PANE_DEFAULT_WIDTH = 340;
+    // Text Pane のマージン
+    private static final Insets TEXT_PANE_MARGIN = new Insets(10, 10, 10, 10);
+    // soaKartePane と pKartePane の隙間
+    private static final int TEXT_PANE_GAP = 2;
+    // KartePanel のデフォルト幅
+    private static final int KARTE_PANE_DEFAULT_WIDTH = TEXT_PANE_DEFAULT_WIDTH * 2 + TEXT_PANE_GAP;
 
     private final KartePanel kartePanel;
     private KartePane soaKartePane;
@@ -62,9 +71,9 @@ public class KartePanelFactory {
         JTextPane soaTextPane = new JTextPane();
         soaTextPane.setFont(KARTE_FONT);
         soaTextPane.setEditorKit(new WrapEditorKit());
-        soaTextPane.setMargin(new Insets(10, 10, 10, 10));
-        soaTextPane.setMinimumSize(new Dimension(340, 1));
-        //soaTextPane.setSize(1, 0); // なぜかこれでうまくいく
+        soaTextPane.setMargin(TEXT_PANE_MARGIN);
+        soaTextPane.setMinimumSize(new Dimension(TEXT_PANE_DEFAULT_WIDTH, 1));
+        soaTextPane.setSize(TEXT_PANE_DEFAULT_WIDTH, Short.MAX_VALUE); // preferred size 計算に幅が必要
         soaKartePane = new KartePane(soaTextPane);
         soaKartePane.getTextPane().setTransferHandler(new KartePaneTransferHandler(soaKartePane));
         soaKartePane.setRole(IInfoModel.ROLE_SOA);
@@ -72,9 +81,9 @@ public class KartePanelFactory {
         JTextPane pTextPane = new JTextPane();
         pTextPane.setFont(KARTE_FONT);
         pTextPane.setEditorKit(new WrapEditorKit());
-        pTextPane.setMargin(new Insets(10, 10, 10, 10));
-        pTextPane.setMinimumSize(new Dimension(340, 1));
-        //pTextPane.setSize(1, 0);
+        pTextPane.setMargin(TEXT_PANE_MARGIN);
+        pTextPane.setMinimumSize(new Dimension(TEXT_PANE_DEFAULT_WIDTH, 1));
+        pTextPane.setSize(TEXT_PANE_DEFAULT_WIDTH, Short.MAX_VALUE);
         pKartePane = new KartePane(pTextPane);
         pKartePane.getTextPane().setTransferHandler(new KartePaneTransferHandler(pKartePane));
         pKartePane.setRole(IInfoModel.ROLE_P);
@@ -89,7 +98,7 @@ public class KartePanelFactory {
             }
         };
         timeStampLabel.setOpaque(true);
-        timeStampLabel.setPreferredSize(new Dimension(10, TIMESTAMP_PANEL_HEIGHT));
+        timeStampLabel.setPreferredSize(new Dimension(KARTE_PANE_DEFAULT_WIDTH, TIMESTAMP_PANEL_HEIGHT));
         timeStampLabel.setBackground(IInspector.BACKGROUND);
         timeStampLabel.setHorizontalAlignment(SwingConstants.CENTER);
         timeStampLabel.setForeground(TIMESTAMP_FORE);
@@ -97,8 +106,8 @@ public class KartePanelFactory {
 
         textPanePanel = new JPanel();
         textPanePanel.setOpaque(true);
-        textPanePanel.setLayout(new GridLayout(1, 2, 2, 0));
-        textPanePanel.setPreferredSize(new Dimension(682, 1));
+        textPanePanel.setLayout(new GridLayout(1, TEXT_PANE_GAP, TEXT_PANE_GAP, 0));
+        textPanePanel.setPreferredSize(new Dimension(KARTE_PANE_DEFAULT_WIDTH, 1));
     }
 
     /// Viewer 用の KartePanel.
