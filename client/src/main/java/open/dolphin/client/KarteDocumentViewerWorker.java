@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ContainerListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -41,7 +42,15 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         this.scrollerPanel = scrollerPanel;
         this.karteViewerList = karteViewerList;
         this.selectedHistoryMap = selectedHistoryMap;
+
         progressBar = chart.getStatusPanel().getProgressBar();
+        progressBar.setMinimum(0);
+        progressBar.setMaximum(100);
+        addPropertyChangeListener(evt -> {
+            if ("progress".equals(evt.getPropertyName())) {
+                progressBar.setValue((Integer) evt.getNewValue()); // EDT 上で実行される
+            }
+        });
     }
 
     @Override
@@ -60,7 +69,6 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         }
 
         if (!added.isEmpty()) {
-            progressBar.setMaximum(added.size());
             // 描画時のパタ付きを防ぐためにソートしておく
             added.sort(chart.getDocumentHistory().isAscending() ? Comparator.naturalOrder() : Comparator.reverseOrder());
 
@@ -97,7 +105,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                         DocumentModelCache.addAll(fetchedModels); // DocumentModel キャッシュに保存
                     }
                     addKarteViewer(toAdd);
-                    progressBar.setValue(count);
+                    setProgress(count*100 / added.size());
 
                 } else {
                     logger.debug("selection has changed");
@@ -214,24 +222,60 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
 
     /// karteViewerList の内容を scrollerPanel に反映する
     private void updateScrollerPanel(List<List<Component>> chunks) {
-        for (List<Component> currentViewerUIs : chunks) {
-            Set<Component> currentViewersSet = new HashSet<>(currentViewerUIs);
-
-            //remove
-            for (Component comp : scrollerPanel.getComponents()) {
-                if (!currentViewersSet.contains(comp)) {
-                    scrollerPanel.remove(comp);
+        // 1. 全 chunk をマージ → 目標コンポーネント 1 回だけ構築
+        List<Component> target = new ArrayList<>();
+        Set<Component> targetSet = new HashSet<>();
+        for (List<Component> chunk : chunks) {
+            for (Component c : chunk) {
+                if (targetSet.add(c)) {
+                    target.add(c);
                 }
             }
+        }
 
-            // add
-            for (int i = 0; i < currentViewerUIs.size(); i++) {
-                Component comp = currentViewerUIs.get(i);
-                if (comp.getParent() == scrollerPanel) {
-                    scrollerPanel.setComponentZOrder(comp, i);
-                } else {
-                    scrollerPanel.add(comp, i);
+        if (target.isEmpty()) {
+            return;
+        }
+
+        // 2. 現在コンポーネントを 1 回だけスナップショット
+        Component[] current = scrollerPanel.getComponents();
+//        Set<Component> currentSet = new HashSet<>(Arrays.asList(current));
+
+        // 3. 差分がゼロなら z-order だけ
+//        if (currentSet.equals(targetSet)) {
+//            for (int i = 0; i < target.size(); i++) {
+//                scrollerPanel.setComponentZOrder(target.get(i), i);
+//            }
+//            scrollerPanel.revalidate();
+//            scrollerPanel.repaint();
+//            return;
+//        }
+
+        // 4. バッチ処理中だけ ContainerListener を一時的に外す
+        ContainerListener[] listeners = scrollerPanel.getContainerListeners();
+        for (ContainerListener l : listeners) {
+            scrollerPanel.removeContainerListener(l);
+        }
+        try {
+            // 4a. 目標にないものを削除
+            for (Component c : current) {
+                if (!targetSet.contains(c)) {
+                    scrollerPanel.remove(c);
                 }
+            }
+            // 4b. 未登録のものを末尾追加（index 付き add は使わない）
+            for (Component c : target) {
+                if (c.getParent() != scrollerPanel) {
+                    scrollerPanel.add(c);
+                }
+            }
+            // 4c. z-order をまとめて設定
+            for (int i = 0; i < target.size(); i++) {
+                scrollerPanel.setComponentZOrder(target.get(i), i);
+            }
+        } finally {
+            for (ContainerListener l : listeners) {
+                scrollerPanel.addContainerListener(l);
             }
         }
 
