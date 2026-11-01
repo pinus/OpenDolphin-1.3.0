@@ -116,7 +116,6 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
     @Override
     public void stop() {
         kartePanel.stop();
-        kartePanel = null;
     }
 
     public void addMouseListener(MouseListener ml) {

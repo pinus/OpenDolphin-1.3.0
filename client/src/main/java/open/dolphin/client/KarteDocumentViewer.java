@@ -137,8 +137,6 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             karteViewerList.stream().forEach(KarteViewer2::stop);
             karteViewerList.clear();
         }
-        // 削除しないとメモリリークする
-        DocumentModelCache.kartePanelCacheClear();
         scrollerPanel.removeAll();
     }
 

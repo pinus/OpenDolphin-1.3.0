@@ -21,7 +21,6 @@ import java.util.concurrent.*;
 
 /// DocumentModel Cache.
 /// キャッシュはファイルに保存する.
-/// KartePanelのキャッシュも行う. これはメモリリークするので保存は不可.
 ///
 /// @author pns
 public class DocumentModelCache {
@@ -80,7 +79,9 @@ public class DocumentModelCache {
                     for (SchemaModel schema : model.getSchema()) {
                         schema.setIcon(new ImageIcon(schema.getJpegByte()));
                     }
-                    cache.put(model.getDocInfo().getDocId(), model);
+                    add(model);
+                    // ついでに KartePanel をレンダリングしてしまう
+                    kartePanelCacheAdd(model.getDocInfo().getDocId(), createKartePanel(model));
                 }
             }
             logger.info("loaded {} models from {}", cache.size(), documentModelCacheFile);
@@ -139,10 +140,12 @@ public class DocumentModelCache {
         return kartePanelCache.get(model.getDocInfo().getDocId());
     }
 
-    /// KartePanel キャッシュクリア
-    public static void kartePanelCacheClear() {
-        kartePanelCache.clear();
-        logger.debug("KartePanel cache size = {}", kartePanelCache.size());
+    /// KartePanel をレンダリングする
+    public static KartePanel createKartePanel(DocumentModel model) {
+        KartePanel kartePanel = KartePanelFactory.createViewerPanel();
+        KarteRenderer_2 renderer = new KarteRenderer_2(kartePanel.getSoaKartePane(), kartePanel.getPKartePane());
+        renderer.render(model);
+        return kartePanel;
     }
 
     /// 受付時に DocumentModel を全部取ってきてキャッシュしてしまう.
@@ -176,10 +179,7 @@ public class DocumentModelCache {
                 add(model);
 
                 // ついでに KartePanel をレンダリングしてしまう
-                KartePanel kp = KartePanelFactory.createViewerPanel();
-                KarteRenderer_2 renderer = new KarteRenderer_2(kp.getSoaKartePane(), kp.getPKartePane());
-                renderer.render(model);
-                kartePanelCacheAdd(model.getDocInfo().getDocId(), kp);
+                kartePanelCacheAdd(model.getDocInfo().getDocId(), createKartePanel(model));
             });
 
             logger.debug("lap = {}", (System.nanoTime() - lap)/1000000);

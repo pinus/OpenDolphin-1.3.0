@@ -64,7 +64,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     // NONE, SOA, SOA_TEXT, SCHEMA, P, P_TEXT, STAMP
     private State curState;
     // JTextPane
-    private JTextPane textPane;
+    private final JTextPane textPane;
     // SOA または P のロール
     private String myRole;
     // この KartePaneのオーナ
@@ -337,6 +337,9 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
 
     /// リソースをclearする.
     public void clear() {
+        setParent(null);
+        mediator = null;
+
         JTextPane pane = getTextPane();
         if (pane == null) {
             return;
@@ -347,15 +350,6 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         pane.removeMouseListener(this);
         pane.removeCaretListener(this);
         pane.putClientProperty("kartePane", null);
-
-        try {
-            KarteStyledDocument doc = getDocument();
-            doc.remove(0, doc.getLength());
-        } catch (BadLocationException e) {
-            e.printStackTrace(System.err);
-        }
-
-        textPane = null;
     }
 
     /// メニューを制御する.
