@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.Objects;
 
 /**
@@ -26,6 +27,8 @@ import java.util.Objects;
 public class PNSFrame extends JFrame {
     // "apple.awt.windowTitleVisible" = false で JLabel をウインドウタイトルとして使う場合 (StampBox)
     private JLabel titleLabel;
+    private BlockGlass2 glassPane;
+    private WindowListener windowListenerForMac;
 
     // Panels
     private CommandPanel commandPanel;
@@ -47,13 +50,14 @@ public class PNSFrame extends JFrame {
     private void initComponents(String title, boolean commandPanelNeeded, boolean statusPanelNeeded) {
         getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);
         setTitle(title);
-        setGlassPane(new BlockGlass2());
+        glassPane = new BlockGlass2();
+        setGlassPane(glassPane);
 
         if (Dolphin.forWin) { setIconImage(GUIConst.ICON_DOLPHIN.getImage()); }
         if (Dolphin.forMac) {
             titleLabel = new JLabel();
             titleLabel.setFont(GUIConst.TITLE_BAR_FONT);
-            addWindowListener(new WindowAdapter() {
+            windowListenerForMac = new WindowAdapter() {
                 @Override
                 public void windowActivated(WindowEvent e) {
                     titleLabel.setForeground(GUIConst.TITLE_BAR_ACTIVE_COLOR);
@@ -65,7 +69,8 @@ public class PNSFrame extends JFrame {
                 }
                 @Override
                 public void windowOpened(WindowEvent e) { windowActivated(e); }
-            });
+            };
+            addWindowListener(windowListenerForMac);
         }
 
         // コマンドパネル
@@ -181,6 +186,18 @@ public class PNSFrame extends JFrame {
     }
 
     public JLabel getTitleLabel() { return titleLabel; }
+
+    @Override
+    public void dispose() {
+        if (Dolphin.forMac) { removeWindowListener(windowListenerForMac); }
+        JComponent emptyGlassPane = new JPanel();
+        emptyGlassPane.setOpaque(false);
+        emptyGlassPane.setVisible(false);
+        setGlassPane(emptyGlassPane);
+        glassPane = null;
+
+        super.dispose();
+    }
 
     public static void main(String[] argv) {
         open.dolphin.client.ClientContext.setClientContextStub(new open.dolphin.client.ClientContextStub());

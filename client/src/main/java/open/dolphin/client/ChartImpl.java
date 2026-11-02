@@ -107,7 +107,7 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
     public void windowClosed(WindowEvent e) {
         // Window がクローズされた時の処理を行う
         // stop で setVisible(false) を出した後に呼ばれる
-        windowClosed(this);
+        //windowClosed(this);
     }
 
     @Override
@@ -155,6 +155,8 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
      * @param closed クローズした Chart(=this)
      */
     public void windowClosed(ChartImpl closed) {
+        windowSupport.getFrame().removeWindowListener(this);
+        windowSupport.dispose();
 
         PatientVisitModel model = closed.getPatientVisit();
 
@@ -1468,7 +1470,8 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         }
         mediator.dispose();
         inspector.dispose();
-        windowSupport.dispose(); // ここで windowClosed が呼ばれる
+        //windowSupport.dispose(); // ここで windowClosed が呼ばれる
+        windowClosed(this);
     }
 
     /**

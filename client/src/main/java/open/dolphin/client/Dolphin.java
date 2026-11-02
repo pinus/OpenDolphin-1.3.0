@@ -179,6 +179,15 @@ public class Dolphin implements MainWindow {
         }
         // ドキュメントフォルダの有無をチェック
         checkDocumentFolder();
+
+        // DocumentModel キャッシュの読み込み
+        Thread.ofPlatform().start(() -> {
+            try {
+                Class.forName(DocumentModelCache.class.getName());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /// initialize() の次に呼ばれる.
