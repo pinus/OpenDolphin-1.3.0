@@ -88,7 +88,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     // 保存後及びブラウズ時の編集不可を表すカラー
     private Color uneditableColor = UNEDITABLE_COLOR;
     // KartePane の UndoManager
-    private final TextComponentUndoManager undoManager;
+    private TextComponentUndoManager undoManager;
     // このペインからDragg及びDroppされたスタンプの情報
     private ComponentHolder<?>[] draggedStamp;
     private int draggedCount;
@@ -97,19 +97,13 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     private PCodeHelper pHelper;
     private SOACodeHelper soaHelper;
 
+    /// KartePaneFactory で生成.
     public KartePane(JTextPane tp) {
         textPane = tp;
         KarteStyledDocument doc = new KarteStyledDocument();
+        doc.setParent(this);
         textPane.setDocument(doc);
         textPane.putClientProperty("kartePane", this);
-        // リスナを登録する
-        textPane.addMouseListener(this);
-        textPane.addCaretListener(this);
-        textPane.getDocument().addDocumentListener(this);
-        // undo manager
-        undoManager = new TextComponentUndoManager(textPane);
-
-        doc.setParent(this);
         stampListTransferHandler = new StampListTransferHandler();
         schemaHolderTransferHandler = new SchemaHolderTransferHandler();
     }
@@ -263,6 +257,13 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     /// @param editable      編集可能かどうかのフラグ
     /// @param chartMediator チャートメディエータ（メニューサポート）
     public void init(boolean editable, ChartMediator chartMediator) {
+        // リスナを登録する
+        textPane.addMouseListener(this);
+        textPane.addCaretListener(this);
+        textPane.getDocument().addDocumentListener(this);
+        // undo manager
+        undoManager = new TextComponentUndoManager(textPane);
+
         // Mediatorを保存する
         setMediator(chartMediator);
         // 入れておかないと最初に focus 取る前に Drop したときヌルポが出る
@@ -276,7 +277,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
 
         if (editable) {
             // undo listener は editable だけ登録
-            getTextPane().getDocument().addUndoableEditListener(getUndoManager());
+            getTextPane().getDocument().addUndoableEditListener(undoManager);
 
             if (myRole.equals(IInfoModel.ROLE_SOA)) {
                 soaHelper = new SOACodeHelper(this, getMediator());
@@ -289,6 +290,23 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         } else {
             setBackgroundUneditable();
         }
+    }
+
+    /// リソースをclearする.
+    public void dispose() {
+        setParent(null);
+        mediator = null;
+        if (textPane == null) { return; }
+
+        textPane.removeMouseListener(this);
+        textPane.removeCaretListener(this);
+        textPane.getDocument().removeDocumentListener(this);
+        textPane.getDocument().removeUndoableEditListener(undoManager);
+
+        if (pHelper != null) { pHelper.dispose(); }
+        if (soaHelper != null) { soaHelper.dispose(); }
+        undoManager.dispose();
+        undoManager = null;
     }
 
     /// JTextPaneへの挿入でdirtyかどうかを判定する
@@ -336,22 +354,6 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
                 SwingUtilities.invokeLater(() -> Focuser.requestFocus(c));
             }
         }
-    }
-
-    /// リソースをclearする.
-    public void dispose() {
-        setParent(null);
-        mediator = null;
-        if (textPane == null) { return; }
-
-        textPane.removeMouseListener(this);
-        textPane.removeCaretListener(this);
-        textPane.getDocument().removeDocumentListener(this);
-        textPane.getDocument().removeUndoableEditListener(undoManager);
-
-        if (pHelper != null) { pHelper.dispose(); }
-        if (soaHelper != null) { soaHelper.dispose(); }
-        undoManager.dispose();
     }
 
     /// メニューを制御する.

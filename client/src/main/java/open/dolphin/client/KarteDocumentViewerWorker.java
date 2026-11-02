@@ -80,6 +80,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
 
                 for (int i = 0; i < fraction; i++) {
                     DocInfoModel test = added.get(count++);
+                    logger.debug("------------- docinfoPk:{} ", test.getDocPk());
                     // DocumentModel の cache をチェック
                     DocumentModel dm = DocumentModelCache.get(test.getDocId());
                     if (dm == null) {
@@ -168,6 +169,11 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
 
         // 追加された DocumentModel から　karteViewer をつくって karteList に加える
         for (DocumentModel dm : models) {
+
+
+            logger.debug("------------- dm id:{}, docPk:{} ", dm.getId(), dm.getDocInfo().getDocPk());
+
+
             DocInfoModel docInfo = dm.getDocInfo();
             String docId = docInfo.getDocId();
 
