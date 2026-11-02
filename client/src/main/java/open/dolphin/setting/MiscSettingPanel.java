@@ -28,6 +28,8 @@ public class MiscSettingPanel extends AbstractSettingPanel {
     private JTextField initX, initY, diffX, diffY;
     // データベースから1回のアクセスで取得するカルテの最大件数
     private JTextField maxFragment;
+    // プリフェッチキャッシュを有効にするかどうか
+    private JCheckBox prefetchCachingBox;
     /// コンソールのログ出力
     private JCheckBox redirectBox;
     /// ORCON 自動起動
@@ -109,8 +111,10 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         gbb = new GridBagBuilder("データベースから1回のアクセスで取得するカルテの最大件数");
         label = new JLabel("件数", SwingConstants.RIGHT);
         maxFragment = new JTextField(3);
+        prefetchCachingBox = new JCheckBox("プリフェッチ・キャッシングを使用する");
         gbb.add(label, 0, 0, 1, 1, GridBagConstraints.EAST);
         gbb.add(maxFragment, 1, 0, 1, 1, GridBagConstraints.WEST);
+        gbb.add(prefetchCachingBox, 2, 0, 1, 1, GridBagConstraints.WEST);
 
         JPanel maxFragmentPanel = gbb.getProduct();
         maxFragmentPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
@@ -153,6 +157,7 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         diffY.setText(String.valueOf(prefs.getInt(Project.ARRANGE_INSPECTOR_DY, WindowSupport.INITIAL_DY)));
 
         maxFragment.setText(String.valueOf(prefs.getInt(Project.MAX_FRAGMENT, 40)));
+        prefetchCachingBox.setSelected(prefs.getBoolean(Project.PREFETCH_CACHING, false));
         redirectBox.setSelected(Preferences.userNodeForPackage(Dolphin.class).getBoolean(Project.REDIRECT_CONSOLE, false));
         orconAutoStartBox.setSelected(prefs.getBoolean(Project.ORCON_AUTO_START, false));
     }
@@ -173,6 +178,7 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         prefs.putInt(Project.ARRANGE_INSPECTOR_DY, Integer.parseInt(diffY.getText()));
 
         prefs.putInt(Project.MAX_FRAGMENT, Integer.parseInt(maxFragment.getText()));
+        prefs.putBoolean(Project.PREFETCH_CACHING, prefetchCachingBox.isSelected());
         Preferences.userNodeForPackage(Dolphin.class).putBoolean(Project.REDIRECT_CONSOLE, redirectBox.isSelected());
         prefs.putBoolean(Project.ORCON_AUTO_START, orconAutoStartBox.isSelected());
     }

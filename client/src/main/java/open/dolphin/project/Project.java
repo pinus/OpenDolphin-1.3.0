@@ -79,6 +79,9 @@ public class Project {
     /// データベースから1回のアクセスで取得するカルテの最大件数
     public static final String MAX_FRAGMENT = "max.fragment";
 
+    /// プリフェッチキャッシュ
+    public static final String PREFETCH_CACHING = "prefetch.caching";
+
     /// コンソールのログファイル出力
     public static final String REDIRECT_CONSOLE = "redirect.console";
 

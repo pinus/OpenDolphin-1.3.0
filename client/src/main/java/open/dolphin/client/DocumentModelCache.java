@@ -2,6 +2,7 @@ package open.dolphin.client;
 
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.infomodel.*;
+import open.dolphin.project.Project;
 import open.dolphin.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,9 @@ public class DocumentModelCache {
     static {
         deleteOldFiles();
         if (documentModelCacheFile.exists()) {
-            load();
+            if (Project.getPreferences().getBoolean(Project.PREFETCH_CACHING, false)) {
+                load();
+            }
         } else {
             save();
         }
@@ -110,9 +113,11 @@ public class DocumentModelCache {
 
     /// DocumentModel をキャッシュに入れて, cache の内容をファイルに保存する.
     public static void add(DocumentModel model) {
-        cache.put(model.getDocInfo().getDocId(), model);
-        logger.debug("add model {}", model.getDocInfo().getDocId());
-        scheduleSave();
+        if (Project.getPreferences().getBoolean(Project.PREFETCH_CACHING, false)) {
+            cache.put(model.getDocInfo().getDocId(), model);
+            logger.debug("add model {}", model.getDocInfo().getDocId());
+            scheduleSave();
+        }
     }
 
     /// DocumentModel をキャッシュに入れて, cache の内容をファイルに保存する.
@@ -132,7 +137,9 @@ public class DocumentModelCache {
 
     /// KartePanel をキャッシュに入れる
     public static void kartePanelCacheAdd(String docId, KartePanel kartePanel) {
-        kartePanelCache.put(docId, kartePanel);
+        if (Project.getPreferences().getBoolean(Project.PREFETCH_CACHING, false)) {
+            kartePanelCache.put(docId, kartePanel);
+        }
     }
 
     /// KartePanel をキャッシュから取り出す
