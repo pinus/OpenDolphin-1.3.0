@@ -91,6 +91,8 @@ public class GUIConst {
 
     public static final String ACTION_HELP_MENU = "helpMenu";
     public static final String ACTION_SHOW_ABOUT = "showAbout";
+    public static final String ACTION_CLEAR_CACHE = "clearCache";
+    public static final String ACTION_CLEAR_CACHE_FILE = "clearCacheFile";
 
     // Role
     public static final String ROLE_ADMIN = "admin";

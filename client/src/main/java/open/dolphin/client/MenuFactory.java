@@ -331,6 +331,12 @@ public class MenuFactory {
     @MenuAction
     public void searchStamp() { chart.sendToChain(GUIConst.ACTION_SEARCH_STAMP); }
 
+    @MenuAction
+    public void clearCache() { main.sendToChain(GUIConst.ACTION_CLEAR_CACHE); }
+
+    @MenuAction
+    public void clearCacheFile() { main.sendToChain(GUIConst.ACTION_CLEAR_CACHE_FILE); }
+
     public void build(JMenuBar menuBar) {
 
         actionMap = MenuActionManager.createActionMap(this);
@@ -377,6 +383,16 @@ public class MenuFactory {
             file.add(createMenuItem("終了", GUIConst.ACTION_PROCESS_EXIT,
                     "Q", GUIConst.ICON_EMPTY_16, "プログラムを終了します"));
         }
+
+        file.addSeparator();
+
+        // キャッシュクリア
+        file.add(createMenuItem("キャッシュを消去", GUIConst.ACTION_CLEAR_CACHE,
+                null, GUIConst.ICON_EMPTY_16, "キャッシュを消去します"));
+
+        // キャッシュファイル消去
+        file.add(createMenuItem("キャッシュファイルを消去", GUIConst.ACTION_CLEAR_CACHE_FILE,
+                null, GUIConst.ICON_EMPTY_16, "キャッシュファイルを消去します"));
 
         //
         // Edit メニュー

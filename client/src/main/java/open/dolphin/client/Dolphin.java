@@ -75,7 +75,7 @@ public class Dolphin implements MainWindow {
     public Dolphin() {
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         // コンソールのリダイレクト
         redirectConsole();
 
@@ -671,6 +671,16 @@ public class Dolphin implements MainWindow {
         getPlugin(OrcaController.class).toggleStealth();
     }
 
+    /// DocumentModel Cache を消去する. MenuSupport から reflection で呼ばれる.
+    public void clearCache() {
+        DocumentModelCache.clearKartePanelCache();
+    }
+
+    /// File を含めてキャッシュを完全に消去. MenuSupport から reflection で呼ばれる.
+    public void clearCacheFile() {
+        DocumentModelCache.clear();
+    }
+
     /// DocumentFolder をチェック.
     private void checkDocumentFolder() {
         Path path = Paths.get(ClientContext.getDocumentDirectory());
@@ -725,17 +735,19 @@ public class Dolphin implements MainWindow {
             mediator.disableAllMenus();
 
             String[] enables = new String[]{
-                GUIConst.ACTION_PRINTER_SETUP,
-                GUIConst.ACTION_PROCESS_EXIT,
-                GUIConst.ACTION_SET_KARTE_ENVIRONMENT,
-                GUIConst.ACTION_SHOW_STAMPBOX,
-                GUIConst.ACTION_SHOW_SCHEMABOX,
-                GUIConst.ACTION_SHOW_WAITING_LIST,
-                GUIConst.ACTION_SHOW_PATIENT_SEARCH,
-                GUIConst.ACTION_SHOW_ORCON,
-                GUIConst.ACTION_STEALTH_ORCON,
-                GUIConst.ACTION_CHANGE_PASSWORD,
-                GUIConst.ACTION_SHOW_ABOUT,
+                    GUIConst.ACTION_PRINTER_SETUP,
+                    GUIConst.ACTION_PROCESS_EXIT,
+                    GUIConst.ACTION_SET_KARTE_ENVIRONMENT,
+                    GUIConst.ACTION_SHOW_STAMPBOX,
+                    GUIConst.ACTION_SHOW_SCHEMABOX,
+                    GUIConst.ACTION_SHOW_WAITING_LIST,
+                    GUIConst.ACTION_SHOW_PATIENT_SEARCH,
+                    GUIConst.ACTION_SHOW_ORCON,
+                    GUIConst.ACTION_STEALTH_ORCON,
+                    GUIConst.ACTION_CHANGE_PASSWORD,
+                    GUIConst.ACTION_SHOW_ABOUT,
+                    GUIConst.ACTION_CLEAR_CACHE,
+                    GUIConst.ACTION_CLEAR_CACHE_FILE,
             };
             mediator.enableMenus(enables);
 

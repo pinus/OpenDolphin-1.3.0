@@ -155,6 +155,22 @@ public class DocumentModelCache {
         return kartePanel;
     }
 
+    /// KartePanel cache をクリアする
+    public static void clearKartePanelCache() {
+        logger.info("KartePanel cache cleared");
+        kartePanelCache.clear();
+    }
+
+    /// キャッシュを全て消去し, 保存ファイルも消去.
+    public static void clear() {
+        logger.info("KartePanel and DocumentModel cache cleared");
+        kartePanelCache.clear();
+        cache.clear();
+        if (documentModelCacheFile.exists()) {
+            documentModelCacheFile.delete();
+        }
+    }
+
     /// 受付時に DocumentModel を全部取ってきてキャッシュしてしまう.
     /// ORCA で受付してから OpenDolphin に表示されるまでの時間が多少遅くなっても実用上問題ない.
     public static void add(PatientVisitModel pvt) {

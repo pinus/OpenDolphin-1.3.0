@@ -88,7 +88,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     // 保存後及びブラウズ時の編集不可を表すカラー
     private Color uneditableColor = UNEDITABLE_COLOR;
     // KartePane の UndoManager
-    private TextComponentUndoManager undoManager;
+    private final TextComponentUndoManager undoManager;
     // このペインからDragg及びDroppされたスタンプの情報
     private ComponentHolder<?>[] draggedStamp;
     private int draggedCount;
@@ -342,20 +342,16 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     public void dispose() {
         setParent(null);
         mediator = null;
+        if (textPane == null) { return; }
 
-        JTextPane pane = getTextPane();
-        if (pane == null) { return; }
-
-        pane.getDocument().removeDocumentListener(this);
-        pane.getDocument().removeUndoableEditListener(undoManager);
-        pane.removeMouseListener(this);
-        pane.removeCaretListener(this);
-        pane.putClientProperty("kartePane", null);
+        textPane.removeMouseListener(this);
+        textPane.removeCaretListener(this);
+        textPane.getDocument().removeDocumentListener(this);
+        textPane.getDocument().removeUndoableEditListener(undoManager);
 
         if (pHelper != null) { pHelper.dispose(); }
         if (soaHelper != null) { soaHelper.dispose(); }
         undoManager.dispose();
-        undoManager = null;
     }
 
     /// メニューを制御する.
