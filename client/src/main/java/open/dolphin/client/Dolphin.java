@@ -177,9 +177,6 @@ public class Dolphin implements MainWindow {
                 }
             }
         }
-        // ドキュメントフォルダの有無をチェック
-        checkDocumentFolder();
-
         // DocumentModel キャッシュの読み込み
         Thread.ofPlatform().start(() -> {
             try {
@@ -188,6 +185,8 @@ public class Dolphin implements MainWindow {
                 throw new RuntimeException(e);
             }
         });
+        // ドキュメントフォルダの有無をチェック
+        checkDocumentFolder();
     }
 
     /// initialize() の次に呼ばれる.

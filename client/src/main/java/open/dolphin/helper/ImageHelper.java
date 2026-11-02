@@ -147,33 +147,48 @@ public class ImageHelper {
     /// Extract PNG Metadata "UnknownChunk".
     /// Format Name: javax_imageio_png_1.0 (nativeMetadataFormatClassName)
     ///
-    /// @param bytes PNG ByteArray
+    /// @param bytes image ByteArray
     /// @param type type (4 chars)
-    /// @return value for the type
+    /// @return value for the type, or null if no PNG metadata is available
     public static String extractMetadata(byte[] bytes, String type) {
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
-            var iis = ImageIO.createImageInputStream(bis);
-            var reader = ImageIO.getImageReaders(iis).next();
-            reader.setInput(iis, true);
+        try (var bis = new ByteArrayInputStream(bytes);
+             var iis = ImageIO.createImageInputStream(bis)) {
+            if (iis == null) {
+                return null;
+            }
+            var readers = ImageIO.getImageReaders(iis);
+            if (!readers.hasNext()) {
+                return null;
+            }
+            var reader = readers.next();
+            try {
+                reader.setInput(iis, true);
 
-            var metadata = reader.getImageMetadata(0);
-            var root = (IIOMetadataNode) metadata.getAsTree("javax_imageio_png_1.0");
+                var metadata = reader.getImageMetadata(0);
+                if (metadata == null || !"javax_imageio_png_1.0".equals(metadata.getNativeMetadataFormatName())) {
+                    return null;
+                }
+                var root = (IIOMetadataNode) metadata.getAsTree("javax_imageio_png_1.0");
 
-            // UnknownChunks length = 0 or 1, 1の場合その中に UnknownChunk が複数入る
-            var chunksList = root.getElementsByTagName("UnknownChunks");
-            if (chunksList.getLength() > 0) {
-                var chunks = (IIOMetadataNode) root.getElementsByTagName("UnknownChunks").item(0);
-                for (int i = 0; i < chunks.getLength(); i++) {
-                    var chunk = (IIOMetadataNode) chunks.item(i);
-                    var chunkType = chunk.getAttributes().getNamedItem("type").getNodeValue();
-                    if (chunkType.equals(type)) {
-                        return new String((byte[]) chunk.getUserObject());
+                // UnknownChunks length = 0 or 1, 1の場合その中に UnknownChunk が複数入る
+                var chunksList = root.getElementsByTagName("UnknownChunks");
+                if (chunksList.getLength() > 0) {
+                    var chunks = (IIOMetadataNode) chunksList.item(0);
+                    for (int i = 0; i < chunks.getLength(); i++) {
+                        var chunk = (IIOMetadataNode) chunks.item(i);
+                        var chunkType = chunk.getAttributes().getNamedItem("type").getNodeValue();
+                        if (chunkType.equals(type)) {
+                            return new String((byte[]) chunk.getUserObject());
+                        }
                     }
                 }
+            } finally {
+                reader.dispose();
             }
 
         } catch (IOException | RuntimeException e) {
             logger.error(e.getMessage());
+            e.printStackTrace(System.err);
         }
         return null;
     }
