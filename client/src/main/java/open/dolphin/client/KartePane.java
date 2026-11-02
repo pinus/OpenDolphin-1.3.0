@@ -88,11 +88,14 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     // 保存後及びブラウズ時の編集不可を表すカラー
     private Color uneditableColor = UNEDITABLE_COLOR;
     // KartePane の UndoManager
-    private final TextComponentUndoManager undoManager;
+    private TextComponentUndoManager undoManager;
     // このペインからDragg及びDroppされたスタンプの情報
     private ComponentHolder<?>[] draggedStamp;
     private int draggedCount;
     private int droppedCount;
+    // CodeHelper
+    private PCodeHelper pHelper;
+    private SOACodeHelper soaHelper;
 
     public KartePane(JTextPane tp) {
         textPane = tp;
@@ -276,9 +279,9 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
             getTextPane().getDocument().addUndoableEditListener(getUndoManager());
 
             if (myRole.equals(IInfoModel.ROLE_SOA)) {
-                SOACodeHelper helper = new SOACodeHelper(this, getMediator());
+                soaHelper = new SOACodeHelper(this, getMediator());
             } else {
-                PCodeHelper helper = new PCodeHelper(this, getMediator());
+                pHelper = new PCodeHelper(this, getMediator());
             }
             getTextPane().setBackground(Color.WHITE);
             getTextPane().setOpaque(true);
@@ -336,20 +339,23 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     }
 
     /// リソースをclearする.
-    public void clear() {
+    public void dispose() {
         setParent(null);
         mediator = null;
 
         JTextPane pane = getTextPane();
-        if (pane == null) {
-            return;
-        }
+        if (pane == null) { return; }
 
         pane.getDocument().removeDocumentListener(this);
         pane.getDocument().removeUndoableEditListener(undoManager);
         pane.removeMouseListener(this);
         pane.removeCaretListener(this);
         pane.putClientProperty("kartePane", null);
+
+        if (pHelper != null) { pHelper.dispose(); }
+        if (soaHelper != null) { soaHelper.dispose(); }
+        undoManager.dispose();
+        undoManager = null;
     }
 
     /// メニューを制御する.

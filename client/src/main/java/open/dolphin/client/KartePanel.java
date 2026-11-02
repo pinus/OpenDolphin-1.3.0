@@ -52,7 +52,7 @@ public abstract class KartePanel extends PrintablePanel {
         getSoaKartePane().getTextPane().removeMouseListener(mouseListener);
         getPKartePane().getTextPane().removeMouseListener(mouseListener);
         mouseListener = null;
-        getSoaKartePane().clear();
-        getPKartePane().clear();
+        getSoaKartePane().dispose();
+        getPKartePane().dispose();
     }
 }

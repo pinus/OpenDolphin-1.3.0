@@ -13,45 +13,61 @@ import javax.swing.text.JTextComponent;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-/**
- * JTextComponent に Undo 機能を付ける.<br>
- * 使用例:
- * <pre>{@code
- * JTextPane c = new JTextPane();
- * c.getDocument().addUndoableEditListener(TextComponentUndoManager.createManager(c));
- * }</pre>
- *
- * @author pns
- */
+/// JTextComponent に Undo 機能を付ける.
+/// 使用例:
+/// ```
+/// JTextPane c = new JTextPane();
+/// c.getDocument().addUndoableEditListener(TextComponentUndoManager.createManager(c));
+/// ```
+///
+/// @author pns
 public class TextComponentUndoManager extends UndoManager {
-        private final Logger logger = LoggerFactory.getLogger(TextComponentUndoManager.class);
     private static final Pattern ALPHABET = Pattern.compile("^[a-z,A-Z]*$");
 
+    private JTextComponent textComponent;
     private Action undoAction;
     private Action redoAction;
+    private AtokListener atokListener;
 
     // 連続する UndoableEditEvent をまとめる CompoundEdit
     private TextComponentUndoableEdit current;
 
-    // delay msec 以内に起きた UndoableEditEvent はまとめて1つにする
+    // DELAY msec 以内に起きた UndoableEditEvent はまとめて1つにする
     private final Timer timer;
-    private final int delay = 30;
+    private static final int DELAY = 30;
 
+    private final Logger logger = LoggerFactory.getLogger(TextComponentUndoManager.class);
+
+    /// Manages undo and redo functionality for a given [JTextComponent].
+    /// Also handles custom behavior for specific platform-related input mechanisms.
+    ///
+    /// @param c the [JTextComponent] for which undo/redo functionality is managed
     public TextComponentUndoManager(JTextComponent c) {
-        timer = new Timer(delay, e -> flush());
+        textComponent = c;
+        timer = new Timer(DELAY,e -> flush());
         current = new TextComponentUndoableEdit();
 
         // ATOK 関連
         if (Dolphin.forMac) {
-            AtokListener atokListener = new AtokListener(c, this);
+            atokListener = new AtokListener(c, this);
             c.addKeyListener(atokListener);
             c.addInputMethodListener(atokListener);
         }
+    }
+
+    /// release resources
+    public void dispose() {
+        if (atokListener != null) {
+            textComponent.removeKeyListener(atokListener);
+            textComponent.removeInputMethodListener(atokListener);
+            atokListener = null;
+        }
+        textComponent = null;
     }
 
     @Override
@@ -61,9 +77,7 @@ public class TextComponentUndoManager extends UndoManager {
         updateActionStatus(); // 文字入力毎に action が enable/disable される
     }
 
-    /**
-     * current にまとめた UndoableEdit を addEdit する. Timer から呼ばれる.
-     */
+    /// current にまとめた UndoableEdit を addEdit する. Timer から呼ばれる.
     public void flush() {
         timer.stop();
         current.end();
@@ -73,12 +87,10 @@ public class TextComponentUndoManager extends UndoManager {
         updateActionStatus();
     }
 
-    /**
-     * Word 単位で undo をまとめる addEdit.
-     *
-     * @param e UndoableEdit to add
-     * @return return value of addEdit
-     */
+    /// Word 単位で undo をまとめる addEdit.
+    ///
+    /// @param e UndoableEdit to add
+    /// @return return value of addEdit
     @Override
     public boolean addEdit(UndoableEdit e) {
         if (toMergeEdit(e, lastEdit())) {
@@ -91,13 +103,11 @@ public class TextComponentUndoManager extends UndoManager {
         }
     }
 
-    /**
-     * 指定した UndoableEdit を前の UndoableEdit に merge するかどうか.
-     *
-     * @param cur TextComponentUndoableEdit which contains current DocumentEvent
-     * @param last TextComponentUndoableEdit which contains last DocumentEvent
-     * @return true to merge
-     */
+    /// 指定した UndoableEdit を前の UndoableEdit に merge するかどうか.
+    ///
+    /// @param cur TextComponentUndoableEdit which contains current DocumentEvent
+    /// @param last TextComponentUndoableEdit which contains last DocumentEvent
+    /// @return true to merge
     private boolean toMergeEdit(UndoableEdit cur, UndoableEdit last) {
         // last が canUndo でなければ merge しない
         if (last == null || !last.canUndo()) { return false; }
@@ -135,10 +145,8 @@ public class TextComponentUndoManager extends UndoManager {
         return false;
     }
 
-    /**
-     * If timer is running,
-     * stop timer, discard current, and then discardAllEdits.
-     */
+    /// If timer is running,
+    /// stop timer, discard current, and then discardAllEdits.
     @Override
     public void discardAllEdits() {
         if (timer.isRunning()) {
@@ -166,20 +174,16 @@ public class TextComponentUndoManager extends UndoManager {
         redoAction.setEnabled(canRedo());
     }
 
-    /**
-     * enable/disable を update するために action を登録する.
-     *
-     * @param undo undo action
-     * @param redo redo action
-     */
+    /// enable/disable を update するために action を登録する.
+    ///
+    /// @param undo undo action
+    /// @param redo redo action
     public void setActions(Action undo, Action redo) {
         undoAction = undo;
         redoAction = redo;
     }
 
-    /**
-     * TextComponentUndoManager 用の UndoableEdit.
-     */
+    /// TextComponentUndoManager 用の UndoableEdit.
     private static class TextComponentUndoableEdit extends CompoundEdit {
         @Override
         public UndoableEdit lastEdit() {
@@ -190,12 +194,10 @@ public class TextComponentUndoManager extends UndoManager {
             return super.edits.size();
         }
 
-        /**
-         * この UndoableEdit が保持する DocumentEvent に edit を merge する.
-         *
-         * @param edit DocumentEvent
-         * @return addEdit した戻り値
-         */
+        /// この UndoableEdit が保持する DocumentEvent に edit を merge する.
+        ///
+        /// @param edit DocumentEvent
+        /// @return addEdit した戻り値
         public boolean mergeEdit(UndoableEdit edit) {
             setInProgress(true);
             boolean ret = addEdit(edit);
@@ -203,11 +205,9 @@ public class TextComponentUndoManager extends UndoManager {
             return ret;
         }
 
-        /**
-         * package-private field の inProgress を書き換える.
-         *
-         * @param inProgress inProgress to set
-         */
+        /// package-private field の inProgress を書き換える.
+        ///
+        /// @param inProgress inProgress to set
         public void setInProgress(boolean inProgress) {
             try {
                 Field field = getClass().getSuperclass().getDeclaredField("inProgress");
@@ -215,17 +215,15 @@ public class TextComponentUndoManager extends UndoManager {
                 field.set(this, inProgress);
 
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
+                e.printStackTrace(System.err);
             }
         }
     }
 
-    /**
-     * JTextComponent に Undo 機能を付ける utility static method.
-     *
-     * @param c JTextComponent
-     * @return TextComponentUndoManager
-     */
+    /// JTextComponent に Undo 機能を付ける utility static method.
+    ///
+    /// @param c JTextComponent
+    /// @return TextComponentUndoManager
     public static TextComponentUndoManager createManager(JTextComponent c) {
         TextComponentUndoManager manager = new TextComponentUndoManager(c);
 
@@ -240,7 +238,7 @@ public class TextComponentUndoManager extends UndoManager {
         };
         manager.setActions(undo, redo);
 
-        // short cut を付ける
+        // shortcut を付ける
         ActionMap am = c.getActionMap();
         InputMap im = c.getInputMap();
         am.put("undo", undo);

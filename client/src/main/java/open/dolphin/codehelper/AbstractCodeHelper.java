@@ -15,89 +15,72 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-/**
- * KartePane の抽象コードヘルパークラス.
- *
- * @author Kazyshi Minagawa
- * @author pns
- */
+/// KartePane の抽象コードヘルパークラス.
+///
+/// @author Kazyshi Minagawa
+/// @author pns
 public abstract class AbstractCodeHelper {
 
-    /**
-     * キーワードの境界となる文字
-     */
+    /// キーワードの境界となる文字
     public static final String[] WORD_SEPARATOR = {" ", "　", "，", ",", "、", "。", ".", "：", ":", "；", ";", "\n", "\t"};
-    /**
-     * 対応する ChartImpl
-     */
-    private final ChartImpl realChart;
-    /**
-     * ChartMediator
-     */
-    private final ChartMediator mediator;
-    /**
-     * KartePane の JTextPane
-     */
-    private final JTextPane textPane;
-    /**
-     * DiagnosisDocument の JTable
-     */
-    private final DiagnosisDocumentTable diagTable;
-    /**
-     * Preferences
-     */
+    /// 対応する ChartImpl
+    private ChartImpl realChart;
+    /// ChartMediator
+    private ChartMediator mediator;
+    /// KartePane の JTextPane
+    private JTextPane textPane;
+    /// meta-return をリスンするリスナ
+    private final KeyAdapter metaReturnListener;
+    /// DiagnosisDocument の JTable
+    private DiagnosisDocumentTable diagTable;
+    /// Preferences
     private final Preferences prefs = Preferences.userNodeForPackage(AbstractCodeHelper.class);
-    /**
-     * 補完リストメニュー
-     */
+    /// 補完リストメニュー
     private JPopupMenu popup;
-    /**
-     * キーワードの開始位置
-     */
+    /// キーワードの開始位置
     private int start;
-    /**
-     * キーワードの終了位置
-     */
+    /// キーワードの終了位置
     private int end;
 
-    /**
-     * Creates a new instance of CodeHelper.
-     *
-     * @param kartePane KartePane
-     * @param chartMediator ChartMediator
-     */
+    /// Creates a new instance of CodeHelper.
+    ///
+    /// @param kartePane KartePane
+    /// @param chartMediator ChartMediator
     public AbstractCodeHelper(KartePane kartePane, ChartMediator chartMediator) {
-
         mediator = chartMediator;
         textPane = kartePane.getTextPane();
         realChart = (ChartImpl) ((EditorFrame) kartePane.getParent().getContext()).getChart();
         diagTable = realChart.getDiagnosisDocument().getDiagnosisTable();
 
         int modifier = prefs.get("modifier", "ctrl").equals("ctrl") ? KeyEvent.CTRL_DOWN_MASK : KeyEvent.META_DOWN_MASK;
-
-        textPane.addKeyListener(new KeyAdapter() {
+        metaReturnListener = new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if ((e.getModifiersEx() == modifier) && e.getKeyCode() == KeyEvent.VK_ENTER) {
                     buildAndShowPopup();
                 }
             }
-        });
+        };
+        textPane.addKeyListener(metaReturnListener);
     }
 
-    /**
-     * 単語の境界からキャレットの位置までのテキストを取得し，長さがゼロ以上でれば補完メニューをポップアップする.
-     */
-    protected void buildAndShowPopup() {
+    /// リソースを開放
+    public void dispose() {
+        textPane.removeKeyListener(metaReturnListener);
+        mediator = null;
+        textPane = null;
+        realChart = null;
+        diagTable = null;
+    }
 
+    /// 単語の境界からキャレットの位置までのテキストを取得し，長さがゼロ以上でれば補完メニューをポップアップする.
+    protected void buildAndShowPopup() {
         end = textPane.getCaretPosition();
         start = end;
         boolean found = false;
 
         while (start > 0) {
-
             start--;
-
             try {
                 String text = textPane.getText(start, 1);
                 for (String test : WORD_SEPARATOR) {
@@ -118,32 +101,23 @@ public abstract class AbstractCodeHelper {
 
         try {
             String str = textPane.getText(start, end - start);
-
-            if (str.length() > 0) {
+            if (!str.isEmpty()) {
                 buildPopup(str);
                 showPopup();
             }
-
         } catch (BadLocationException e) {
             e.printStackTrace(System.err);
         }
     }
 
-    /**
-     * popup menu を構築する.
-     *
-     * @param text キーワード
-     */
+    /// popup menu を構築する.
+    ///
+    /// @param text キーワード
     protected abstract void buildPopup(String text);
 
-    /**
-     * popup menu を表示する.
-     */
+    /// popup menu を表示する.
     protected void showPopup() {
-
-        if (popup == null || popup.getComponentCount() < 1) {
-            return;
-        }
+        if (popup == null || popup.getComponentCount() < 1) { return; }
 
         try {
             int pos = textPane.getCaretPosition();
@@ -155,18 +129,13 @@ public abstract class AbstractCodeHelper {
         }
     }
 
-    /**
-     * 引数の entityに対応するスタンプの popup を作る.
-     *
-     * @param entity Entity
-     */
+    /// 引数の entityに対応するスタンプの popup を作る.
+    ///
+    /// @param entity Entity
     protected void buildEntityPopup(String entity) {
-
         StampBoxPlugin stampBox = mediator.getStampBox();
         StampTree tree = stampBox.getStampTree(entity);
-        if (tree == null) {
-            return;
-        }
+        if (tree == null) { return; }
 
         popup = new JPopupMenu();
 
@@ -175,12 +144,10 @@ public abstract class AbstractCodeHelper {
         builder.build(popup);
     }
 
-    /**
-     * SearchText に一致するスタンプの popup を作る.
-     *
-     * @param trees stamp trees
-     * @param searchText search text
-     */
+    /// SearchText に一致するスタンプの popup を作る.
+    ///
+    /// @param trees stamp trees
+    /// @param searchText search text
     protected void buildMatchedPopup(List<StampTree> trees, String searchText) {
         popup = new JPopupMenu();
         String pattern = ".*" + searchText + ".*";
@@ -190,11 +157,9 @@ public abstract class AbstractCodeHelper {
         builder.buildRootless(popup);
     }
 
-    /**
-     * StampTree menu action.
-     *
-     * @param e StampTreeMenuEvent
-     */
+    /// StampTree menu action.
+    ///
+    /// @param e StampTreeMenuEvent
     public void importStamp(StampTreeMenuEvent e) {
         JComponent comp;
         boolean isDiagnosis = e.getEntity().equals(IInfoModel.ENTITY_DIAGNOSIS);
@@ -221,20 +186,16 @@ public abstract class AbstractCodeHelper {
         comp.getTransferHandler().importData(new TransferHandler.TransferSupport(comp, e.getTransferable()));
     }
 
-    /**
-     * ChartMediator を返す.
-     *
-     * @return ChartMediator
-     */
+    /// ChartMediator を返す.
+    ///
+    /// @return ChartMediator
     protected ChartMediator getMediator() {
         return mediator;
     }
 
-    /**
-     * Preferences を返す.
-     *
-     * @return Preferences
-     */
+    /// Preferences を返す.
+    ///
+    /// @return Preferences
     protected Preferences getPreferences() {
         return prefs;
     }
