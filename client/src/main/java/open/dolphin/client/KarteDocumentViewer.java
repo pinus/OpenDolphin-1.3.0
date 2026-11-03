@@ -41,7 +41,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     // 前回処方を適用した新規カルテはこの選択されたカルテが元になる
     private KarteViewer2 selectedKarteViewer;
     // 選択された History の DocId をキーとした Map
-    private Map<String, DocInfoModel> selectedHistoryMap;
+    private Map<Long, DocInfoModel> selectedHistoryMap;
     // karteViewer を並べたパネル
     private JPanel scrollerPanel;
     // 文書履を昇順で表示する場合に true
@@ -214,9 +214,9 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         if (selected == null || selected.length == 0) { return; }
 
         // 選択が変化していなければ帰る
-        Set<String> selectedIds = new HashSet<>();
+        Set<Long> selectedIds = new HashSet<>();
         for (DocInfoModel df : selected) {
-            selectedIds.add(df.getDocId());
+            selectedIds.add(df.getDocPk());
         }
         if (selectedHistoryMap.keySet().equals(selectedIds)) {
             logger.debug("selection unchanged");
@@ -226,7 +226,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         // 選択された History の DocId をキーとした HashMap を作成
         selectedHistoryMap = new HashMap<>();
         for (DocInfoModel model : selected) {
-            selectedHistoryMap.put(model.getDocId(), model);
+            selectedHistoryMap.put(model.getDocPk(), model);
         }
 
         // KarteTask でデータベースから DocumentModel を取ってきて EDT で addKarteViewer を呼ぶ

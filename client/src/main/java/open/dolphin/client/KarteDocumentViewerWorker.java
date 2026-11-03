@@ -3,7 +3,6 @@ package open.dolphin.client;
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.infomodel.DocInfoModel;
 import open.dolphin.infomodel.DocumentModel;
-import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +25,15 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
     private final KarteDocumentViewer context;
     private final Chart chart;
     private final List<KarteViewer2> karteViewerList;
-    // 選択された History の DocId をキーとした Map
-    private final Map<String, DocInfoModel> selectedHistoryMap;
+    // 選択された History の DocPk (DocumentModel#id) をキーとした Map
+    private final Map<Long, DocInfoModel> selectedHistoryMap;
     // karteViewer を並べるパネル
     private final JPanel scrollerPanel;
     private final JProgressBar progressBar;
     private final Logger logger = LoggerFactory.getLogger(KarteDocumentViewerWorker.class);
     private long lap;
 
-    public KarteDocumentViewerWorker(KarteDocumentViewer context, List<KarteViewer2> karteViewerList, Map<String, DocInfoModel> selectedHistoryMap, JPanel scrollerPanel) {
+    public KarteDocumentViewerWorker(KarteDocumentViewer context, List<KarteViewer2> karteViewerList, Map<Long, DocInfoModel> selectedHistoryMap, JPanel scrollerPanel) {
         this.context = context;
         this.chart = context.getContext();
         this.scrollerPanel = scrollerPanel;
@@ -57,13 +56,13 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         int fraction = Project.getPreferences().getInt(Project.MAX_FRAGMENT, 40);
 
         // 選択リストにあって 現在の karteList にないものは追加する
-        List<DocInfoModel> added = new ArrayList<>(); // 追加されたもの
-        Set<String> karteListIdSet = karteViewerList.stream().map(viewer -> viewer.getDocument().getDocInfo().getDocId()).collect(Collectors.toSet());
+        List<Long> added = new ArrayList<>(); // 追加されたもの
+        Set<Long> karteListPkSet = karteViewerList.stream().map(viewer -> viewer.getDocument().getDocInfo().getDocPk()).collect(Collectors.toSet());
 
         for (DocInfoModel selectedDocInfo : selectedHistoryMap.values()) {
-            if (!karteListIdSet.contains(selectedDocInfo.getDocId())) {
-                //logger.debug("added: " + selectedDocInfo.getDocId());
-                added.add(selectedDocInfo);
+            if (!karteListPkSet.contains(selectedDocInfo.getDocPk())) {
+                logger.debug("added: docPk={}", selectedDocInfo.getDocPk());
+                added.add(selectedDocInfo.getDocPk());
             }
         }
 
@@ -79,13 +78,12 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                 List<DocumentModel> toAdd = new ArrayList<>();
 
                 for (int i = 0; i < fraction; i++) {
-                    DocInfoModel test = added.get(count++);
-                    logger.debug("------------- docinfoPk:{} ", test.getDocPk());
+                    long test = added.get(count++);
                     // DocumentModel の cache をチェック
-                    DocumentModel dm = DocumentModelCache.get(test.getDocId());
+                    DocumentModel dm = DocumentModelCache.get(test);
                     if (dm == null) {
                         // DocumentModel がキャッシュに無ければ取りに行く分のリストに追加
-                        pkList.add(test.getDocPk());
+                        pkList.add(test);
                     } else {
                         logger.debug("DocumentModel cache hit");
                         toAdd.add(dm);
@@ -101,6 +99,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                 if (!isCancelled() && chart.getFrame().isVisible()) {
                     if (!pkList.isEmpty()) {
                         logger.debug("fetching {} documents", pkList.size());
+                        // この時点では DocumentModel.getDocInfo().getDocPk() == 0
                         List<DocumentModel> fetchedModels = ddl.getDocuments(pkList);
                         toAdd.addAll(fetchedModels);
                         DocumentModelCache.addAll(fetchedModels); // DocumentModel キャッシュに保存
@@ -156,35 +155,29 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
 
         // karteViewerList にあって選択リストにないものは除去リストに入れる
         for (KarteViewer2 viewer : karteViewerList) {
-            String id = viewer.getDocument().getDocInfo().getDocId();
-            if (!selectedHistoryMap.containsKey(id)) {
+            long pk = viewer.getDocument().getDocInfo().getDocPk();
+            if (!selectedHistoryMap.containsKey(pk)) {
                 removed.add(viewer);
                 //viewer.stop();
             }
         }
         // 削除リストを karteViewerList から取り除く
         karteViewerList.removeAll(removed);
-        // 非選択項目削除済みの karteList の DocId セットを作る
-        Set<String> karteListDocIdSet = karteViewerList.stream().map(v -> v.getDocument().getDocInfo().getDocId()).collect(Collectors.toSet());
+
+        // 残った処理対象の DocumentModel#id (docPk) セットを作る
+        Set<Long> karteListDocPkSet = karteViewerList.stream().map(v -> v.getDocument().getId()).collect(Collectors.toSet());
 
         // 追加された DocumentModel から　karteViewer をつくって karteList に加える
         for (DocumentModel dm : models) {
-
-
-            logger.debug("------------- dm id:{}, docPk:{} ", dm.getId(), dm.getDocInfo().getDocPk());
-
-
-            DocInfoModel docInfo = dm.getDocInfo();
-            String docId = docInfo.getDocId();
-
             // karteList にないものがあれば, KarteViewer を作って加える
-            if (!karteListDocIdSet.contains(docId)) {
+            if (!karteListDocPkSet.contains(dm.getId())) {
 
                 // 対応する DocInfoModel を探す
                 DocInfoModel foundInfo = selectedHistoryMap.values().stream()
-                        .filter(d -> d.getDocId().equals(docId)).findFirst().orElse(null);
+                        .filter(d -> d.getDocPk() == dm.getId()).findFirst().orElse(null);
                 if (foundInfo != null) {
                     // 実体のある docInfo をセットする
+                    logger.debug("found docInfo: docPk={}", foundInfo.getDocPk());
                     dm.setDocInfo(foundInfo);
                 } else {
                     // 選択が変化して，せっかく取ってきた DocumentModel が無駄になった
@@ -200,22 +193,20 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                 // このコールでモデルのレンダリングが開始される
                 karteViewer.start();
                 // ダブルクリックされたカルテを別画面で表示する MouseListener を生成して KarteViewer の Pane にアタッチする
-                if (docInfo.getDocType().equals(IInfoModel.DOCTYPE_KARTE)) {
-                    final MouseListener ml = new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(MouseEvent e) {
-                            int cnt = e.getClickCount();
-                            if (cnt == 2) {
-                                // 選択した Karte を EditorFrame で開く
-                                context.setSelectedKarteViewer(karteViewer);
-                                context.openKarte();
-                            } else if (cnt == 1) {
-                                context.setSelectedKarteViewer(karteViewer);
-                            }
+                final MouseListener ml = new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        int cnt = e.getClickCount();
+                        if (cnt == 2) {
+                            // 選択した Karte を EditorFrame で開く
+                            context.setSelectedKarteViewer(karteViewer);
+                            context.openKarte();
+                        } else if (cnt == 1) {
+                            context.setSelectedKarteViewer(karteViewer);
                         }
-                    };
-                    karteViewer.addMouseListener(ml);
-                }
+                    }
+                };
+                karteViewer.addMouseListener(ml);
                 // ボーダーをあらかじめ付けておく
                 karteViewer.getKartePanel().setBackground(karteViewer.getSoaKartePane().getTextPane().getBackground());
                 karteViewer.setSelected(false);

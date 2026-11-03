@@ -57,7 +57,6 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         if (document == null) { return; }
 
         // Creates GUI
-        String docId = document.getDocInfo().getDocId();
         kartePanel = DocumentModelCache.kartePanelCacheGet(document);
 
         if (kartePanel == null) {
@@ -65,7 +64,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
             kartePanel = KartePanelFactory.createViewerPanel();
             KarteRenderer_2 renderer = new KarteRenderer_2(getSoaKartePane(), getPKartePane());
             renderer.render(document);
-            DocumentModelCache.kartePanelCacheAdd(docId, kartePanel);
+            DocumentModelCache.kartePanelCacheAdd(document.getId(), kartePanel);
 
         } else {
             logger.debug("KartePanel cache hit");
@@ -73,7 +72,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
 
         kartePanel.setParent(this);
         // Schema 画像にファイル名を付けるのために必要
-        kartePanel.setDocId(docId);
+        kartePanel.setDocId(document.getDocInfo().getDocId());
 
         StringBuilder timeStamp = new StringBuilder();
 

@@ -28,8 +28,9 @@ public class DocumentModelCache {
     private static final long TIMEOUT_SECONDS = 30;
     private static final long SAVE_DELAY_MILLIS = 1000;
 
-    private static final Map<String, DocumentModel> cache = new ConcurrentHashMap<>();
-    private static final Map<String, KartePanel> kartePanelCache = new ConcurrentHashMap<>();
+    /// DocumentModel(KarteBean)#id (DocInfoModel#docPk) をキーとした HashMap
+    private static final Map<Long, DocumentModel> cache = new ConcurrentHashMap<>();
+    private static final Map<Long, KartePanel> kartePanelCache = new ConcurrentHashMap<>();
 
     private static final String SUFFIX = "open.dolphin.document.cache";
     private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
@@ -84,7 +85,7 @@ public class DocumentModelCache {
                     }
                     add(model);
                     // ついでに KartePanel をレンダリングしてしまう
-                    kartePanelCacheAdd(model.getDocInfo().getDocId(), createKartePanel(model));
+                    kartePanelCacheAdd(model.getId(), createKartePanel(model));
                 }
             }
             logger.info("loaded {} models from {}", cache.size(), documentModelCacheFile);
@@ -114,8 +115,8 @@ public class DocumentModelCache {
     /// DocumentModel をキャッシュに入れて, cache の内容をファイルに保存する.
     public static void add(DocumentModel model) {
         if (Project.getPreferences().getBoolean(Project.PREFETCH_CACHING, false)) {
-            cache.put(model.getDocInfo().getDocId(), model);
-            logger.debug("add model {}", model.getDocInfo().getDocId());
+            cache.put(model.getId(), model);
+            logger.debug("add model {}", model.getId());
             scheduleSave();
         }
     }
@@ -126,25 +127,25 @@ public class DocumentModelCache {
     }
 
     /// docId に対応する DocumentModel をキャッシュから取得する. なければ null を返す.
-    public static DocumentModel get(String docId) {
-        return cache.get(docId);
+    public static DocumentModel get(long docPk) {
+        return cache.get(docPk);
     }
 
     /// docId に対応する DocumentModel がキャッシュに存在するかを返す.
-    public static boolean contains(String docId) {
-        return cache.containsKey(docId);
+    public static boolean contains(long docPk) {
+        return cache.containsKey(docPk);
     }
 
     /// KartePanel をキャッシュに入れる
-    public static void kartePanelCacheAdd(String docId, KartePanel kartePanel) {
+    public static void kartePanelCacheAdd(long docPk, KartePanel kartePanel) {
         if (Project.getPreferences().getBoolean(Project.PREFETCH_CACHING, false)) {
-            kartePanelCache.put(docId, kartePanel);
+            kartePanelCache.put(docPk, kartePanel);
         }
     }
 
     /// KartePanel をキャッシュから取り出す
     public static KartePanel kartePanelCacheGet(DocumentModel model) {
-        return kartePanelCache.get(model.getDocInfo().getDocId());
+        return kartePanelCache.get(model.getId());
     }
 
     /// KartePanel をレンダリングする
@@ -163,12 +164,10 @@ public class DocumentModelCache {
 
     /// キャッシュを全て消去し, 保存ファイルも消去.
     public static void clear() {
-        logger.info("KartePanel and DocumentModel cache cleared");
         kartePanelCache.clear();
         cache.clear();
-        if (documentModelCacheFile.exists()) {
-            documentModelCacheFile.delete();
-        }
+        boolean deleted = documentModelCacheFile.delete();
+        logger.info("Cache cleared and cache file deleted: {}", deleted);
     }
 
     /// 受付時に DocumentModel を全部取ってきてキャッシュしてしまう.
@@ -187,22 +186,17 @@ public class DocumentModelCache {
             karte.setPatient(pvt.getPatient());
 
             // DocumentModel 取得のための pk list を作り, 同時に DocInfoModel の map を作る
-            List<Long> docIds = new ArrayList<>();
-            Map<String, DocInfoModel> docInfoMap = new HashMap<>();
-            karte.getDocInfoEntry().forEach(docInfo -> {
-                docInfoMap.put(docInfo.getDocId(), docInfo);
-                docIds.add(docInfo.getDocPk());
-            });
-
-            List<DocumentModel> models = ddl.getDocuments(docIds);
+            Map<Long, DocInfoModel> docInfoMap = new HashMap<>();
+            karte.getDocInfoEntry().forEach(docInfo -> docInfoMap.put(docInfo.getDocPk(), docInfo));
+            List<DocumentModel> models = ddl.getDocuments(new ArrayList<>(docInfoMap.keySet()));
 
             // 取得した DocumentModel に DocInfoModel の実体をセットして cache に追加する
             models.forEach(model -> {
-                model.setDocInfo(docInfoMap.get(model.getDocInfo().getDocId()));
+                model.setDocInfo(docInfoMap.get(model.getId()));
                 add(model);
 
                 // ついでに KartePanel をレンダリングしてしまう
-                kartePanelCacheAdd(model.getDocInfo().getDocId(), createKartePanel(model));
+                kartePanelCacheAdd(model.getId(), createKartePanel(model));
             });
 
             logger.debug("lap = {}", (System.nanoTime() - lap)/1000000);
