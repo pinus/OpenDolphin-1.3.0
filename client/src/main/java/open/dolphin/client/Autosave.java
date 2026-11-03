@@ -1,17 +1,22 @@
 package open.dolphin.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
 import open.dolphin.ui.sheet.JSheet;
 import open.dolphin.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -22,16 +27,21 @@ import java.util.stream.Stream;
 public class Autosave implements Runnable {
     private final static int INTERVAL = 2;
     private final static int INITIAL_DELAY = 2;
-    private final static String SUFFIX = "open.dolphin";
-    private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
+    private final static String SUFFIX = "open.dolphin.autosave";
+    private final static String TMP_DIR = System.getProperty("java.io.tmpdir");
     private final KarteEditor editor;
-    // Logger
-    private final Logger logger = LoggerFactory.getLogger(Autosave.class);
     private final AutosaveModel autosaveModel;
     private File tmpFile;
     private boolean dirty = true;
+    // ObjectMapper 関連
+    private static final ObjectMapper objectMapper = new SmileMapper();
+    static { JsonUtils.initialize(objectMapper); }
+    private static final ObjectReader objectReader = objectMapper.readerFor(AutosaveModel.class);
+    private static final ObjectWriter objectWriter = objectMapper.writerFor(AutosaveModel.class);
     // 自動セーブのタイマー
     private ScheduledExecutorService executor;
+    // Logger
+    private final Logger logger = LoggerFactory.getLogger(Autosave.class);
 
     public Autosave(KarteEditor e) {
         editor = e;
@@ -56,22 +66,16 @@ public class Autosave implements Runnable {
      * @return list of AutosaveModel
      */
     private static List<AutosaveModel> load() {
-
         File dir = new File(TMP_DIR);
 
-        return Stream.of(dir.listFiles(fn -> fn.getName().endsWith(SUFFIX))).map(f -> {
-            StringBuilder str = new StringBuilder();
-
-            try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-                String s;
-                while ((s = br.readLine()) != null) {
-                    str.append(s);
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace(System.err);
-            }
-            return JsonUtils.fromJson(str.toString(), AutosaveModel.class);
-        }).collect(Collectors.toList());
+        return Stream.of(dir.listFiles(fn -> fn.getName().endsWith(SUFFIX)))
+                .<AutosaveModel>map(f -> {
+                    try {
+                        return objectReader.readValue(f);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }).toList();
     }
 
     /**
@@ -173,23 +177,17 @@ public class Autosave implements Runnable {
      */
     @Override
     public void run() {
-
         if (dirty) {
-            long l = System.currentTimeMillis();
-
-            autosaveModel.dump(editor);
-
-            String json = JsonUtils.toJson(autosaveModel);
-
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile))) {
-                bw.write(json);
-
-            } catch (IOException ex) {
-                ex.printStackTrace(System.err);
+            long l = System.nanoTime();
+            try {
+                autosaveModel.dump(editor);
+                objectWriter.writeValue(tmpFile, autosaveModel);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                dirty = false;
+                logger.debug("autosave took {} ms", (System.nanoTime() - l)/1000000);
             }
-
-            dirty = false;
-            logger.debug("autosave took " + (System.currentTimeMillis() - l) + " ms");
         }
     }
 }

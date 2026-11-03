@@ -34,7 +34,7 @@ public class DocumentModelCache {
     private static final Map<Long, DocumentModel> cache = new ConcurrentHashMap<>();
     private static final Map<Long, KartePanel> kartePanelCache = new ConcurrentHashMap<>();
     // Cache ファイル関連
-    private static final String SUFFIX = "open.dolphin.document.cache";
+    private static final String SUFFIX = "open.dolphin.documentcache";
     private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
     private static final File documentModelCacheFile = new File(TMP_DIR, LocalDate.now() + "." + SUFFIX);
     // ObjectMapper 関連
