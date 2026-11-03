@@ -73,6 +73,7 @@ public class DocumentModelCache {
     /// ファイルから cache に読み込む.
     private static void load() {
         try {
+            long lap = System.nanoTime();
             String json = Files.readString(documentModelCacheFile.toPath(), StandardCharsets.UTF_8);
             if (json.isBlank()) { return; }
             DocumentModel[] models = JsonUtils.fromJson(json, DocumentModel[].class);
@@ -83,12 +84,13 @@ public class DocumentModelCache {
                     for (SchemaModel schema : model.getSchema()) {
                         schema.setIcon(new ImageIcon(schema.getJpegByte()));
                     }
-                    add(model);
+                    cache.put(model.getId(), model);
                     // ついでに KartePanel をレンダリングしてしまう
                     kartePanelCacheAdd(model.getId(), createKartePanel(model));
                 }
             }
-            logger.info("loaded {} models from {}", cache.size(), documentModelCacheFile);
+            logger.info("loaded {} models from {} in {} ms", cache.size(), documentModelCacheFile, (System.nanoTime() - lap)/1000000);
+
         } catch (IOException | RuntimeException e) {
             logger.warn("failed to load {}: {}", documentModelCacheFile, e.toString());
         }
@@ -97,10 +99,12 @@ public class DocumentModelCache {
     /// cache の内容をファイルに保存する.
     private static synchronized void save() {
         try {
+            long lap = System.nanoTime();
             String json = JsonUtils.toJson(cache.values().toArray(new DocumentModel[0]));
             if (json == null) { return; }
             Files.writeString(documentModelCacheFile.toPath(), json, StandardCharsets.UTF_8);
-            logger.debug("saved {} models to {}", cache.size(), documentModelCacheFile);
+            logger.debug("saved {} models to {} in {} ms", cache.size(), documentModelCacheFile, (System.nanoTime() - lap)/1000000);
+
         } catch (IOException | RuntimeException e) {
             logger.warn("failed to save {}: {}", documentModelCacheFile, e.toString());
         }

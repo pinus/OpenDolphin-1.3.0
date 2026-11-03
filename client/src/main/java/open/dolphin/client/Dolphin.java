@@ -75,6 +75,7 @@ public class Dolphin implements MainWindow {
     public Dolphin() {
     }
 
+    @SuppressWarnings("RedundantMethodVisibility")
     static void main(String[] args) {
         // コンソールのリダイレクト
         redirectConsole();
