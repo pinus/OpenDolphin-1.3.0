@@ -1,5 +1,8 @@
 package open.dolphin.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.infomodel.*;
 import open.dolphin.project.Project;
@@ -10,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,6 +36,12 @@ public class DocumentModelCache {
     private static final String SUFFIX = "open.dolphin.document.cache";
     private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
     private static final File documentModelCacheFile = new File(TMP_DIR, LocalDate.now() + "." + SUFFIX);
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    static { JsonUtils.initialize(objectMapper); }
+    private static final ObjectReader objectReader = objectMapper.readerFor(DocumentModel[].class);
+    private static final ObjectWriter objectWriter = objectMapper.writerFor(DocumentModel[].class);
+
     private static final Logger logger = LoggerFactory.getLogger(DocumentModelCache.class);
 
     private static final ScheduledExecutorService saver = Executors.newSingleThreadScheduledExecutor(r -> {
@@ -72,11 +79,10 @@ public class DocumentModelCache {
 
     /// ファイルから cache に読み込む.
     private static void load() {
+        if (!documentModelCacheFile.exists()) { return; }
         try {
             long lap = System.nanoTime();
-            String json = Files.readString(documentModelCacheFile.toPath(), StandardCharsets.UTF_8);
-            if (json.isBlank()) { return; }
-            DocumentModel[] models = JsonUtils.fromJson(json, DocumentModel[].class);
+            DocumentModel[] models = objectReader.readValue(documentModelCacheFile);
             if (models == null) { return; }
             for (DocumentModel model : models) {
                 if (model != null && model.getDocInfo() != null) {
@@ -100,9 +106,7 @@ public class DocumentModelCache {
     private static synchronized void save() {
         try {
             long lap = System.nanoTime();
-            String json = JsonUtils.toJson(cache.values().toArray(new DocumentModel[0]));
-            if (json == null) { return; }
-            Files.writeString(documentModelCacheFile.toPath(), json, StandardCharsets.UTF_8);
+            objectWriter.writeValue(documentModelCacheFile, cache.values().toArray(new DocumentModel[0]));
             logger.debug("saved {} models to {} in {} ms", cache.size(), documentModelCacheFile, (System.nanoTime() - lap)/1000000);
 
         } catch (IOException | RuntimeException e) {

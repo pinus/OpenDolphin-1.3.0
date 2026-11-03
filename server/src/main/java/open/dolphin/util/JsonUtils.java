@@ -16,9 +16,9 @@ import java.io.IOException;
 /// @author pns
 public class JsonUtils {
     private final static ObjectMapper mapper = new ObjectMapper();
-    static { initialilze(mapper); }
+    static { initialize(mapper); }
 
-    public static void initialilze(ObjectMapper objectMapper) {
+    public static void initialize(ObjectMapper objectMapper) {
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         objectMapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);

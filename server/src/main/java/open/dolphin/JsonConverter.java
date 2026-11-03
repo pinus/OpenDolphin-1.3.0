@@ -24,7 +24,7 @@ public class JsonConverter implements ContextResolver<ObjectMapper> {
     }
 
     private void initModule() {
-        JsonUtils.initialilze(mapper);
+        JsonUtils.initialize(mapper);
 
         // works in Hibernate 7
         hbm.configure(Hibernate7Module.Feature.FORCE_LAZY_LOADING, false);
