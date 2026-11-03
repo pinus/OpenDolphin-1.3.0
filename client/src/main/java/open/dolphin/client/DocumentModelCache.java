@@ -3,6 +3,7 @@ package open.dolphin.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.infomodel.*;
 import open.dolphin.project.Project;
@@ -29,15 +30,15 @@ public class DocumentModelCache {
     private static final long TIMEOUT_SECONDS = 30;
     private static final long SAVE_DELAY_MILLIS = 1000;
 
-    /// DocumentModel(KarteBean)#id (DocInfoModel#docPk) をキーとした HashMap
+    // DocumentModel(KarteBean)#id (DocInfoModel#docPk) をキーとした HashMap
     private static final Map<Long, DocumentModel> cache = new ConcurrentHashMap<>();
     private static final Map<Long, KartePanel> kartePanelCache = new ConcurrentHashMap<>();
-
+    // Cache ファイル関連
     private static final String SUFFIX = "open.dolphin.document.cache";
     private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
     private static final File documentModelCacheFile = new File(TMP_DIR, LocalDate.now() + "." + SUFFIX);
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    // ObjectMapper 関連
+    private static final ObjectMapper objectMapper = new SmileMapper();
     static { JsonUtils.initialize(objectMapper); }
     private static final ObjectReader objectReader = objectMapper.readerFor(DocumentModel[].class);
     private static final ObjectWriter objectWriter = objectMapper.writerFor(DocumentModel[].class);

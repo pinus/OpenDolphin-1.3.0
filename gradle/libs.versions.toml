@@ -41,6 +41,7 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 jackson-annotation = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson-annotations" }
 jackson-hibernate7 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-hibernate7", version.ref = "jackson" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+jackson-dataformat-smile = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-smile", version.ref = "jackson" }
 commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 jdom2 = { module = "org.jdom:jdom2", version.ref = "jdom2" }
@@ -63,4 +64,4 @@ thumbnailator = { module = "net.coobird:thumbnailator", version.ref = "thumbnail
 [bundles]
 google = [ "google-client", "google-oauth", "google-calendar" ]
 hibernate-search = [ "hibernate-search", "hibernate-search-elasticsearch" ]
-jackson = [ "jackson-core", "jackson-databind", "jackson-annotation", "jackson-hibernate7", "jackson-datatype-jsr310" ]
+jackson = [ "jackson-core", "jackson-databind", "jackson-annotation", "jackson-hibernate7", "jackson-datatype-jsr310", "jackson-dataformat-smile" ]
