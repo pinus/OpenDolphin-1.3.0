@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
+import open.dolphin.infomodel.DocumentModel;
+import open.dolphin.infomodel.SchemaModel;
 import open.dolphin.ui.sheet.JSheet;
 import open.dolphin.util.JsonUtils;
 import org.slf4j.Logger;
@@ -19,25 +21,22 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-/**
- * 編集中の KafrteEditor を定期的に一時保存する.
- *
- * @author pns
- */
+/// 編集中の KafrteEditor を定期的に一時保存する.
+///
+/// @author pns
 public class Autosave implements Runnable {
     private final static int INTERVAL = 2;
     private final static int INITIAL_DELAY = 2;
     private final static String SUFFIX = "open.dolphin.autosave";
     private final static String TMP_DIR = System.getProperty("java.io.tmpdir");
     private final KarteEditor editor;
-    private final AutosaveModel autosaveModel;
     private File tmpFile;
-    private boolean dirty = true;
+    private boolean shouldSave = true;
     // ObjectMapper 関連
     private static final ObjectMapper objectMapper = new SmileMapper();
     static { JsonUtils.initialize(objectMapper); }
-    private static final ObjectReader objectReader = objectMapper.readerFor(AutosaveModel.class);
-    private static final ObjectWriter objectWriter = objectMapper.writerFor(AutosaveModel.class);
+    private static final ObjectReader objectReader = objectMapper.readerFor(SaveModel.class);
+    private static final ObjectWriter objectWriter = objectMapper.writerFor(SaveModel.class);
     // 自動セーブのタイマー
     private ScheduledExecutorService executor;
     // Logger
@@ -45,31 +44,25 @@ public class Autosave implements Runnable {
 
     public Autosave(KarteEditor e) {
         editor = e;
-        autosaveModel = new AutosaveModel();
     }
 
-    /**
-     * pid と doc id から temporary file を作る.
-     *
-     * @param patientId PatientId
-     * @param docId     DocID
-     * @return File
-     */
+    /// pid と doc id から temporary file を作る.
+    ///
+    /// @param patientId PatientId
+    /// @param docId     DocID
+    /// @return File
     private static File getTemporaryFile(String patientId, String docId) {
         String path = String.format("%s%s-%s.%s", TMP_DIR, patientId, docId, SUFFIX);
         return new File(path);
     }
 
-    /**
-     * 保存された Temporary file を読み込んで AutosaveModel を生成する.
-     *
-     * @return list of AutosaveModel
-     */
-    private static List<AutosaveModel> load() {
+    /// 保存された Temporary file を読み込んで SaveModel を生成する.
+    ///
+    /// @return list of SaveModel
+    private static List<SaveModel> load() {
         File dir = new File(TMP_DIR);
-
         return Stream.of(dir.listFiles(fn -> fn.getName().endsWith(SUFFIX)))
-                .<AutosaveModel>map(f -> {
+                .<SaveModel>map(f -> {
                     try {
                         return objectReader.readValue(f);
                     } catch (IOException e) {
@@ -78,40 +71,31 @@ public class Autosave implements Runnable {
                 }).toList();
     }
 
-    /**
-     * 保存されていない編集中カルテをチェックして編集するかどうか決める.
-     *
-     * @param chart ChartImpl
-     */
+    /// 保存されていない編集中カルテをチェックして編集するかどうか決める.
+    ///
+    /// @param chart ChartImpl
     public static void checkForTemporaryFile(final ChartImpl chart) {
-
         String chartPid = chart.getKarte().getPatient().getPatientId();
-
-        List<AutosaveModel> targetModels = load().stream()
-            .filter(m -> chartPid.equals(m.getPatientId())).toList();
-
-        if (targetModels.isEmpty()) {
-            return;
-        }
+        List<SaveModel> targetModels = load().stream()
+                .filter(m -> chartPid.equals(m.getPatientId())).toList();
+        if (targetModels.isEmpty()) { return; }
 
         SwingUtilities.invokeLater(() -> {
-
             String message = "保存されていない編集中カルテがみつかりました. \nエディタで開きますか?";
             String[] selection = {"開く", "破棄"};
-
             int opt = JSheet.showOptionDialog(chart.getFrame(), message, "保存されていないカルテ",
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, selection, selection[0]);
 
             switch (opt) {
                 case JOptionPane.YES_OPTION ->
-                    targetModels.stream().map(a -> {
-                        a.composeDocumentModel();
-                        return a.getDocumentModel();
-
-                    }).forEach(m -> {
+                    targetModels.stream().forEach(saveModel -> {
+                        DocumentModel dm = saveModel.getDocument();
+                        // ImageIcon を作り直す
+                        for (SchemaModel schema : dm.getSchema()) {
+                            schema.setIcon(new ImageIcon(schema.getJpegByte()));
+                        }
                         KarteEditor editor = chart.createEditor();
-                        editor.setDocument(m);
-
+                        editor.setDocument(dm);
                         editor.setEditable(true);
                         editor.setModify(true);
 
@@ -119,21 +103,19 @@ public class Autosave implements Runnable {
                         editorFrame.setChart(chart);
                         editorFrame.setKarteEditor(editor);
                         editorFrame.start();
-
-                        editor.setDirty(true);
+                        // EDT の最後に setDirty を載せる
+                        SwingUtilities.invokeLater(() -> editor.setDirty(true));
                     });
 
                 case JOptionPane.NO_OPTION, JOptionPane.CLOSED_OPTION ->
                     targetModels.stream()
-                        .map(a -> getTemporaryFile(a.getPatientId(), a.getDocumentModel().getDocInfo().getDocId()))
+                        .map(s -> getTemporaryFile(s.getPatientId(), s.getDocument().getDocInfo().getDocId()))
                         .forEach(File::delete);
             }
         });
     }
 
-    /**
-     * 編集中カルテの記録を開始する.
-     */
+    /// 編集中カルテの記録を開始する.
     public void start() {
         String patientId = editor.getContext().getPatient().getPatientId();
         String docId = editor.getDocument().getDocInfo().getDocId();
@@ -145,9 +127,7 @@ public class Autosave implements Runnable {
         executor.scheduleWithFixedDelay(this, INITIAL_DELAY, INTERVAL, TimeUnit.SECONDS);
     }
 
-    /**
-     * 編集中カルテの記録を終了し, TemporaryFile を消去する.
-     */
+    /// 編集中カルテの記録を終了し, TemporaryFile を消去する.
     public void stop() {
         if (! (executor.isShutdown() || executor.isTerminated())) {
             executor.shutdownNow();
@@ -163,31 +143,41 @@ public class Autosave implements Runnable {
         }
     }
 
-    /**
-     * KarteEditor から Dirty 情報を受け取る.
-     *
-     * @param newDirty new dirty flag
-     */
-    public void setDirty(boolean newDirty) {
-        dirty = newDirty;
+    /// KarteEditor から Dirty 情報を受け取る.
+    ///
+    /// @param dirty new dirty flag
+    public void setDirty(boolean dirty) {
+        shouldSave = dirty;
     }
 
-    /**
-     * 編集中の KarteEditor を AutosaveModel にしてファイル保存する.
-     */
+    /// 編集中の KarteEditor を SaveModel にしてファイル保存する.
     @Override
     public void run() {
-        if (dirty) {
+        if (shouldSave) {
             long l = System.nanoTime();
             try {
-                autosaveModel.dump(editor);
-                objectWriter.writeValue(tmpFile, autosaveModel);
+                SaveModel saveModel = new SaveModel();
+                saveModel.setPatientId(editor.getContext().getKarte().getPatient().getPatientId());
+                saveModel.setDocument(editor.getDocument());
+                objectWriter.writeValue(tmpFile, saveModel);
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
-                dirty = false;
+                shouldSave = false;
                 logger.debug("autosave took {} ms", (System.nanoTime() - l)/1000000);
             }
         }
+    }
+
+    private static class SaveModel {
+        private String patientId;
+        private DocumentModel documentModel;
+
+        public SaveModel() {}
+        public void setPatientId(String patientId) { this.patientId = patientId; }
+        public String getPatientId() { return patientId; }
+        public void setDocument(DocumentModel documentModel) { this.documentModel = documentModel; }
+        public DocumentModel getDocument() { return documentModel; }
     }
 }
