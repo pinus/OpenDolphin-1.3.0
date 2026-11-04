@@ -15,13 +15,14 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-/// 編集中の KafrteEditor を定期的に一時保存する.
+/// 編集中の KarteEditor を定期的に一時保存する.
 ///
 /// @author pns
 public class Autosave implements Runnable {
@@ -60,9 +61,9 @@ public class Autosave implements Runnable {
     ///
     /// @return list of SaveModel
     private static List<SaveModel> load() {
-        File dir = new File(TMP_DIR);
-        return Stream.of(dir.listFiles(fn -> fn.getName().endsWith(SUFFIX)))
-                .<SaveModel>map(f -> {
+        File[] autoSavedFiles = new File(TMP_DIR).listFiles(fn -> fn.getName().endsWith(SUFFIX));
+        if (autoSavedFiles == null) { return new ArrayList<>(); }
+        return Stream.of(autoSavedFiles).<SaveModel>map(f -> {
                     try {
                         return objectReader.readValue(f);
                     } catch (IOException e) {
@@ -72,6 +73,7 @@ public class Autosave implements Runnable {
     }
 
     /// 保存されていない編集中カルテをチェックして編集するかどうか決める.
+    /// KarteDocumentViewer から static に呼ばれる
     ///
     /// @param chart ChartImpl
     public static void checkForTemporaryFile(final ChartImpl chart) {
@@ -88,7 +90,7 @@ public class Autosave implements Runnable {
 
             switch (opt) {
                 case JOptionPane.YES_OPTION ->
-                    targetModels.stream().forEach(saveModel -> {
+                    targetModels.forEach(saveModel -> {
                         DocumentModel dm = saveModel.getDocument();
                         // ImageIcon を作り直す
                         for (SchemaModel schema : dm.getSchema()) {
@@ -139,7 +141,7 @@ public class Autosave implements Runnable {
             tmpFile.delete();
 
         } else {
-            logger.info("stop() is called, but is already shutdown");
+            logger.warn("stop() is called, but is already shutdown");
         }
     }
 
