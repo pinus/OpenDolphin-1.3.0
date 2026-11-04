@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /// 文書をデータベースから取得するタスククラス.
 /// FRACTION を大きくすると速くなる. 小さくするとロード中の操作がしやすくなる.
 /// 290件のカルテ表示時間
-/// FRACTION 10: 2358, 20: 1989, 30: 1854, 40: 1795, 50: 1658, 60: 1587
+/// FRACTION 10: 2168, 20: 1756, 30: 1480, 40: 1408, 50: 1430, 60: 1434
 public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Component>> {
     private final KarteDocumentViewer context;
     private final Chart chart;
@@ -134,7 +134,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         if (!karteViewerList.isEmpty()) {
             context.setSelectedKarteViewer(karteViewerList.getFirst());
         }
-        SwingUtilities.invokeLater(() -> logger.debug("lap time later: {}", (System.nanoTime() - lap)/1000000));
+        SwingUtilities.invokeLater(() -> logger.debug("lap time: {}", (System.nanoTime() - lap)/1000000));
     }
 
     private void addKarteViewer(List<DocumentModel> models) {
