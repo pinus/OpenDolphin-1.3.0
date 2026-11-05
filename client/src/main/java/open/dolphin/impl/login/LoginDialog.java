@@ -1,6 +1,7 @@
 package open.dolphin.impl.login;
 
 import open.dolphin.client.ClientContext;
+import open.dolphin.client.DocumentModelCache;
 import open.dolphin.client.Dolphin;
 import open.dolphin.delegater.DolphinClientContext;
 import open.dolphin.delegater.UserDelegater;
@@ -136,6 +137,14 @@ public class LoginDialog {
 
                 // User 情報を取得するためのデリゲータを得る
                 UserDelegater userDlg = new UserDelegater();
+
+                // DocumentModel キャッシュの読み込み - ログイン手順に間借りする
+                try {
+                    Class.forName(DocumentModelCache.class.getName());
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+
                 return userDlg.getUser(pk);
             }
 
