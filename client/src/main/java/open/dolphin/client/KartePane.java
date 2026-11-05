@@ -45,8 +45,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.prefs.Preferences;
 
 /// KarteComposite の一つで，内部に JTextPane を１つ保持している.
@@ -353,7 +351,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
             KarteStyledDocument doc = getDocument();
             Component c = StyleConstants.getComponent(doc.getCharacterElement(e.getDot()).getAttributes());
             if (Objects.nonNull(c)) {
-                queueRunnable(() -> Focuser.requestFocus(c));
+                SwingUtilities.invokeLater(() -> Focuser.requestFocus(c));
             }
         }
     }
@@ -486,21 +484,20 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         return null;
     }
 
-    /// 段落を構成する. EDTで呼び出す.
+    /// 段落を構成する.
     public void makeParagraph() {
-        queueRunnable(() -> getDocument().makeParagraph());
+        getDocument().makeParagraph();
     }
 
-    /// Documentに文字列を挿入する. EDTで呼び出す.
+    /// Documentに文字列を挿入する.
     ///
     /// @param s 挿入する文字列
     /// @param a 属性
     public void insertFreeString(String s, AttributeSet a) {
-        queueRunnable(() -> getDocument().insertFreeString(s, a));
+        getDocument().insertFreeString(s, a);
     }
 
     /// このペインに Stamp を挿入する. (drag & drop した場合)
-    /// EDTで呼び出す.
     ///
     /// @param stamp ModuleModel
     public void stamp(final ModuleModel stamp) {
@@ -515,12 +512,10 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         // 「月　日」の自動挿入
         // replace の場合はここに入らないので，StampHolder#importStamp でセット
         StampModifier.modify(stamp);
-        queueRunnable(() -> {
-            StampHolder h = new StampHolder(KartePane.this, stamp);
-            h.setTransferHandler(stampListTransferHandler);
-            KarteStyledDocument doc = getDocument();
-            doc.stamp(h);
-        });
+        StampHolder h = new StampHolder(KartePane.this, stamp);
+        h.setTransferHandler(stampListTransferHandler);
+        KarteStyledDocument doc = getDocument();
+        doc.stamp(h);
     }
 
     /// 重複をチェックする stamp(ModuleModel) - StampHolder から呼ばれる.
@@ -532,54 +527,49 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     }
 
     /// このペインに Stamp を挿入する. (KarteRenderer\_2 から呼ばれる)
-    /// EDTで呼び出す.
     ///
     /// @param stamp ModuleModel
     public void flowStamp(ModuleModel stamp) {
-        if (stamp == null || stamp.getModel() == null) { return; }
-        
-       queueRunnable(() -> {
-            // 外用剤の bundleNumber を補正する
-            StampModifier.adjustNumber(stamp);
-            StampHolder h = new StampHolder(this, stamp);
-            h.setTransferHandler(stampListTransferHandler);
-            KarteStyledDocument doc = getDocument();
-            doc.flowStamp(h);
-        });
+        if (stamp == null || stamp.getModel() == null) {
+            return;
+        }
+
+        // 外用剤の bundleNumber を補正する
+        StampModifier.adjustNumber(stamp);
+        StampHolder h = new StampHolder(this, stamp);
+        h.setTransferHandler(stampListTransferHandler);
+        KarteStyledDocument doc = getDocument();
+        doc.flowStamp(h);
     }
 
-    /// このペインにシェーマを挿入する. EDTで呼び出す.
+    /// このペインにシェーマを挿入する.
     ///
     /// @param schema シェーマ
     public void stampSchema(final SchemaModel schema) {
         if (schema == null) { return; }
 
-        queueRunnable(() -> {
-            SchemaHolder h = new SchemaHolder(KartePane.this, schema);
-            h.setTransferHandler(schemaHolderTransferHandler);
-            KarteStyledDocument doc = getDocument();
-            doc.stampSchema(h);
-        });
+        SchemaHolder h = new SchemaHolder(KartePane.this, schema);
+        h.setTransferHandler(schemaHolderTransferHandler);
+        KarteStyledDocument doc = getDocument();
+        doc.stampSchema(h);
     }
 
-    /// このペインにシェーマを挿入する. EDTで呼び出す.
+    /// このペインにシェーマを挿入する.
     ///
     /// @param schema シェーマ
     public void flowSchema(SchemaModel schema) {
         if (schema == null) { return; }
 
-        queueRunnable(() -> {
-            SchemaHolder h = new SchemaHolder(this, schema);
-            h.setTransferHandler(schemaHolderTransferHandler);
-            getDocument().flowSchema(h);
-        });
+        SchemaHolder h = new SchemaHolder(this, schema);
+        h.setTransferHandler(schemaHolderTransferHandler);
+        getDocument().flowSchema(h);
     }
 
-    /// このペインに TextStamp を挿入する. EDTで呼び出す.
+    /// このペインに TextStamp を挿入する.
     ///
     /// @param s TextStamp
     public void insertTextStamp(final String s) {
-        queueRunnable(() -> getDocument().insertTextStamp(s));
+        getDocument().insertTextStamp(s);
     }
 
     /// StampInfoがDropされた時，そのデータをペインに挿入する.
@@ -970,11 +960,11 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
             new TransferHandler.TransferSupport(getTextPane(), t));
     }
 
-    /// このペインからスタンプを削除する. EDTで操作.
+    /// このペインからスタンプを削除する.
     ///
     /// @param sh 削除するスタンプのホルダ
     public void removeStamp(StampHolder sh) {
-        queueRunnable(() -> getDocument().removeStamp(sh.getStartPos()));
+        getDocument().removeStamp(sh.getStartPos());
     }
 
     /// このペインからスタンプを削除する.
@@ -983,15 +973,15 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     public void removeStamp(StampHolder[] sh) {
         if (sh == null) { return; }
         for (StampHolder h : sh) {
-            removeStamp(h); // EDT
+            removeStamp(h);
         }
     }
 
-    /// このペインからシェーマを削除する. EDTで処理.
+    /// このペインからシェーマを削除する.
     ///
     /// @param sh 削除するシェーマのホルダ
     public void removeSchema(SchemaHolder sh) {
-        queueRunnable(() -> getDocument().removeStamp(sh.getStartPos()));
+        getDocument().removeStamp(sh.getStartPos());
     }
 
     /// このペインからシェーマを削除する.
@@ -1000,7 +990,7 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     public void removeSchema(SchemaHolder[] sh) {
         if (sh == null) { return; }
         for (SchemaHolder h : sh) {
-            removeSchema(h); // EDT
+            removeSchema(h);
         }
     }
 
@@ -1012,21 +1002,5 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     /// KartePane の状態　(_TEXT はテキストが選択された状態)
     private enum State {
         NONE, SOA, SOA_TEXT, SCHEMA, P, P_TEXT, STAMP
-    }
-
-    private final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<>();
-    private final AtomicBoolean scheduled = new AtomicBoolean(false);
-
-    /// StyledDocument を操作する Runnable をキューに積んで順番に処理する.
-    /// Rendering では EDT 外での操作になるので, DefaultCaret.ALWAYS_UPDATE に設定する3
-    private void queueRunnable(Runnable runnable) {
-        queue.add(runnable);
-        if (!scheduled.compareAndSet(false, true)) {
-            scheduled.set(false);
-            Runnable r;
-            while ((r = queue.poll()) != null) {
-                r.run();
-            }
-        }
     }
 }
