@@ -200,6 +200,11 @@ public class KartePanelFactory {
     /// workaround caret moving to the end on opening
     /// [...](http://ron.shoutboot.com/2010/05/23/swing-jscrollpane-scrolls-to-bottom/)
     private static class MyCaret extends DefaultCaret {
+        public MyCaret() {
+            super();
+            // EDT でなくても Caret を常に更新する
+            setUpdatePolicy(ALWAYS_UPDATE);
+        }
         @Override
         protected void adjustVisibility(Rectangle r) { }
     }
