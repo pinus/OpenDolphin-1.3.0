@@ -28,8 +28,8 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
 
     // このフレームの実のコンテキストチャート
     private Chart realChart;
-    // このフレームに表示する KarteViewer オブジェクト
-    private KarteViewer2 view;
+    // このフレームに表示する KarteViewer オブジェクト - 使っていない
+    private KarteViewer2 viewer;
     // このフレームに表示する KarteEditor オブジェクト
     private KarteEditor editor;
     // スクローラコンポーネント
@@ -100,7 +100,7 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
         }
 
         switch (mode) {
-            case BROWSER -> docModel = view.getDocument();
+            case BROWSER -> docModel = viewer.getDocument();
             case EDITOR -> docModel = editor.getDocument();
         }
         return docModel;
@@ -161,7 +161,7 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
      * @param view 表示する KarteView
      */
     public void setKarteViewer(KarteViewer2 view) {
-        this.view = view;
+        this.viewer = view;
     }
 
     /**
@@ -465,11 +465,11 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
 
         //statusPanel = new StatusPanel();
 
-        if (view != null) {
+        if (viewer != null) {
             mode = EditorMode.BROWSER;
-            view.setContext(EditorFrame.this);
-            view.start();
-            scroller = new JScrollPane(view.getUI());
+            viewer.setContext(EditorFrame.this);
+            viewer.start();
+            scroller = new JScrollPane(viewer.getUI());
             mediator.enableAction(GUIConst.ACTION_NEW_DOCUMENT, false);
 
         } else if (editor != null) {
@@ -495,8 +495,8 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
 
         // 先頭を表示
         SwingUtilities.invokeLater(() -> {
-            if (view != null) {
-                view.getUI().scrollRectToVisible(new Rectangle(0, 0, view.getUI().getWidth(), 50));
+            if (viewer != null) {
+                viewer.getUI().scrollRectToVisible(new Rectangle(0, 0, viewer.getUI().getWidth(), 50));
             } else if (editor != null) {
                 editor.getUI().scrollRectToVisible(new Rectangle(0, 0, editor.getUI().getWidth(), 50));
             }
@@ -548,8 +548,14 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
         mediator.dispose();
         editor.stop();
         windowSupport.dispose();
+
         realChart = null;
         setContext(null);
+        mediator = null;
+        editor = null;
+        windowSupport = null;
+        scroller = null;
+        //viewer = null; //使ってない
     }
 
     /**

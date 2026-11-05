@@ -255,8 +255,8 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
     public void stop() {
         logger.info("autosave stop");
         autosave.stop();
-        getSoaPane().dispose();
-        getPPane().dispose();
+        kartePanel.stop();
+        kartePanel = null;
     }
 
     /// DocumentModelを表示する.

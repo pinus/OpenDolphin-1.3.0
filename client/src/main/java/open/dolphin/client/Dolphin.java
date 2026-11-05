@@ -177,14 +177,6 @@ public class Dolphin implements MainWindow {
                 }
             }
         }
-        // DocumentModel キャッシュの読み込み
-        Thread.ofPlatform().start(() -> {
-            try {
-                Class.forName(DocumentModelCache.class.getName());
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        });
         // ドキュメントフォルダの有無をチェック
         checkDocumentFolder();
     }
@@ -352,10 +344,13 @@ public class Dolphin implements MainWindow {
 
         // StageManager を使用していると, 左寄りのウィンドウの位置が勝手に右側に動かされてしまう.
         // その動きは windowSupport で 500 msec 後に undo に記録されるので, それを 1秒後に呼び出して元に戻す
-        Thread.ofVirtual().start(() -> {
+        Thread.ofPlatform().start(() -> {
             try {
+                // DocumentModel キャッシュの読み込み - 体感的に気になりにくい場所はどこだ
+                Class.forName(DocumentModelCache.class.getName());
                 Thread.sleep(1000);
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException | ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
             }
             windowSupport.revertBounds();
         });
