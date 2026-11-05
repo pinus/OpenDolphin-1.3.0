@@ -162,7 +162,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         long maxMemory = Runtime.getRuntime().maxMemory() / 1048576L;
         //logger.info(message);
         logger.info("free/max {}/{} MB ({})", freeMemory, maxMemory, Window.getOwnerlessWindows().length);
-        System.gc();
+        //System.gc();
     }
 
     /// 500 msec 以内の変更は記録しない処理.
