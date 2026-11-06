@@ -84,16 +84,16 @@ public class StampModifier {
         if (!duplicates.isEmpty()) {
             final Window parent = SwingUtilities.getWindowAncestor(kartePane.getComponent());
 
-            SwingUtilities.invokeLater(() -> {
-                StringBuilder sb = new StringBuilder();
-                sb.append("同一スタンプが既に入力されています");
-                for (String item : duplicates) {
-                    sb.append("\n「").append(item).append("」");
-                }
-                JSheet.showMessageDialog(parent, sb.toString(), "スタンプ重複", JOptionPane.WARNING_MESSAGE);
-            });
+            StringBuilder sb = new StringBuilder();
+            sb.append("同一スタンプが既に入力されています");
+            for (String item : duplicates) {
+                sb.append("\n「").append(item).append("」");
+            }
+            //JSheet.showMessageDialog(parent, sb.toString(), "スタンプ重複", JOptionPane.WARNING_MESSAGE);
+            int opt = JSheet.showOptionDialog(parent, sb.toString(), "スタンプ重複",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[]{"入力する", "キャンセル"}, "入力する");
+            if (opt == 0) { return 0; } // それでも入力する
         }
-
         return duplicates.size();
     }
 

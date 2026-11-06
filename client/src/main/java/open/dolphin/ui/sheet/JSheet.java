@@ -36,7 +36,7 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
     // glass pane
     private Component glassPane;
     // キー入力を横取りするための KeyEventDispatcher
-    private static SheetKeyEventDispatcher sheetKeyEventDispatcher;
+    private SheetKeyEventDispatcher sheetKeyEventDispatcher;
     // Modal にするための SecondaryLoop
     private SecondaryLoop secondaryLoop;
     // 徐々に大きくなる JPanel
@@ -81,7 +81,7 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
         }
 
         // SheetKeyEventDispatcher に JOptionPane を登録
-        sheetKeyEventDispatcher.setJOptionPane(pane);
+        js.getSheetKeyEventDispatcher().setJOptionPane(pane);
 
         return js;
     }
@@ -622,6 +622,10 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
             g.setComposite(ac);
             g.drawImage(offscreenImage, 0, posY - ANIMATION_OFFSET, this);
         }
+    }
+
+    private SheetKeyEventDispatcher getSheetKeyEventDispatcher() {
+        return sheetKeyEventDispatcher;
     }
 
     /**
