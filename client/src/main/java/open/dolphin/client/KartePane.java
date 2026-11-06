@@ -522,8 +522,8 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     ///
     /// @param stamp ModuleModel
     public void stampWithDuplicateCheck(final ModuleModel stamp) {
-        stamp(stamp);
         StampModifier.checkDuplicates(stamp, this);
+        stamp(stamp);
     }
 
     /// このペインに Stamp を挿入する. (KarteRenderer\_2 から呼ばれる)
@@ -686,18 +686,10 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
                             ModuleModel module = new ModuleModel();
                             module.setModel(stamp);
                             module.setModuleInfo(stampInfo);
+                            // 重複チェック
+                            StampModifier.checkDuplicates(module, KartePane.this);
                             // スタンプ挿入
                             stamp(module);
-                            // 後で重複チェック
-                            duplicateCheckList.add(module);
-                        }
-                    }
-
-                    // スタンプ重複チェック
-                    for (ModuleModel module : duplicateCheckList) {
-                        int duplicateCount = StampModifier.checkDuplicates(module, KartePane.this);
-                        if (duplicateCount > 0) {
-                            break;
                         }
                     }
                 }

@@ -73,7 +73,7 @@ public class StampModifier {
 
                             String text = StringTool.toHankakuNumber(distItem.getName());
                             text = StringTool.toHankakuUpperLower(text);
-                            text = text.replaceAll("　", " ");
+                            text = text.replace("　", " ");
                             duplicates.add(text);
                         }
                     }
@@ -162,7 +162,7 @@ public class StampModifier {
     private static void addUnit(ModuleModel stamp) {
         ClaimItem[] items = ((BundleDolphin) stamp.getModel()).getClaimItem();
         for (ClaimItem c : items) {
-            if (c.getUnit() == null || c.getUnit().equals("")) {
+            if (c.getUnit() == null || c.getUnit().isEmpty()) {
                 c.setUnit(getUnit(c.getCode()));
             }
         }

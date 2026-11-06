@@ -139,6 +139,7 @@ public class LoginDialog {
                 UserDelegater userDlg = new UserDelegater();
 
                 // DocumentModel キャッシュの読み込み - ログイン手順に間借りする
+                setNote("キャッシュの読み込み中...");
                 try {
                     Class.forName(DocumentModelCache.class.getName());
                 } catch (ClassNotFoundException e) {
