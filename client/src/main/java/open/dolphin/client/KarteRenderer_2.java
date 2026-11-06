@@ -142,11 +142,11 @@ public class KarteRenderer_2 {
             renderPane(pSpec);
         }
 
-        // 最後の CR は attribute が変になってるので取り除く
         soaPane.getDocument().removeRepeatedCr();
-        soaPane.getDocument().removeLastCr();
         pPane.getDocument().removeRepeatedCr();
-        pPane.getDocument().removeLastCr();
+        // 最後の CR は attribute が変になってるので取り除く
+        //soaPane.getDocument().removeLastCr();
+        //pPane.getDocument().removeLastCr();
     }
 
     /**

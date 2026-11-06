@@ -281,22 +281,17 @@ public class KartePaneTransferHandler extends DolphinTransferHandler {
             OrderList list = (OrderList) tr.getTransferData(DolphinDataFlavor.stampListFlavor);
             ModuleModel[] stamps = list.getOrderList();
 
-            // pPaneにスタンプを挿入する
-            for (ModuleModel stamp : stamps) {
-                kartePane.stamp(stamp);
+            // 同一 pane 内での DnD フラグ
+            boolean isSamePane = kartePane.getDraggedCount() > 0 && kartePane.getDraggedStamp() != null;
+            if (isSamePane) {
+                // drag されたスタンプがあるとき drop した数を設定 - StampListTransferHander で参照される
+                kartePane.setDroppedCount(stamps.length);
             }
 
-            // drag されたスタンプがあるとき drop した数を設定する
-            // これで同じpane内でのDnDを判定している
-            if (kartePane.getDraggedCount() > 0 && kartePane.getDraggedStamp() != null) {
-                // 同一 pane 内での DnD
-                kartePane.setDroppedCount(stamps.length);
-
-            } else {
-                // 他の pane からの DnD の場合は重複チェックをする
-                for (ModuleModel stamp : stamps) {
-                    int duplicate = StampModifier.checkDuplicates(stamp, kartePane);
-                    if (duplicate > 0) { break; }
+            // pPaneにスタンプを挿入する
+            for (ModuleModel stamp : stamps) {
+                if (isSamePane || StampModifier.checkDuplicates(stamp, kartePane) == 0) {
+                    kartePane.stamp(stamp);
                 }
             }
             return true;

@@ -86,7 +86,7 @@ public class StampModifier {
 
             SwingUtilities.invokeLater(() -> {
                 StringBuilder sb = new StringBuilder();
-                sb.append("重複したスタンプがあります");
+                sb.append("同一スタンプが既に入力されています");
                 for (String item : duplicates) {
                     sb.append("\n「").append(item).append("」");
                 }
