@@ -82,6 +82,9 @@ public class Project {
     /// プリフェッチキャッシュ
     public static final String PREFETCH_CACHING = "prefetch.caching";
 
+    /// プリフェッチキャッシュの最大件数
+    public static final String MAX_CACHE_SIZE = "max.cache.size";
+
     /// コンソールのログファイル出力
     public static final String REDIRECT_CONSOLE = "redirect.console";
 

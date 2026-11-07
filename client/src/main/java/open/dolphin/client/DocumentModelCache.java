@@ -16,10 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 /// DocumentModel Cache.
@@ -29,10 +26,11 @@ import java.util.concurrent.*;
 public class DocumentModelCache {
     private static final long TIMEOUT_SECONDS = 30;
     private static final long SAVE_DELAY_MILLIS = 1000;
+    private static final int MAX_CACHE_SIZE = Project.getPreferences().getInt(Project.MAX_CACHE_SIZE, 5000);
 
     // DocumentModel(KarteBean)#id (DocInfoModel#docPk) をキーとした HashMap
-    private static final Map<Long, DocumentModel> cache = new ConcurrentHashMap<>();
-    private static final Map<Long, KartePanel> kartePanelCache = new ConcurrentHashMap<>();
+    private static final Map<Long, DocumentModel> cache = new LinkedHashMap<>();
+    private static final Map<Long, KartePanel> kartePanelCache = new HashMap<>();
     // Cache ファイル関連
     private static final String SUFFIX = "open.dolphin.documentcache";
     private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
@@ -122,11 +120,22 @@ public class DocumentModelCache {
     }
 
     /// DocumentModel をキャッシュに入れて, cache の内容をファイルに保存する.
-    public static void add(DocumentModel model) {
+    public static synchronized void add(DocumentModel model) {
         if (Project.getPreferences().getBoolean(Project.PREFETCH_CACHING, false)) {
             cache.put(model.getId(), model);
-            logger.debug("add model {}", model.getId());
+            trimCache();
+            logger.debug("add model {} (cache size:{})", model.getId(), cache.size());
             scheduleSave();
+        }
+    }
+
+    /// 古い履歴の削除
+    private static synchronized void trimCache() {
+        while (cache.size() > MAX_CACHE_SIZE) {
+            Long oldestKey = cache.keySet().iterator().next();
+            cache.remove(oldestKey);
+            kartePanelCache.remove(oldestKey);
+            logger.debug("removed old cache {}", oldestKey);
         }
     }
 
@@ -145,8 +154,11 @@ public class DocumentModelCache {
         return cache.containsKey(docPk);
     }
 
+    /// キャッシュされている件数を返す
+    public static int size() { return cache.size(); }
+
     /// KartePanel をキャッシュに入れる
-    public static void kartePanelCacheAdd(long docPk, KartePanel kartePanel) {
+    public static synchronized void kartePanelCacheAdd(long docPk, KartePanel kartePanel) {
         if (Project.getPreferences().getBoolean(Project.PREFETCH_CACHING, false)) {
             kartePanelCache.put(docPk, kartePanel);
         }

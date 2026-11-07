@@ -3,6 +3,7 @@ package open.dolphin.client;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusManager;
+import com.sun.management.HotSpotDiagnosticMXBean;
 import open.dolphin.helper.*;
 import open.dolphin.impl.labrcv.LaboTestImporter;
 import open.dolphin.impl.login.LoginDialog;
@@ -33,13 +34,15 @@ import java.beans.PropertyChangeListener;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 
@@ -339,7 +342,13 @@ public class Dolphin implements MainWindow {
         // Orcon 自動起動
         if (Project.getPreferences().getBoolean(Project.ORCON_AUTO_START, false)) {
             Callable<Boolean> orcaStartingTask = getPlugin(OrcaController.class).getStartingTask();
-            Executors.newVirtualThreadPerTaskExecutor().submit(orcaStartingTask);
+            Thread.ofPlatform().start(() -> {
+                try {
+                    orcaStartingTask.call();
+                } catch (Exception e) {
+                    logger.error("OrcaController の自動起動に失敗しました", e);
+                }
+            });
         }
 
         // StageManager を使用していると, 左寄りのウィンドウの位置が勝手に右側に動かされてしまう.
@@ -674,6 +683,37 @@ public class Dolphin implements MainWindow {
         DocumentModelCache.clear();
     }
 
+    /// Heap Dump を保存する
+    public void dumpHeap() {
+        try {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+            Path dumpPath = Paths.get(System.getProperty("user.home"), "OpenDolphin-" + timestamp + ".hprof");
+
+            HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
+
+            // 第2引数 true: 到達可能な live object のみ出力
+            // false にすると unreachable object も含めた heap 全体を出力
+            mxBean.dumpHeap(dumpPath.toString(), true);
+
+            logger.info("Heap dump saved: {}", dumpPath);
+            PNSOptionPane.showMessageDialog(
+                    getFrame(),
+                    "Heap dump を保存しました:\n" + dumpPath,
+                    "Heap Dump",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+        } catch (IOException | RuntimeException e) {
+            logger.error("Heap dump failed", e);
+            PNSOptionPane.showMessageDialog(
+                    getFrame(),
+                    "Heap dump の保存に失敗しました:\n" + e.getMessage(),
+                    "Heap Dump",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
     /// DocumentFolder をチェック.
     private void checkDocumentFolder() {
         Path path = Paths.get(ClientContext.getDocumentDirectory());
@@ -741,6 +781,7 @@ public class Dolphin implements MainWindow {
                     GUIConst.ACTION_SHOW_ABOUT,
                     GUIConst.ACTION_CLEAR_CACHE,
                     GUIConst.ACTION_CLEAR_CACHE_FILE,
+                    GUIConst.ACTION_DUMP_HEAP,
             };
             mediator.enableMenus(enables);
 

@@ -337,6 +337,9 @@ public class MenuFactory {
     @MenuAction
     public void clearCacheFile() { main.sendToChain(GUIConst.ACTION_CLEAR_CACHE_FILE); }
 
+    @MenuAction
+    public void dumpHeap() { main.sendToChain(GUIConst.ACTION_DUMP_HEAP); }
+
     public void build(JMenuBar menuBar) {
 
         actionMap = MenuActionManager.createActionMap(this);
@@ -383,16 +386,6 @@ public class MenuFactory {
             file.add(createMenuItem("終了", GUIConst.ACTION_PROCESS_EXIT,
                     "Q", GUIConst.ICON_EMPTY_16, "プログラムを終了します"));
         }
-
-        file.addSeparator();
-
-        // キャッシュクリア
-        file.add(createMenuItem("キャッシュを消去", GUIConst.ACTION_CLEAR_CACHE,
-                null, GUIConst.ICON_EMPTY_16, "キャッシュを消去します"));
-
-        // キャッシュファイル消去
-        file.add(createMenuItem("キャッシュファイルを消去", GUIConst.ACTION_CLEAR_CACHE_FILE,
-                null, GUIConst.ICON_EMPTY_16, "キャッシュファイルを消去します"));
 
         //
         // Edit メニュー
@@ -541,10 +534,13 @@ public class MenuFactory {
         // Help
         //
         JMenu help = createMenu("ヘルプ", GUIConst.ACTION_HELP_MENU);
-
         if (Dolphin.forWin) {
             help.add(createMenuItem("OpenDolphin について", GUIConst.ACTION_SHOW_ABOUT));
+            tool.addSeparator();
         }
+        help.add(createMenuItem("キャッシュを消去", GUIConst.ACTION_CLEAR_CACHE));
+        help.add(createMenuItem("キャッシュファイルを消去", GUIConst.ACTION_CLEAR_CACHE_FILE));
+        help.add(createMenuItem("ヒープダンプを保存", GUIConst.ACTION_DUMP_HEAP));
 
         //
         // この時点で menuBar には既に window メニューが入っている (menuCount = 1 となっている)

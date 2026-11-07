@@ -30,6 +30,8 @@ public class MiscSettingPanel extends AbstractSettingPanel {
     private JTextField maxFragment;
     // プリフェッチキャッシュを有効にするかどうか
     private JCheckBox prefetchCachingBox;
+    // キャッシュの最大件数
+    private JTextField maxCache;
     /// コンソールのログ出力
     private JCheckBox redirectBox;
     /// ORCON 自動起動
@@ -108,14 +110,17 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         scrollUnitPanel.add(gbb.getProduct());
 
         // データベースから1回のアクセスで取得するカルテの最大件数
-        gbb = new GridBagBuilder("データベースから1回のアクセスで取得するカルテの最大件数");
-        label = new JLabel("件数", SwingConstants.RIGHT);
+        gbb = new GridBagBuilder("ドキュメントモデル取得設定");
+        label = new JLabel("１回のアクセスで取得するカルテの件数:");
         maxFragment = new JTextField(3);
         prefetchCachingBox = new JCheckBox("プリフェッチ・キャッシングを使用する");
-        gbb.add(label, 0, 0, 1, 1, GridBagConstraints.EAST);
+        maxCache = new JTextField(5);
+        gbb.add(label, 0, 0, 1, 1, GridBagConstraints.WEST);
         gbb.add(maxFragment, 1, 0, 1, 1, GridBagConstraints.WEST);
-        gbb.add(prefetchCachingBox, 2, 0, 1, 1, GridBagConstraints.WEST);
-
+        gbb.add(prefetchCachingBox, 0, 1, 2, 1, GridBagConstraints.WEST);
+        label = new JLabel("最大件数:");
+        gbb.add(label, 2, 1, 1, 1, GridBagConstraints.WEST);
+        gbb.add(maxCache, 3, 1, 1, 1, GridBagConstraints.WEST);
         JPanel maxFragmentPanel = gbb.getProduct();
         maxFragmentPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
 
@@ -159,6 +164,8 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         maxFragment.setText(String.valueOf(prefs.getInt(Project.MAX_FRAGMENT, 40)));
         prefetchCachingBox.setSelected(prefs.getBoolean(Project.PREFETCH_CACHING, false));
         redirectBox.setSelected(Preferences.userNodeForPackage(Dolphin.class).getBoolean(Project.REDIRECT_CONSOLE, false));
+        maxCache.setText(String.valueOf(prefs.getInt(Project.MAX_CACHE_SIZE, 5000)));
+
         orconAutoStartBox.setSelected(prefs.getBoolean(Project.ORCON_AUTO_START, false));
     }
 
@@ -179,6 +186,8 @@ public class MiscSettingPanel extends AbstractSettingPanel {
 
         prefs.putInt(Project.MAX_FRAGMENT, Integer.parseInt(maxFragment.getText()));
         prefs.putBoolean(Project.PREFETCH_CACHING, prefetchCachingBox.isSelected());
+        prefs.putInt(Project.MAX_CACHE_SIZE, Integer.parseInt(maxCache.getText()));
+
         Preferences.userNodeForPackage(Dolphin.class).putBoolean(Project.REDIRECT_CONSOLE, redirectBox.isSelected());
         prefs.putBoolean(Project.ORCON_AUTO_START, orconAutoStartBox.isSelected());
     }
