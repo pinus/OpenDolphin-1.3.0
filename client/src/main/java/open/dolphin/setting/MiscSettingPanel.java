@@ -180,8 +180,7 @@ public class MiscSettingPanel extends AbstractSettingPanel {
 
         // 現在のキャッシュ件数を取りに行く - 大きいと時間がかかるので SwingWorker を使う
         if (prefetchCachingBox.isSelected()) {
-            SwingWorker<Integer, String> showCurrent = new SwingWorker<>() {
-                private final String[] spinner = {"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"};
+            SwingWorker<Integer, Integer> showCurrent = new SwingWorker<>() {
                 private final AtomicInteger index = new AtomicInteger();
                 private ScheduledExecutorService scheduler;
 
@@ -189,8 +188,7 @@ public class MiscSettingPanel extends AbstractSettingPanel {
                 protected Integer doInBackground() {
                     scheduler = Executors.newSingleThreadScheduledExecutor();
                     scheduler.scheduleAtFixedRate(() -> {
-                        int i = index.getAndUpdate(v -> (v + 1) % spinner.length);
-                        publish(spinner[i]);
+                        publish(index.getAndIncrement());
                     }, 0, 100, TimeUnit.MILLISECONDS);
                     try {
                         return DocumentModelCache.size();
@@ -200,9 +198,10 @@ public class MiscSettingPanel extends AbstractSettingPanel {
                 }
 
                 @Override
-                protected void process(List<String> chunks) {
-                    String frame = chunks.getLast();
-                    currentCache.setText(String.format("(現在の件数: %s 件)", frame));
+                protected void process(List<Integer> chunks) {
+                    int count = chunks.getLast();
+                    // 偽のカウントアップ
+                    currentCache.setText(String.format("(現在の件数: %d 件)", count));
                 }
 
                 @Override
