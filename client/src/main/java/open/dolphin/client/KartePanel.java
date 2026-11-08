@@ -42,7 +42,7 @@ public abstract class KartePanel extends PrintablePanel {
         return docId;
     }
 
-    public void addMouseListener(MouseListener listener) {
+    public void setupMouseListener(MouseListener listener) {
         mouseListener = listener;
         getSoaKartePane().getTextPane().addMouseListener(mouseListener);
         getPKartePane().getTextPane().addMouseListener(mouseListener);

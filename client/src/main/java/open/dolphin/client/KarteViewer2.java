@@ -3,11 +3,13 @@ package open.dolphin.client;
 import open.dolphin.infomodel.DocInfoModel;
 import open.dolphin.infomodel.DocumentModel;
 import open.dolphin.infomodel.IInfoModel;
+import open.dolphin.project.Project;
 import open.dolphin.util.DateUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.print.PageFormat;
 import java.time.LocalDateTime;
@@ -19,11 +21,15 @@ import java.util.Objects;
 ///
 /// @author Kazushi Minagawa, Digital Globe, Inc.
 /// @author pns
-public class KarteViewer2 extends AbstractChartDocument implements Comparable<KarteViewer2> {
+public class KarteViewer2 extends AbstractChartDocument implements Comparable<KarteViewer2>, MouseListener {
     // 仮保存中のドキュメントを表す文字
     private static final String UNDER_TMP_SAVE = " - 仮保存中";
+    // KarteDocumentViewer
+    private KarteDocumentViewer context;
     // 2号カルテ
     private KartePanel kartePanel;
+    // ChartMediator
+    private ChartMediator mediator;
     // 選択されているかどうかのフラグ
     private boolean selected;
 
@@ -57,7 +63,9 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         if (document == null) { return; }
 
         // Creates GUI
-        kartePanel = DocumentModelCache.kartePanelCacheGet(document);
+        if (Project.getPreferences().getBoolean(Project.PREFETCH_CACHING, false)) {
+            kartePanel = DocumentModelCache.kartePanelCacheGet(document);
+        }
 
         if (kartePanel == null) {
             logger.debug("KartePanel cache miss");
@@ -71,6 +79,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         }
 
         kartePanel.setParent(this);
+        kartePanel.setupMouseListener(this);
         // Schema 画像にファイル名を付けるのために必要
         kartePanel.setDocId(document.getDocInfo().getDocId());
 
@@ -104,7 +113,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         kartePanel.setTimeStamp(timeStamp.toString());
 
         // モデル表示後にリスナ等を設定する init(editable, mediator)
-        ChartMediator mediator = getContext().getChartMediator();
+        mediator = getContext().getChartMediator();
         getSoaKartePane().init(false, mediator);
         getPKartePane().init(false, mediator);
 
@@ -113,12 +122,38 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
     }
 
     @Override
-    public void stop() {
-        kartePanel.stop();
+    // ダブルクリックされたカルテを別画面で表示する MouseListener を生成して KarteViewer の Pane にアタッチする
+    public void mouseClicked(MouseEvent e) {
+        int cnt = e.getClickCount();
+        if (cnt == 2) {
+            // 選択した Karte を EditorFrame で開く
+            context.setSelectedKarteViewer(KarteViewer2.this);
+            context.openKarte();
+        } else if (cnt == 1) {
+            context.setSelectedKarteViewer(KarteViewer2.this);
+        }
     }
 
-    public void addMouseListener(MouseListener ml) {
-        kartePanel.addMouseListener(ml);
+    @Override
+    public void mousePressed(MouseEvent e) {}
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+    @Override
+    public void mouseExited(MouseEvent e) {}
+
+    public void setKarteDocumentViewer(KarteDocumentViewer context) {
+        this.context = context;
+        setContext(context.getContext()); // AbstractChartDocument
+    }
+
+    @Override
+    public void stop() {
+        kartePanel.stop(); // これで mouseListener は外れる
+        setContext(null);
+        context = null;
+        mediator = null;
     }
 
     public String getDocType() {

@@ -95,6 +95,7 @@ public class CompletableJTextField extends JTextField
         parentFrame.removeComponentListener(this);
         listWindow.dispose();
         completer.stop();
+        parentFrame = null;
         super.removeNotify();
     }
 

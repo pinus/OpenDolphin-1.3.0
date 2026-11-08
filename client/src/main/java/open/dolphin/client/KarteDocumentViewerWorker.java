@@ -10,9 +10,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ContainerListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,15 +20,16 @@ import java.util.stream.Collectors;
 /// FRACTION を大きくすると速くなる. 小さくするとロード中の操作がしやすくなる.
 /// 290件のカルテ表示時間
 /// FRACTION 10: 2168, 20: 1756, 30: 1480, 40: 1408, 50: 1430, 60: 1434
-public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Component>> {
-    private final KarteDocumentViewer context;
-    private final Chart chart;
-    private final List<KarteViewer2> karteViewerList;
+public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Component>> implements PropertyChangeListener {
+    private KarteDocumentViewer context;
+    private Chart chart;
+    private List<KarteViewer2> karteViewerList;
     // 選択された History の DocPk (DocumentModel#id) をキーとした Map
-    private final Map<Long, DocInfoModel> selectedHistoryMap;
+    private Map<Long, DocInfoModel> selectedHistoryMap;
     // karteViewer を並べるパネル
-    private final JPanel scrollerPanel;
-    private final JProgressBar progressBar;
+    private JPanel scrollerPanel;
+    private JProgressBar progressBar;
+
     private final Logger logger = LoggerFactory.getLogger(KarteDocumentViewerWorker.class);
     private long lap;
 
@@ -43,11 +43,14 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         progressBar = chart.getStatusPanel().getProgressBar();
         progressBar.setMinimum(0);
         progressBar.setMaximum(100);
-        addPropertyChangeListener(evt -> {
-            if ("progress".equals(evt.getPropertyName())) {
-                progressBar.setValue((Integer) evt.getNewValue()); // EDT 上で実行される
-            }
-        });
+        addPropertyChangeListener(this);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("progress".equals(evt.getPropertyName())) {
+            progressBar.setValue((Integer) evt.getNewValue()); // EDT 上で実行される
+        }
     }
 
     @Override
@@ -190,29 +193,15 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
 
                 // KarteViewer を生成する
                 final KarteViewer2 karteViewer = new KarteViewer2();
-                karteViewer.setContext(chart);
+                karteViewer.setKarteDocumentViewer(context);
                 karteViewer.setDocument(dm);
 
                 // このコールでモデルのレンダリングが開始される
                 karteViewer.start();
-                // ダブルクリックされたカルテを別画面で表示する MouseListener を生成して KarteViewer の Pane にアタッチする
-                final MouseListener ml = new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        int cnt = e.getClickCount();
-                        if (cnt == 2) {
-                            // 選択した Karte を EditorFrame で開く
-                            context.setSelectedKarteViewer(karteViewer);
-                            context.openKarte();
-                        } else if (cnt == 1) {
-                            context.setSelectedKarteViewer(karteViewer);
-                        }
-                    }
-                };
-                karteViewer.addMouseListener(ml);
                 // ボーダーをあらかじめ付けておく
                 karteViewer.getKartePanel().setBackground(karteViewer.getSoaKartePane().getTextPane().getBackground());
                 karteViewer.setSelected(false);
+
                 karteViewerList.add(karteViewer);
             }
         }
@@ -282,5 +271,17 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         // repaint
         scrollerPanel.revalidate();
         scrollerPanel.repaint();
+    }
+
+    /// リソース開放
+    public void dispose() {
+        if (!isDone()) { cancel(true); }
+        removePropertyChangeListener(this);
+        context = null;
+        chart = null;
+        scrollerPanel = null;
+        karteViewerList = null;
+        selectedHistoryMap = null;
+        progressBar = null;
     }
 }

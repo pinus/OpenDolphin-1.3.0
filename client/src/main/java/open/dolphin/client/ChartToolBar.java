@@ -17,22 +17,25 @@ import java.awt.geom.AffineTransform;
 import java.util.Objects;
 import java.util.prefs.Preferences;
 
-/**
- * EditorFrame 特有の JToolBar.
- *
- * @author pns
- */
+/// EditorFrame 特有の JToolBar.
+///
+/// @author pns
 public class ChartToolBar extends JToolBar {
-
-    private final EditorFrame editorFrame;
-    private final ChartMediator mediator;
     private final Preferences prefs;
+
+    private EditorFrame editorFrame;
+    private ChartMediator mediator;
+
+    private JTextPane soaTextPane;
+    private JTextPane pTextPane;
+    private CaretListener caretListener;
+    private ProxyDocumentListener documentListener;
+    private FocusListener focusListener;
 
     private FontButton boldButton;
     private FontButton italicButton;
     private FontButton underlineButton;
     private ColorButton colorButton;
-
     private JustifyButton leftJustify;
     private JustifyButton centerJustify;
     private JustifyButton rightJustify;
@@ -52,9 +55,25 @@ public class ChartToolBar extends JToolBar {
         connect();
     }
 
-    /**
-     * コンポネントの組み立て.
-     */
+    /// リソース開放
+    public void dispose() {
+        soaTextPane.removeCaretListener(caretListener);
+        pTextPane.removeCaretListener(caretListener);
+        soaTextPane.getDocument().removeDocumentListener(documentListener);
+        pTextPane.getDocument().removeDocumentListener(documentListener);
+        soaTextPane.removeFocusListener(focusListener);
+        pTextPane.removeFocusListener(focusListener);
+
+        soaTextPane = null;
+        pTextPane = null;
+        caretListener = null;
+        documentListener = null;
+        focusListener = null;
+        editorFrame = null;
+        mediator = null;
+    }
+
+    /// コンポネントの組み立て.
     private void initComponents() {
         setFloatable(false);
         setOpaque(false);
@@ -71,11 +90,11 @@ public class ChartToolBar extends JToolBar {
         add(Box.createHorizontalStrut(4));
     }
 
-    /**
-     * リスナーの接続を行う.
-     */
+    /// リスナーの接続を行う.
     private void connect() {
         KarteEditor karteEditor = editorFrame.getEditor();
+        soaTextPane = karteEditor.getSoaPane().getTextPane();
+        pTextPane = karteEditor.getPPane().getTextPane();
 
         colorButton.addActionListener(e -> {
             if (pause) { return; }
@@ -104,20 +123,20 @@ public class ChartToolBar extends JToolBar {
         });
 
         // CaretListener
-        CaretListener caretListener = e -> feedback((JTextPane) e.getSource());
-        karteEditor.getSoaPane().getTextPane().addCaretListener(caretListener);
-        karteEditor.getPPane().getTextPane().addCaretListener(caretListener);
+        caretListener = e -> feedback((JTextPane) e.getSource());
+        soaTextPane.addCaretListener(caretListener);
+        pTextPane.addCaretListener(caretListener);
 
         // DocumentListener
-        ProxyDocumentListener documentListener = e -> {
+        documentListener = e -> {
             JComponent c = mediator.getCurrentComponent();
             if (c instanceof JTextPane) { feedback((JTextPane) c); }
         };
-        karteEditor.getSoaPane().getTextPane().getDocument().addDocumentListener(documentListener);
-        karteEditor.getPPane().getTextPane().getDocument().addDocumentListener(documentListener);
+        soaTextPane.getDocument().addDocumentListener(documentListener);
+        pTextPane.getDocument().addDocumentListener(documentListener);
 
         // FocusListener
-        FocusListener focusListener = new FocusListener() {
+        focusListener = new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 Object c = e.getSource();
@@ -126,13 +145,11 @@ public class ChartToolBar extends JToolBar {
             @Override
             public void focusLost(FocusEvent e) { }
         };
-        karteEditor.getSoaPane().getTextPane().addFocusListener(focusListener);
-        karteEditor.getPPane().getTextPane().addFocusListener(focusListener);
+        soaTextPane.addFocusListener(focusListener);
+        pTextPane.addFocusListener(focusListener);
     }
 
-    /**
-     * JTextPane が変更されたときにボタンにフィードバックする.
-     */
+    /// JTextPane が変更されたときにボタンにフィードバックする.
     public void feedback(JTextPane pane) {
         int start = pane.getSelectionStart();
         int end = pane.getSelectionEnd();
@@ -166,11 +183,9 @@ public class ChartToolBar extends JToolBar {
         SwingUtilities.invokeLater(() -> pause = false);
     }
 
-    /**
-     * Font size 設定パネル.
-     *
-     * @return Size Panel
-     */
+    /// Font size 設定パネル.
+    ///
+    /// @return Size Panel
     private JPanel createSizePanel() {
         sizeCombo = new JComboBox<>(ChartMediator.FONT_SIZE);
         sizeCombo.setBorder(BorderFactory.createEmptyBorder());
@@ -181,11 +196,9 @@ public class ChartToolBar extends JToolBar {
         return panel;
     }
 
-    /**
-     * Bold, Italic, Underline ボタンのパネルを作る.
-     *
-     * @return Font Panel
-     */
+    /// Bold, Italic, Underline ボタンのパネルを作る.
+    ///
+    /// @return Font Panel
     private JPanel createFontPanel() {
         boldButton = new FontButton("B", "bold left", mediator::fontBold);
         italicButton = new FontButton("I", "italic", mediator::fontItalic);
@@ -201,11 +214,9 @@ public class ChartToolBar extends JToolBar {
         return panel;
     }
 
-    /**
-     * 書式ボタンのパネルを作る.
-     *
-     * @return Justification Panel
-     */
+    /// 書式ボタンのパネルを作る.
+    ///
+    /// @return Justification Panel
     private JPanel createJustifyPanel() {
         leftJustify = new JustifyButton("left", mediator::leftJustify);
         centerJustify = new JustifyButton("center", mediator::centerJustify);
@@ -224,9 +235,7 @@ public class ChartToolBar extends JToolBar {
         return panel;
     }
 
-    /**
-     * Color ボタン.
-     */
+    /// Color ボタン.
     private class ColorButton extends PNSToggleButton {
         private String LETTER = "A";
         private double SCALE = 1.3d;
@@ -263,9 +272,7 @@ public class ChartToolBar extends JToolBar {
         }
     }
 
-    /**
-     * ToggelButton の共通設定.
-     */
+    /// ToggelButton の共通設定.
     private class ToggleButtonBase extends PNSToggleButton implements ActionListener {
         private Runnable runnable;
 
@@ -289,9 +296,7 @@ public class ChartToolBar extends JToolBar {
         }
     }
 
-    /**
-     * Bold, Italic, Underline ボタン.
-     */
+    /// Bold, Italic, Underline ボタン.
     private class FontButton extends ToggleButtonBase  {
         private double SCALE = 1.3d;
         private Font boldFont = new Font("Courier", Font.BOLD, 14)
@@ -344,9 +349,7 @@ public class ChartToolBar extends JToolBar {
         }
     }
 
-    /**
-     * 書式ボタン.
-     */
+    /// 書式ボタン.
     private class JustifyButton extends ToggleButtonBase {
         private int LONG = 20;
         private int SHORT = 14;
@@ -374,11 +377,9 @@ public class ChartToolBar extends JToolBar {
         }
     }
 
-    /**
-     * スタンプ検索パネル.
-     *
-     * @return Stamp Search Panel
-     */
+    /// スタンプ検索パネル.
+    ///
+    /// @return Stamp Search Panel
     private JPanel createDiagnosisSearchPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -443,10 +444,9 @@ public class ChartToolBar extends JToolBar {
         return panel;
     }
 
-    /**
-     * stamp search field を返す.
-     * @return stamp search field
-     */
+    /// stamp search field を返す.
+    ///
+    /// @return stamp search field
     public CompletableSearchField getStampSearchField() {
         return stampSearchField;
     }

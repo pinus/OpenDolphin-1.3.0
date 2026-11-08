@@ -131,9 +131,6 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
             timer.purge();
             timer = null;
         }
-        frame.removeComponentListener(WindowSupport.this);
-        windowMenu.removeMenuListener(WindowSupport.this);
-
         // bounds 記録
         Rectangle r = frame.getBounds();
         pref.putInt(keyX, r.x);
@@ -143,7 +140,10 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
 
         // リソース解放
         WindowHolder.remove(this);
+        frame.removeComponentListener(this);
+        windowMenu.removeMenuListener(this);
         menuBar.setVisible(false);
+        frame.setJMenuBar(null);
         frame.setVisible(false);
         frame.dispose();
 

@@ -43,6 +43,8 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     private KarteViewer2 selectedKarteViewer;
     // 選択された History の DocId をキーとした Map
     private Map<Long, DocInfoModel> selectedHistoryMap;
+    // DocumentBridgeImpl から渡される scroller
+    private PNSScrollPane scroller;
     // karteViewer を並べたパネル
     private JPanel scrollerPanel;
     // 文書履を昇順で表示する場合に true
@@ -154,6 +156,9 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             karteViewerList.clear();
         }
         scrollerPanel.removeAll();
+        scroller.setViewportView(null);
+        scroller = null;
+        currentTask.dispose();
     }
 
     @Override
@@ -225,6 +230,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     /// @param scroller PNSScrollPane
     public void showDocuments(DocInfoModel[] selected, final PNSScrollPane scroller) {
         getContext().showDocument(0);  // Chart のカルテ参照タブの選択
+        this.scroller = scroller;
 
         scroller.setViewportView(scrollerPanel);
         if (selected == null || selected.length == 0) { return; }

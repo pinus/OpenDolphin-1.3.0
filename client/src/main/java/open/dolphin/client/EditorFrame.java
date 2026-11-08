@@ -157,6 +157,7 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
 
     /**
      * 表示する KarteViewer オブジェクトを設定する.
+     * 使ってない.
      *
      * @param view 表示する KarteView
      */
@@ -548,12 +549,14 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
         mediator.dispose();
         editor.stop();
         windowSupport.dispose();
+        chartToolBar.dispose();
 
         realChart = null;
         setContext(null);
         mediator = null;
         editor = null;
         windowSupport = null;
+        chartToolBar = null;
         scroller = null;
         //viewer = null; //使ってない
     }

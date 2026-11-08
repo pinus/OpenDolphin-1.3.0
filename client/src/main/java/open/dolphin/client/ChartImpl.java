@@ -2,6 +2,7 @@ package open.dolphin.client;
 
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.event.BadgeEvent;
+import open.dolphin.event.ProxyAction;
 import open.dolphin.helper.GUIDGenerator;
 import open.dolphin.helper.PNSTask;
 import open.dolphin.helper.WindowHolder;
@@ -15,10 +16,7 @@ import open.dolphin.impl.pvt.WaitingListImpl;
 import open.dolphin.infomodel.*;
 import open.dolphin.inspector.*;
 import open.dolphin.project.Project;
-import open.dolphin.ui.Focuser;
-import open.dolphin.ui.PNSBadgeTabbedPane;
-import open.dolphin.ui.PNSFrame;
-import open.dolphin.ui.StatusPanel;
+import open.dolphin.ui.*;
 import open.dolphin.ui.sheet.JSheet;
 import open.dolphin.util.DateUtils;
 import org.slf4j.Logger;
@@ -1396,44 +1394,63 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         List<UnsavedDocument> dirtyList = dirtyList();
 
         if (dirtyList != null && !dirtyList.isEmpty()) {
-            String saveAll = "保存";     // 保存;
-            String discard = "破棄";  // 破棄;
-            String question = "未保存のドキュメントがあります。保存しますか？";
-            String title = "未保存処理";
-            String cancelText = (String) UIManager.get("OptionPane.cancelButtonText");
-
-            Object[] message = new Object[dirtyList.size() + 1];
-            message[0] = question;
-            int index = 1;
-            for (UnsavedDocument doc : dirtyList) {
-                message[index++] = doc.getCheckBox();
-            }
-
             // すでに JSheet が出ている場合は，toFront してリターン
             if (JSheet.isAlreadyShown(getFrame())) {
                 getFrame().toFront();
                 return;
             }
-            // int option = JOptionPane.showOptionDialog(
-            int option = JSheet.showOptionDialog(
-                    getFrame(),
-                    message,
-                    ClientContext.getFrameTitle(title),
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.WARNING_MESSAGE,
-                    null,
-                    new String[]{saveAll, discard, cancelText},
-                    saveAll);
+            // Dirty list
+            Object[] message = new Object[dirtyList.size() + 1];
+            message[0] = "未保存のドキュメントがあります。保存しますか？";
+            int index = 1;
+            for (UnsavedDocument doc : dirtyList) {
+                message[index++] = doc.getCheckBox();
+            }
 
-            if (option == 0) {
+            String saveAll = "保 存";
+            String discard = "破 棄";
+            String cancel = (String) UIManager.get("OptionPane.cancelButtonText");
+
+            PNSButton okButton = new PNSButton(saveAll);
+            okButton.setToolTipText("Return");
+            // discard without saving
+            PNSButton discardButton = new PNSButton(discard);
+            discardButton.setToolTipText("<html>&#8984;D</html>");
+            // cancel does nothing
+            PNSButton cancelButton = new PNSButton(cancel);
+            cancelButton.setToolTipText("ESC");
+
+            // JOptionPane
+            JOptionPane pane = new JOptionPane(message, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
+                    new JButton[]{okButton, discardButton, cancelButton}, okButton);
+            JSheet dialog = JSheet.createDialog(pane, getFrame());
+            dialog.addSheetListener(se -> {
+                // Escape を押したときだけここに入る
+                if (se.getOption() == JOptionPane.CLOSED_OPTION) {
+                    cancelButton.doClick();
+                }
+            });
+            okButton.setAction(new ProxyAction(saveAll, () -> {
+                dialog.setVisible(false);
                 // save
                 saveAll(dirtyList);
                 // DiagnosisDocument が isValidOutcome ならば終了処理へ
                 if (getDiagnosisDocument().isValidOutcome()) { stop(); }
-            } else if (option == 1) {
-                // discard without saving
+            }));
+            discardButton.setAction(new ProxyAction(discard, () -> {
+                dialog.setVisible(false);
                 stop();
-            } // option == 2 do nothing with cancel
+            }));
+            cancelButton.setAction(new ProxyAction(cancel, () -> dialog.setVisible(false)));
+
+            // ショートカット登録
+            ActionMap am = dialog.getRootPane().getActionMap();
+            InputMap im = dialog.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+            // Cmd-D で破棄
+            im.put(KeyStroke.getKeyStroke("meta D"), "discard");
+            am.put("discard", new ProxyAction(discardButton::doClick));
+
+            dialog.setVisible(true);
 
         } else {
             // nothing dirty
