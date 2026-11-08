@@ -3,6 +3,7 @@ package open.dolphin.client;
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.delegater.OrcaDelegater;
 import open.dolphin.helper.ChartTask;
+import open.dolphin.helper.WindowHolder;
 import open.dolphin.infomodel.DocInfoModel;
 import open.dolphin.infomodel.DocumentModel;
 import open.dolphin.infomodel.IInfoModel;
@@ -102,6 +103,21 @@ public class KarteDocumentViewer extends AbstractChartDocument {
 
     public void findPrevious() {
         findAndView.showPrevious(scrollerPanel);
+    }
+
+    public void searchStamp() {
+        ChartImpl chart = WindowHolder.allCharts().stream().filter(c -> c.getFrame().isActive()).findAny().orElse(null);
+        if (Objects.nonNull(chart)) {
+            ChartSearchPanel panel = chart.getChartSearchPanel();
+            panel.setMode(ChartSearchPanel.Mode.STAMP);
+            Focuser.requestFocus(panel.getSearchField());
+            return;
+        }
+
+        EditorFrame frame = WindowHolder.allEditorFrames().stream().filter(f -> f.getFrame().isActive()).findAny().orElse(null);
+        if (Objects.nonNull(frame)) {
+            Focuser.requestFocus(frame.getChartToolBar().getStampSearchField());
+        }
     }
 
     /// スタンプ標準表示/簡易表示を切り替える.

@@ -2,7 +2,6 @@ package open.dolphin.client;
 
 import open.dolphin.delegater.DocumentDelegater;
 import open.dolphin.event.BadgeEvent;
-import open.dolphin.event.ProxyAction;
 import open.dolphin.helper.GUIDGenerator;
 import open.dolphin.helper.PNSTask;
 import open.dolphin.helper.WindowHolder;
@@ -668,14 +667,6 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
         }
 
         frame.setVisible(true);
-
-        // command ctrl F で検索フィールドにフォーカスする裏コマンド
-        if (Dolphin.forMac) {
-            InputMap im = windowSupport.getFrame().getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-            ActionMap am = windowSupport.getFrame().getRootPane().getActionMap();
-            im.put(KeyStroke.getKeyStroke("meta ctrl F"), GUIConst.ACTION_SEARCH_STAMP);
-            am.put(GUIConst.ACTION_SEARCH_STAMP, new ProxyAction(mediator::searchStamp));
-        }
         enter();
     }
 

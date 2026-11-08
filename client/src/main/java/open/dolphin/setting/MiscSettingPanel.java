@@ -130,7 +130,7 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         label = new JLabel("最大件数:");
         gbb.add(label, 2, 1, 1, 1, GridBagConstraints.WEST);
         gbb.add(maxCache, 3, 1, 1, 1, GridBagConstraints.WEST);
-        currentCache = new JLabel("(現在の件数: 読み込み中)");
+        currentCache = new JLabel("(現在の件数: ----件)");
         gbb.add(currentCache, 2, 2, 2, 1, GridBagConstraints.WEST);
         JPanel maxFragmentPanel = gbb.getProduct();
         maxFragmentPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
@@ -179,41 +179,46 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         orconAutoStartBox.setSelected(prefs.getBoolean(Project.ORCON_AUTO_START, false));
 
         // 現在のキャッシュ件数を取りに行く - 大きいと時間がかかるので SwingWorker を使う
-        SwingWorker<Integer, String> showCurrent = new SwingWorker<>() {
-            private final String[] spinner = {"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"};
-            private final AtomicInteger index = new AtomicInteger();
-            private ScheduledExecutorService scheduler;
-            @Override
-            protected Integer doInBackground() {
-                scheduler = Executors.newSingleThreadScheduledExecutor();
-                scheduler.scheduleAtFixedRate(() -> {
-                    int i = index.getAndUpdate(v -> (v + 1) % spinner.length);
-                    publish(spinner[i]);
-                }, 0, 100, TimeUnit.MILLISECONDS);
-                try {
-                    return DocumentModelCache.size();
-                } finally {
-                    scheduler.shutdownNow();
+        if (prefetchCachingBox.isSelected()) {
+            SwingWorker<Integer, String> showCurrent = new SwingWorker<>() {
+                private final String[] spinner = {"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"};
+                private final AtomicInteger index = new AtomicInteger();
+                private ScheduledExecutorService scheduler;
+
+                @Override
+                protected Integer doInBackground() {
+                    scheduler = Executors.newSingleThreadScheduledExecutor();
+                    scheduler.scheduleAtFixedRate(() -> {
+                        int i = index.getAndUpdate(v -> (v + 1) % spinner.length);
+                        publish(spinner[i]);
+                    }, 0, 100, TimeUnit.MILLISECONDS);
+                    try {
+                        return DocumentModelCache.size();
+                    } finally {
+                        scheduler.shutdownNow();
+                    }
                 }
-            }
-            @Override
-            protected void process(List<String> chunks) {
-                String frame = chunks.getLast();
-                currentCache.setText(String.format("(現在の件数: %s件)", frame));
-            }
-            @Override
-            protected void done() {
-                if (scheduler != null) {
-                    scheduler.shutdownNow();
+
+                @Override
+                protected void process(List<String> chunks) {
+                    String frame = chunks.getLast();
+                    currentCache.setText(String.format("(現在の件数: %s 件)", frame));
                 }
-                try {
-                    currentCache.setText(String.format("(現在の件数: %d件)", get()));
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace(System.err);
+
+                @Override
+                protected void done() {
+                    if (scheduler != null) {
+                        scheduler.shutdownNow();
+                    }
+                    try {
+                        currentCache.setText(String.format("(現在の件数: %d件)", get()));
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace(System.err);
+                    }
                 }
-            }
-        };
-        showCurrent.execute();
+            };
+            showCurrent.execute();
+        }
     }
 
     @Override

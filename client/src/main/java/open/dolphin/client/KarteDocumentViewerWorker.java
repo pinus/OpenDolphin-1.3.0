@@ -102,7 +102,10 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                         // この時点では DocumentModel.getDocInfo().getDocPk() == 0
                         List<DocumentModel> fetchedModels = ddl.getDocuments(pkList);
                         toAdd.addAll(fetchedModels);
-                        DocumentModelCache.addAll(fetchedModels); // DocumentModel キャッシュに保存
+                        // DocumentModel キャッシュに保存
+                        if (Project.getPreferences().getBoolean(Project.PREFETCH_CACHING, false)) {
+                            DocumentModelCache.addAll(fetchedModels);
+                        }
                     }
                     addKarteViewer(toAdd);
                     setProgress(count*100 / added.size());

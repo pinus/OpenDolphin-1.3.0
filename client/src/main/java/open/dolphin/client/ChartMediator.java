@@ -1,11 +1,9 @@
 package open.dolphin.client;
 
 import open.dolphin.helper.MenuSupport;
-import open.dolphin.helper.WindowHolder;
 import open.dolphin.infomodel.IInfoModel;
 import open.dolphin.project.Project;
 import open.dolphin.stampbox.*;
-import open.dolphin.ui.Focuser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +45,11 @@ public final class ChartMediator extends MenuSupport implements PropertyChangeLi
         "leftJustify", "centerJustify", "rightJustify"};
     private static final String FOCUS_OWNER = "permanentFocusOwner";
 
-    final private Chart chart;
-    final private Logger logger;
+    private Chart chart;
     private int curFontSizeIndex = 2;
     private KarteComposite<?> curKarteComposit;
+
+    private final Logger logger = LoggerFactory.getLogger(ChartMediator.class);
 
     /**
      * Create ChartMediator.
@@ -59,7 +58,6 @@ public final class ChartMediator extends MenuSupport implements PropertyChangeLi
      */
     public ChartMediator(Chart owner) {
         super(owner);
-        logger = LoggerFactory.getLogger(ChartMediator.class);
         chart = owner;
 
         // focus を取った KarteComposite に menu の activate/deactivate 情報を送る listener
@@ -186,6 +184,7 @@ public final class ChartMediator extends MenuSupport implements PropertyChangeLi
      */
     public void dispose() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().removePropertyChangeListener(FOCUS_OWNER, this);
+        chart = null;
     }
 
     /**
@@ -714,20 +713,5 @@ public final class ChartMediator extends MenuSupport implements PropertyChangeLi
 
     public void fontBlack() {
         colorAction(Color.BLACK);
-    }
-
-    public void searchStamp() {
-        ChartImpl chart = WindowHolder.allCharts().stream().filter(c -> c.getFrame().isActive()).findAny().orElse(null);
-        if (Objects.nonNull(chart)) {
-            ChartSearchPanel panel = chart.getChartSearchPanel();
-            panel.setMode(ChartSearchPanel.Mode.STAMP);
-            Focuser.requestFocus(panel.getSearchField());
-            return;
-        }
-
-        EditorFrame frame = WindowHolder.allEditorFrames().stream().filter(f -> f.getFrame().isActive()).findAny().orElse(null);
-        if (Objects.nonNull(frame)) {
-            Focuser.requestFocus(frame.getChartToolBar().getStampSearchField());
-        }
     }
 }

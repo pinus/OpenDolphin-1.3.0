@@ -139,7 +139,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
     /// コンテナからコールされる enter() メソッドでメニューを制御する.
     @Override
     public void enter() {
-        super.enter();
+        //super.enter(); // addChartDocumentChain(this) されると KarteDocumentViewer が上書きされる
 
         // ReadOnly 属性
         boolean canEdit = !getContext().isReadOnly();
