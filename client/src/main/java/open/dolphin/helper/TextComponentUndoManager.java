@@ -65,6 +65,7 @@ public class TextComponentUndoManager extends UndoManager {
         if (atokListener != null) {
             textComponent.removeKeyListener(atokListener);
             textComponent.removeInputMethodListener(atokListener);
+            atokListener.dispose();
             atokListener = null;
         }
         textComponent = null;

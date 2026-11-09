@@ -200,4 +200,9 @@ public class AtokListener implements KeyListener, InputMethodListener {
 
     @Override
     public void keyTyped(KeyEvent e) { }
+
+    public void dispose() {
+        textComponent = null;
+        undoManager = null;
+    }
 }
