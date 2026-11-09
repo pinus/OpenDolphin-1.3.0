@@ -156,8 +156,10 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             karteViewerList.clear();
         }
         scrollerPanel.removeAll();
-        scroller.setViewportView(null);
-        scroller = null;
+        if (scroller != null) {
+            scroller.setViewportView(null);
+            scroller = null;
+        }
         currentTask.dispose();
     }
 
