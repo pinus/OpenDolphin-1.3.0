@@ -42,17 +42,19 @@ public abstract class KartePanel extends PrintablePanel {
         return docId;
     }
 
-    public void setupMouseListener(MouseListener listener) {
-        mouseListener = listener;
-        getSoaKartePane().getTextPane().addMouseListener(mouseListener);
-        getPKartePane().getTextPane().addMouseListener(mouseListener);
+    public void setupMouseListener(MouseListener newListener) {
+        getSoaKartePane().getTextPane().removeMouseListener(mouseListener);
+        getPKartePane().getTextPane().removeMouseListener(mouseListener);
+        getSoaKartePane().getTextPane().addMouseListener(newListener);
+        getPKartePane().getTextPane().addMouseListener(newListener);
+        mouseListener = newListener;
     }
 
     public void stop() {
         getSoaKartePane().getTextPane().removeMouseListener(mouseListener);
         getPKartePane().getTextPane().removeMouseListener(mouseListener);
-        mouseListener = null;
         getSoaKartePane().dispose();
         getPKartePane().dispose();
+        mouseListener = null;
     }
 }

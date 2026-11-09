@@ -164,7 +164,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
             long pk = viewer.getDocument().getDocInfo().getDocPk();
             if (!selectedHistoryMap.containsKey(pk)) {
                 removed.add(viewer);
-                //viewer.stop();
+                viewer.stop();
             }
         }
         // 削除リストを karteViewerList から取り除く
