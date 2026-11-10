@@ -33,6 +33,11 @@ public class OrcaHostInfoStartup {
         Map<String,String> orcaUserInfoHashMap = OrcaUserInfo.getHashMap();
         orcaUserInfoHashMap.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).forEach(logger::info);
 
+        if (orcaHostInfo.getHost().contains("trial")) {
+            logger.info("WebOrca Trial Mode");
+            return;
+        }
+
         PushApi pushApi = PushApi.getInstance();
         logger.info("PushApi = " + pushApi);
 

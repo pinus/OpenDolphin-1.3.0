@@ -1,6 +1,7 @@
 package open.dolphin.ui;
 
 import open.dolphin.client.GUIConst;
+import open.dolphin.laf.MySearchFieldUI;
 
 /**
  * CompletableSearchField.
@@ -12,6 +13,7 @@ import open.dolphin.client.GUIConst;
 public class CompletableSearchField extends CompletableJTextFieldWithLabel {
     public CompletableSearchField(int col) {
         super(col);
+        setUI(new MySearchFieldUI());
         setIcon(GUIConst.ICON_SEARCH_16);
     }
 }

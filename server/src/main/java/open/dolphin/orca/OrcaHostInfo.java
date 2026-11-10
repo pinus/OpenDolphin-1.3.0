@@ -174,7 +174,7 @@ public class OrcaHostInfo {
         /**
          * ORCA のアドレス. ポート番号は含まない.
          */
-        private String host = "trial.orca.med.or.jp";
+        private String host = "weborca-trial.orca.med.or.jp";
         /**
          * ORCA 用の userId.
          */
@@ -182,7 +182,7 @@ public class OrcaHostInfo {
         /**
          * ORCA 用の userId の password.
          */
-        private String password = "";
+        private String password = "weborcatrial";
         /**
          * JMARI コード.
          */

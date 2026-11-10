@@ -161,10 +161,10 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
 
         // karteViewerList にあって選択リストにないものは除去リストに入れる
         for (KarteViewer2 viewer : karteViewerList) {
+            viewer.stop(); // 全てリソース開放. 新たに作るとき KarteViewer.start() で KartePanel がキャッシュから読まれる.
             long pk = viewer.getDocument().getDocInfo().getDocPk();
             if (!selectedHistoryMap.containsKey(pk)) {
                 removed.add(viewer);
-                viewer.stop();
             }
         }
         // 削除リストを karteViewerList から取り除く

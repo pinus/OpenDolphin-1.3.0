@@ -305,8 +305,10 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
 
         if (pHelper != null) { pHelper.dispose(); }
         if (soaHelper != null) { soaHelper.dispose(); }
-        undoManager.dispose();
-        undoManager = null;
+        if (undoManager != null) {
+            undoManager.dispose();
+            undoManager = null;
+        }
     }
 
     /// JTextPaneへの挿入でdirtyかどうかを判定する

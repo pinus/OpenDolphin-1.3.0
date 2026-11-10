@@ -181,15 +181,13 @@ public class MiscSettingPanel extends AbstractSettingPanel {
         // 現在のキャッシュ件数を取りに行く - 大きいと時間がかかるので SwingWorker を使う
         if (prefetchCachingBox.isSelected()) {
             SwingWorker<Integer, Integer> showCurrent = new SwingWorker<>() {
-                private final AtomicInteger index = new AtomicInteger();
+                private int count = 0;
                 private ScheduledExecutorService scheduler;
 
                 @Override
                 protected Integer doInBackground() {
                     scheduler = Executors.newSingleThreadScheduledExecutor();
-                    scheduler.scheduleAtFixedRate(() -> {
-                        publish(index.getAndIncrement());
-                    }, 0, 100, TimeUnit.MILLISECONDS);
+                    scheduler.scheduleAtFixedRate(() -> publish(count++), 0, 10, TimeUnit.MILLISECONDS);
                     try {
                         return DocumentModelCache.size();
                     } finally {

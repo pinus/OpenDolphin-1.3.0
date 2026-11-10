@@ -16,6 +16,7 @@ public class MyPasswordFieldUI extends BasicPasswordFieldUI {
 
     private static final int DEFAULT_TEXT_HEIGHT = 28;
     private JPasswordField tf;
+    private FocusListener focusListener;
 
     public static ComponentUI createUI(JComponent c) {
         return new MyPasswordFieldUI();
@@ -36,17 +37,25 @@ public class MyPasswordFieldUI extends BasicPasswordFieldUI {
         c.setBackground(Color.WHITE);
         c.setOpaque(false);
 
-        c.addFocusListener(new FocusListener() {
+        focusListener = new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 c.repaint();
             }
-
             @Override
             public void focusLost(FocusEvent e) {
                 c.repaint();
             }
-        });
+        };
+        c.addFocusListener(focusListener);
+    }
+
+    @Override
+    public void uninstallUI(JComponent c) {
+        c.removeFocusListener(focusListener);
+        focusListener = null;
+        tf = null;
+        super.uninstallUI(c);
     }
 
     @Override

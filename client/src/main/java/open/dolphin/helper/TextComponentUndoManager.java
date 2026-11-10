@@ -60,17 +60,6 @@ public class TextComponentUndoManager extends UndoManager {
         }
     }
 
-    /// release resources
-    public void dispose() {
-        if (atokListener != null) {
-            textComponent.removeKeyListener(atokListener);
-            textComponent.removeInputMethodListener(atokListener);
-            atokListener.dispose();
-            atokListener = null;
-        }
-        textComponent = null;
-    }
-
     @Override
     public void undoableEditHappened(UndoableEditEvent e) {
         timer.restart();
@@ -182,6 +171,19 @@ public class TextComponentUndoManager extends UndoManager {
     public void setActions(Action undo, Action redo) {
         undoAction = undo;
         redoAction = redo;
+    }
+
+    /// release resources
+    public void dispose() {
+        if (atokListener != null) {
+            textComponent.removeKeyListener(atokListener);
+            textComponent.removeInputMethodListener(atokListener);
+            atokListener.dispose();
+            atokListener = null;
+        }
+        textComponent = null;
+        undoAction = null;
+        redoAction = null;
     }
 
     /// TextComponentUndoManager 用の UndoableEdit.
