@@ -141,6 +141,15 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
             context.setSelectedKarteViewer(karteViewerList.getFirst());
         }
         SwingUtilities.invokeLater(() -> logger.debug("lap time: {}", (System.nanoTime() - lap)/1000000));
+
+        // リソース開放 - SwingWorker は最終的に done() で終了する
+        removePropertyChangeListener(this);
+        context = null;
+        chart = null;
+        scrollerPanel = null;
+        karteViewerList = null;
+        selectedHistoryMap = null;
+        progressBar = null;
     }
 
     private void addKarteViewer(List<DocumentModel> models) {
@@ -271,17 +280,5 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         // repaint
         scrollerPanel.revalidate();
         scrollerPanel.repaint();
-    }
-
-    /// リソース開放
-    public void dispose() {
-        if (!isDone()) { cancel(true); }
-        removePropertyChangeListener(this);
-        context = null;
-        chart = null;
-        scrollerPanel = null;
-        karteViewerList = null;
-        selectedHistoryMap = null;
-        progressBar = null;
     }
 }

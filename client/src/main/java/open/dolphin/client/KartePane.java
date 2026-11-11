@@ -261,54 +261,64 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
         textPane.addMouseListener(this);
         textPane.addCaretListener(this);
         textPane.getDocument().addDocumentListener(this);
-        // undo manager
-        undoManager = new TextComponentUndoManager(textPane);
 
         // Mediatorを保存する
-        setMediator(chartMediator);
+        mediator = chartMediator;
         // 入れておかないと最初に focus 取る前に Drop したときヌルポが出る
-        enter(getMediator().getActions());
+        enter(mediator.getActions());
 
-        getTextPane().setEditable(editable);
+        textPane.setEditable(editable);
         // ChartImpl で DocumentHistory が focus を取れないことがあるのの workaround
         // editable でないときはフォーカスを取らない
         // ただし，マウスで選択する時は MouseListener で focus とって選択できるようにする
-        getTextPane().setFocusable(editable);
+        textPane.setFocusable(editable);
 
         if (editable) {
             // undo listener は editable だけ登録
-            getTextPane().getDocument().addUndoableEditListener(undoManager);
+            undoManager = new TextComponentUndoManager(textPane);
+            textPane.getDocument().addUndoableEditListener(undoManager);
 
             if (myRole.equals(IInfoModel.ROLE_SOA)) {
-                soaHelper = new SOACodeHelper(this, getMediator());
+                soaHelper = new SOACodeHelper(this, mediator);
             } else {
-                pHelper = new PCodeHelper(this, getMediator());
+                pHelper = new PCodeHelper(this, mediator);
             }
-            getTextPane().setBackground(Color.WHITE);
-            getTextPane().setOpaque(true);
+            textPane.setBackground(Color.WHITE);
+            textPane.setOpaque(true);
 
         } else {
             setBackgroundUneditable();
         }
     }
 
-    /// リソースをclearする.
-    public void dispose() {
-        setParent(null);
-        mediator = null;
-        if (textPane == null) { return; }
+    /// リソースを開放する.
+    public void stop() {
+        if (pHelper != null) {
+            pHelper.dispose();
+            pHelper = null;
+        }
+        if (soaHelper != null) {
+            soaHelper.dispose();
+            soaHelper = null;
+        }
 
-        textPane.removeMouseListener(this);
-        textPane.removeCaretListener(this);
-        textPane.getDocument().removeDocumentListener(this);
-        textPane.getDocument().removeUndoableEditListener(undoManager);
+        if (textPane != null) {
+            textPane.removeMouseListener(this);
+            textPane.removeCaretListener(this);
+            textPane.getDocument().removeDocumentListener(this);
+            if (undoManager != null) {
+                textPane.getDocument().removeUndoableEditListener(undoManager);
+            }
+            // textPaen = null; // should not be null
+        }
 
-        if (pHelper != null) { pHelper.dispose(); }
-        if (soaHelper != null) { soaHelper.dispose(); }
         if (undoManager != null) {
             undoManager.dispose();
             undoManager = null;
         }
+        parent = null;
+        mediator = null;
+        draggedStamp = null;
     }
 
     /// JTextPaneへの挿入でdirtyかどうかを判定する
@@ -361,8 +371,8 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     /// メニューを制御する.
     private void controlMenus(ActionMap map) {
         // undo redo
-        map.get(GUIConst.ACTION_UNDO).setEnabled(undoManager.canUndo());
-        map.get(GUIConst.ACTION_REDO).setEnabled(undoManager.canRedo());
+        map.get(GUIConst.ACTION_UNDO).setEnabled(undoManager != null && undoManager.canUndo());
+        map.get(GUIConst.ACTION_REDO).setEnabled(undoManager != null && undoManager.canRedo());
 
         // 各Stateはenableになる条件だけを管理する
         switch (curState) {
@@ -397,9 +407,10 @@ public class KartePane implements KarteComposite<JTextPane>, DocumentListener, M
     public void enter(ActionMap map) {
         curState = getMyRole().equals(IInfoModel.ROLE_SOA) ? State.SOA : State.P;
 
-        // UndoManager 内で enable/disable してもらうために登録
-        undoManager.setActions(map.get(GUIConst.ACTION_UNDO), map.get(GUIConst.ACTION_REDO));
-
+        if (undoManager != null) {
+            // UndoManager 内で enable/disable してもらうために登録
+            undoManager.setActions(map.get(GUIConst.ACTION_UNDO), map.get(GUIConst.ACTION_REDO));
+        }
         controlMenus(map);
     }
 

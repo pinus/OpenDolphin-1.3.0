@@ -160,7 +160,8 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             scroller.setViewportView(null);
             scroller = null;
         }
-        currentTask.dispose();
+        currentTask = null;
+        super.setContext(null);
     }
 
     @Override
@@ -221,7 +222,10 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     /// 文書履歴の抽出期間が変更された場合，
     /// karteList を clear, 選択されている karteViewer を解除, sateMgr  NoKarte 状態に設定する.
     public void historyPeriodChanged() {
-        if (karteViewerList != null) { karteViewerList.clear(); }
+        if (karteViewerList != null) {
+            karteViewerList.forEach(KarteViewer2::stop);
+            karteViewerList.clear();
+        }
         setSelectedKarteViewer(null);
         getContext().showDocument(0);
     }

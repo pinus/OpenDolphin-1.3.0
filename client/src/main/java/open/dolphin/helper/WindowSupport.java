@@ -186,7 +186,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension size = frame.getSize();
         int x = (screenSize.width - size.width) / 2;
-        int y = (screenSize.height - size.height) / (Dolphin.forMac? 3:2);
+        int y = (screenSize.height - size.height) / (Dolphin.forMac ? 3 : 2);
         frame.setBounds(x, y, size.width, size.height);
     }
 
@@ -236,7 +236,7 @@ public class WindowSupport<T> implements MenuListener, ComponentListener {
 
         List<WindowSupport<?>> allWindows = WindowHolder.allWindowSupports();
         // まず，カルテとインスペクタ以外
-        for (WindowSupport<?> ws :  allWindows) {
+        for (WindowSupport<?> ws : allWindows) {
             if (!(ws.getContent() instanceof Chart)) {
                 wm.add(ws.windowAction);
                 count++;

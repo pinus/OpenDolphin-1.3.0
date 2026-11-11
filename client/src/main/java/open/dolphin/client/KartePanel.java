@@ -17,6 +17,11 @@ public abstract class KartePanel extends PrintablePanel {
 
     public abstract JLabel getTimeStampLabel();
 
+    public void initKartePane(boolean editable, ChartMediator mediator) {
+        getSoaKartePane().init(editable, mediator);
+        getPKartePane().init(editable, mediator);
+    }
+
     public void setSelected(boolean selected) {
         getTimeStampLabel().setFont(selected
                 ? KartePanelFactory.TIMESTAMP_FONT_BOLD
@@ -38,10 +43,7 @@ public abstract class KartePanel extends PrintablePanel {
         getPKartePane().setDocId(id);
     }
 
-    public String getDocId() {
-        return docId;
-    }
-
+    ///  If the listener is null, no exception is thrown and no action is performed.
     public void setupMouseListener(MouseListener newListener) {
         getSoaKartePane().getTextPane().removeMouseListener(mouseListener);
         getPKartePane().getTextPane().removeMouseListener(mouseListener);
@@ -50,11 +52,14 @@ public abstract class KartePanel extends PrintablePanel {
         mouseListener = newListener;
     }
 
-    public void stop() {
+    public void removeMouseListener() {
         getSoaKartePane().getTextPane().removeMouseListener(mouseListener);
         getPKartePane().getTextPane().removeMouseListener(mouseListener);
-        getSoaKartePane().dispose();
-        getPKartePane().dispose();
         mouseListener = null;
+    }
+
+    public void stopKartePane() {
+        getSoaKartePane().stop();
+        getPKartePane().stop();
     }
 }

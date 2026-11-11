@@ -78,10 +78,10 @@ public abstract class AbstractChartDocument implements ChartDocument {
     @Override
     public void enter() {
         chartContext.getStatusPanel().setText("", "message");
-        getContext().getChartMediator().addChartDocumentChain(this);
+        chartContext.getChartMediator().addChartDocumentChain(this);
         disableMenus();
-        getContext().enabledAction(GUIConst.ACTION_NEW_KARTE, true);
-        getContext().enabledAction(GUIConst.ACTION_SIMPLIFY_STAMP, true);
+        chartContext.enabledAction(GUIConst.ACTION_NEW_KARTE, true);
+        chartContext.enabledAction(GUIConst.ACTION_SIMPLIFY_STAMP, true);
     }
 
     @Override
@@ -109,7 +109,7 @@ public abstract class AbstractChartDocument implements ChartDocument {
 
     public void disableMenus() {
         // このウインドウに関連する全てのメニューをdisableにする
-        ChartMediator mediator = getContext().getChartMediator();
+        ChartMediator mediator = chartContext.getChartMediator();
         mediator.disableMenus(CHART_MENUS);
     }
 

@@ -476,7 +476,6 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
         } else if (editor != null) {
             mode = EditorMode.EDITOR;
             editor.setContext(EditorFrame.this);
-            editor.initialize();
             editor.start();
             scroller = new PNSScrollPane(editor.getUI());
             scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);

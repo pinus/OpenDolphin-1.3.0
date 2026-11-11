@@ -25,7 +25,7 @@ import java.util.List;
  * @author pns
  */
 public class PNSTabbedPane extends JPanel implements ChangeListener {
-        /**
+    /**
      * １行の最低タブ数
      */
     private static final int MIN_TAB_PER_LINE = 3;

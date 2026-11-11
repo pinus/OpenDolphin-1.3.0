@@ -114,9 +114,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
 
         // モデル表示後にリスナ等を設定する init(editable, mediator)
         mediator = getContext().getChartMediator();
-        getSoaKartePane().init(false, mediator);
-        getPKartePane().init(false, mediator);
-
+        kartePanel.initKartePane(false, mediator);
         setUI(kartePanel);
         enter();
     }
@@ -150,9 +148,12 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
 
     @Override
     public void stop() {
-        kartePanel.stop(); // これで mouseListener は外れる
-        setContext(null);
-        context = null;
+        kartePanel.removeMouseListener();
+        kartePanel.stopKartePane();
+        kartePanel.setParent(null);
+
+        setContext(null); // Chart
+        context = null; // KarteDocumentViewer
         mediator = null;
     }
 

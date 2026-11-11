@@ -940,7 +940,6 @@ public class ChartImpl extends AbstractMainTool implements Chart, IInfoModel, Wi
 
         } else {
             editor.setContext(this);
-            editor.initialize();
             editor.start();
             this.addChartDocument(editor, params);
         }

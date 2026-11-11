@@ -93,6 +93,12 @@ public class ChartSearchPanel extends JPanel {
         map.put(KeyStroke.getKeyStroke("ctrl ENTER"), value);
     }
 
+    @Override
+    public void removeNotify() {
+        super.removeNotify();
+        scrollerPanel = null;
+    }
+
     /**
      * Sets the current mode of the ChartSearchPanel. This method updates the
      * search field's label and preferences based on the new mode and applies

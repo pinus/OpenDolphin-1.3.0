@@ -18,9 +18,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 import java.time.LocalDate;
@@ -188,8 +185,9 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
         autosave.setDirty(newDirty);
     }
 
-    /// 2号カルテモードで初期化する.
-    public void initialize() {
+    /// ２号カルテモードを開始する. 初期化の後コールされる.
+    @Override
+    public void start() {
         stateMgr = new StateMgr();
         kartePanel = KartePanelFactory.createEditorPanel();
         kartePanel.setParent(this);
@@ -200,54 +198,30 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
             kartePanel.setDocId(docId);
         }
 
-        // ctrl-¥ で soaPane, PPane 間を移動する
-        KeyListener l = new KeyAdapter() {
-            final KeyStroke CTRL_YEN = KeyStroke.getKeyStroke("ctrl BACK_SLASH");
-            final JTextPane SOA = getSoaPane().getTextPane();
-            final JTextPane P = getPPane().getTextPane();
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (KeyStroke.getKeyStrokeForEvent(e).equals(CTRL_YEN)) {
-                    Focuser.requestFocus(e.getSource() == SOA ? P : SOA);
-                }
-            }
-        };
-        getSoaPane().getTextPane().addKeyListener(l);
-        getPPane().getTextPane().addKeyListener(l);
-
-        setUI(kartePanel);
-
-        // 初期化の前にモデルがセットしてある.
-        // Model を表示する
-        displayModel();
+        ChartMediator mediator = getContext().getChartMediator();
+        kartePanel.initKartePane(editable, mediator);
+        renderDocumentModel();
 
         // dirty フラグ, undo 履歴の初期化
+        getSoaPane().setDirty(false);
+        getSoaPane().getUndoManager().discardAllEdits();
+        getPPane().setDirty(false);
+        getPPane().getUndoManager().discardAllEdits();
+        // キャレットを先頭にリセット.
         SwingUtilities.invokeLater(() -> {
-            kartePanel.getSoaKartePane().setDirty(false);
-            kartePanel.getSoaKartePane().getUndoManager().discardAllEdits();
-            kartePanel.getPKartePane().setDirty(false);
-            kartePanel.getPKartePane().getUndoManager().discardAllEdits();
-        });
-    }
-
-    /// ２号カルテモードを開始する. 初期化の後コールされる.
-    @Override
-    public void start() {
-        ChartMediator mediator = getContext().getChartMediator();
-        getSoaPane().init(editable, mediator);
-        getPPane().init(editable, mediator);
-
-        SwingUtilities.invokeLater(() -> {
-            // キャレットを先頭にリセット.
+            getPPane().getUndoManager().discardAllEdits();
             getSoaPane().getTextPane().setCaretPosition(0);
             getPPane().getTextPane().setCaretPosition(0);
             Focuser.requestFocus(getSoaPane().getTextPane());
         });
-        enter();
+
+        setUI(kartePanel);
 
         // 自動一時保存スタート
         autosave.start();
         logger.info("autosave start");
+
+        enter();
     }
 
     /// KarteEditor の終了処理. EditorFrame から呼ばれる.
@@ -255,12 +229,15 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
     public void stop() {
         logger.info("autosave stop");
         autosave.stop();
-        kartePanel.stop();
+
+        kartePanel.stopKartePane();
+        kartePanel.setParent(null);
         kartePanel = null;
+        setContext(null);
     }
 
     /// DocumentModelを表示する.
-    private void displayModel() {
+    private void renderDocumentModel() {
         // Timestamp を表示する
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy年M月d日(E) HH:mm"));
         String timeStamp = MODIFY_MARK + now;
