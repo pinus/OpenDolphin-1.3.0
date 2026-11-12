@@ -543,108 +543,117 @@ public class StampHolderPopupMenu extends JPopupMenu {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
             final JTextField tf = new JTextField(10);
             tf.setPreferredSize(new Dimension(100, 26));
             tf.getDocument().addUndoableEditListener(TextComponentUndoManager.createManager(tf));
 
             JDialog dialog = new JDialog();
-            dialog.getRootPane().getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "cancel");
+            try {
+                dialog.getRootPane().getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "cancel");
 
-            PNSButton addBtn = new PNSButton("追加");
-            PNSButton overwriteBtn = new PNSButton("上書き");
-            PNSButton cancelBtn = new PNSButton("キャンセル");
-            JButton[] options = { addBtn, overwriteBtn, cancelBtn };
+                PNSButton addBtn = new PNSButton("追加");
+                PNSButton overwriteBtn = new PNSButton("上書き");
+                PNSButton cancelBtn = new PNSButton("キャンセル");
+                JButton[] options = {addBtn, overwriteBtn, cancelBtn};
 
-            PNSOptionPane pane = new PNSOptionPane(tf,
-                    JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
-                    options, options[0]) {
-                // 初期状態でボタンでなく，tf にフォーカスを取る
-                @Override
-                public void selectInitialValue() {
-                    Focuser.requestFocus(tf);
+                PNSOptionPane pane = new PNSOptionPane(tf,
+                        JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
+                        options, options[0]) {
+                    // 初期状態でボタンでなく，tf にフォーカスを取る
+                    @Override
+                    public void selectInitialValue() {
+                        Focuser.requestFocus(tf);
+                    }
+                };
+
+                Consumer<Integer> btnAction = retVal -> {
+                    pane.setValue(retVal);
+                    dialog.setVisible(false);
+                };
+
+                addBtn.addActionListener(evt -> btnAction.accept(0));
+                overwriteBtn.addActionListener(evt -> btnAction.accept(1));
+                cancelBtn.addActionListener(evt -> btnAction.accept(2));
+                tf.addKeyListener(new KeyListener() {
+                    @Override
+                    public void keyTyped(KeyEvent e) {
+                    }
+
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                            btnAction.accept(-1);
+                        }
+                    }
+
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                    }
+                });
+
+                dialog.setModal(true);
+                if (Dolphin.forMac) {
+                    dialog.getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);
+                    dialog.getRootPane().putClientProperty("apple.awt.fullWindowContent", true);
+                    JLabel titleLabel = new JLabel("コメント入力");
+                    JPanel titlePanel = new JPanel();
+                    titlePanel.setPreferredSize(new Dimension(100, 28));
+                    titlePanel.add(titleLabel);
+                    dialog.add(titlePanel, BorderLayout.NORTH);
                 }
-            };
+                dialog.add(pane, BorderLayout.CENTER);
+                dialog.pack();
 
-            Consumer<Integer> btnAction = retVal -> {
-                pane.setValue(retVal);
-                dialog.setVisible(false);
-            };
+                // ダイアログ表示位置計算　できればスタンプの上に，上にスペースがなければ下に
+                Point p = ctx.getLocationOnScreen();
+                int y;
+                p.y = (y = p.y - dialog.getHeight() - 10) > 30 ? y : p.y + ctx.getHeight() + 10;
+                dialog.setLocation(p);
+                pane.selectInitialValue();
+                dialog.setVisible(true);
 
-            addBtn.addActionListener(evt -> btnAction.accept(0));
-            overwriteBtn.addActionListener(evt -> btnAction.accept(1));
-            cancelBtn.addActionListener(evt -> btnAction.accept(2));
-            tf.addKeyListener(new KeyListener() {
-                @Override
-                public void keyTyped(KeyEvent e) {}
-                @Override
-                public void keyPressed(KeyEvent e) {
-                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { btnAction.accept(-1); }
-                }
-                @Override
-                public void keyReleased(KeyEvent e) {}
-            });
+                // getValue() の値 追加=0, 上書き=1, キャンセル=2, エスケープでキャンセル=-1，赤ボタンで消した=uninitializedValue
+                if (pane.getValue() instanceof Integer ans) {
+                    // 追加、上書きでないばあい、入力なしの場合はそのまま帰る
+                    if (!(ans == 0 || ans == 1) || tf.getText().trim().isEmpty()) {
+                        return;
+                    }
 
-            dialog.setModal(true);
-            if (Dolphin.forMac) {
-                dialog.getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);
-                dialog.getRootPane().putClientProperty("apple.awt.fullWindowContent", true);
-                JLabel titleLabel = new JLabel("コメント入力");
-                JPanel titlePanel = new JPanel();
-                titlePanel.setPreferredSize(new Dimension(100, 28));
-                titlePanel.add(titleLabel);
-                dialog.add(titlePanel, BorderLayout.NORTH);
-            }
-            dialog.add(pane, BorderLayout.CENTER);
-            dialog.pack();
+                    // 新たなスタンプ作成
+                    BundleMed srcBundle = (BundleMed) ctx.getModel().getModel();
+                    ModuleModel stamp = ModelUtils.clone(ctx.getModel());
+                    BundleMed bundle = (BundleMed) stamp.getModel();
 
-            // ダイアログ表示位置計算　できればスタンプの上に，上にスペースがなければ下に
-            Point p = ctx.getLocationOnScreen();
-            int y;
-            p.y = (y = p.y - dialog.getHeight() - 10) > 30 ? y : p.y + ctx.getHeight() + 10;
-            dialog.setLocation(p);
-            pane.selectInitialValue();
-            dialog.setVisible(true);
+                    List<ClaimItem> list = new ArrayList<>();
 
-            // getValue() の値 追加=0, 上書き=1, キャンセル=2, エスケープでキャンセル=-1，赤ボタンで消した=uninitializedValue
-            if (pane.getValue() instanceof Integer ans) {
-                // 追加、上書きでないばあい、入力なしの場合はそのまま帰る
-                if (!(ans == 0 || ans == 1) || tf.getText().trim().isEmpty()) { return; }
+                    // 既存のコメント以外はそのまま登録，追加登録の場合は既存のコメントも登録
+                    for (ClaimItem src : srcBundle.getClaimItem()) {
+                        if (!src.getCode().startsWith("810000001") || ans == 0) {
+                            list.add(ModelUtils.clone(src));
+                        }
+                    }
+                    // あらたな ClaimItem を作る
+                    ClaimItem newComment = new ClaimItem();
+                    newComment.setClassCode("2");
+                    newComment.setClassCodeSystem("Claim003");
+                    newComment.setCode("810000001");
+                    newComment.setName(tf.getText());
+                    newComment.setNumber(".");
+                    newComment.setNumberCode(ClaimConst.YAKUZAI_TOYORYO); // = "10"
+                    newComment.setNumberCodeSystem("Claim004");
 
-                // 新たなスタンプ作成
-                BundleMed srcBundle = (BundleMed) ctx.getModel().getModel();
-                ModuleModel stamp = ModelUtils.clone(ctx.getModel());
-                BundleMed bundle = (BundleMed) stamp.getModel();
+                    // コメントを登録
+                    list.add(newComment);
 
-                List<ClaimItem> list = new ArrayList<>();
-
-                // 既存のコメント以外はそのまま登録，追加登録の場合は既存のコメントも登録
-                for (ClaimItem src : srcBundle.getClaimItem()) {
-                    if (!src.getCode().startsWith("810000001") || ans == 0) {
-                        list.add(ModelUtils.clone(src));
+                    // 変更あれば list を srcBundle に登録
+                    if (isClaimItemChanged(srcBundle.getClaimItem(), list)) {
+                        bundle.setClaimItem(list.toArray(new ClaimItem[0]));
+                        propertyChanged(stamp);
                     }
                 }
-                // あらたな ClaimItem を作る
-                ClaimItem newComment = new ClaimItem();
-                newComment.setClassCode("2");
-                newComment.setClassCodeSystem("Claim003");
-                newComment.setCode("810000001");
-                newComment.setName(tf.getText());
-                newComment.setNumber(".");
-                newComment.setNumberCode(ClaimConst.YAKUZAI_TOYORYO); // = "10"
-                newComment.setNumberCodeSystem("Claim004");
-
-                // コメントを登録
-                list.add(newComment);
-
-                // 変更あれば list を srcBundle に登録
-                if (isClaimItemChanged(srcBundle.getClaimItem(), list)) {
-                    bundle.setClaimItem(list.toArray(new ClaimItem[0]));
-                    propertyChanged(stamp);
-                }
+            } finally {
+                dialog.dispose();
             }
-
-            dialog.dispose();
         }
     }
 

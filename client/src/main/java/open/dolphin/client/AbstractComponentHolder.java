@@ -82,6 +82,11 @@ public abstract class AbstractComponentHolder<T> extends JLabel
     }
 
     @Override
+    public void exit(ActionMap map) {
+        actionMap = null;
+    }
+
+    @Override
     public void keyPressed(KeyEvent e) {
         KeyStroke key = KeyStroke.getKeyStrokeForEvent(e);
 

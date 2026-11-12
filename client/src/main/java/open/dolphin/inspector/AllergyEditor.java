@@ -6,7 +6,6 @@ import open.dolphin.event.ProxyAction;
 import open.dolphin.event.ProxyDocumentListener;
 import open.dolphin.helper.TextComponentUndoManager;
 import open.dolphin.infomodel.AllergyModel;
-import open.dolphin.infomodel.SimpleDate;
 import open.dolphin.ui.Focuser;
 import open.dolphin.ui.PNSButton;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +27,6 @@ public class AllergyEditor {
     private final AllergyInspector inspector;
     private static AllergyEditor editor;
     private AllergyModel model;
-    private final JDialog dialog;
     private final PNSButton addBtn;
     private final PNSButton clearBtn;
     private JTextField factorFld;
@@ -95,7 +93,7 @@ public class AllergyEditor {
             JOptionPane.DEFAULT_OPTION,
             null,
             new Object[]{addBtn, clearBtn, "キャンセル"}, addBtn);
-        dialog = pane.createDialog(inspector.getContext().getFrame(), "アレルギー登録");
+        JDialog dialog = pane.createDialog(inspector.getContext().getFrame(), "アレルギー登録");
         dialog.getRootPane().putClientProperty("apple.awt.transparentTitleBar", Boolean.TRUE);
         dialog.setIconImage(GUIConst.ICON_DOLPHIN.getImage());
 
@@ -136,8 +134,10 @@ public class AllergyEditor {
         memoFld.getDocument().addDocumentListener((ProxyDocumentListener) e -> checkBtn());
         memoFld.getDocument().addUndoableEditListener(TextComponentUndoManager.createManager(memoFld));
 
-        // show dialogs
+        // show dialog (modal)
         dialog.setVisible(true);
+        // dispose
+        dialog.dispose();
     }
 
     // デザインパターン

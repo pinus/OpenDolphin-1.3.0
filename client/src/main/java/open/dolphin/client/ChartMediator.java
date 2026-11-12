@@ -184,6 +184,10 @@ public final class ChartMediator extends MenuSupport implements PropertyChangeLi
      */
     public void dispose() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().removePropertyChangeListener(FOCUS_OWNER, this);
+        if (curKarteComposit != null) {
+            curKarteComposit.exit(getActions());
+            curKarteComposit = null;
+        }
         chart = null;
     }
 

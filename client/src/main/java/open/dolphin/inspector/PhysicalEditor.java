@@ -7,7 +7,6 @@ import open.dolphin.event.ProxyAction;
 import open.dolphin.event.ProxyDocumentListener;
 import open.dolphin.helper.TextComponentUndoManager;
 import open.dolphin.infomodel.PhysicalModel;
-import open.dolphin.infomodel.SimpleDate;
 import open.dolphin.ui.Focuser;
 import open.dolphin.ui.PNSButton;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +25,6 @@ public class PhysicalEditor {
     private final PhysicalInspector inspector;
     private static PhysicalEditor editor;
     private PhysicalModel model;
-    private final JDialog dialog;
     private final PNSButton addBtn;
     private final PNSButton clearBtn;
     private javax.swing.JTextField heightFld;
@@ -79,7 +77,7 @@ public class PhysicalEditor {
             JOptionPane.DEFAULT_OPTION,
             null,
             options, addBtn);
-        dialog = pane.createDialog(inspector.getContext().getFrame(), ClientContext.getFrameTitle("身長体重登録"));
+        JDialog dialog = pane.createDialog(inspector.getContext().getFrame(), ClientContext.getFrameTitle("身長体重登録"));
         dialog.getRootPane().putClientProperty("apple.awt.transparentTitleBar", Boolean.TRUE);
         dialog.setIconImage(GUIConst.ICON_DOLPHIN.getImage());
 
@@ -115,8 +113,10 @@ public class PhysicalEditor {
         identifiedFld.addMouseListener(new PopupListener());
         identifiedFld.putClientProperty("Quaqua.TextComponent.showPopup", false);
 
-        // show dialog
+        // show dialog (modal)
         dialog.setVisible(true);
+        // dispose
+        dialog.dispose();
     }
 
     public static void show(PhysicalInspector inspector) {

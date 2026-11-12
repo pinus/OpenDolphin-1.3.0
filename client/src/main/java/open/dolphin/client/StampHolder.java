@@ -150,7 +150,7 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
                             distBundle.setBundleNumber(num);
                             undoableUpdateModel(distModel);
                             kartePane.setDirty(true);
-                            logger.info("bundle number changed to {}", num);
+                            logger.debug("bundle number changed to {}", num);
                         }
 
                     } else {
@@ -169,7 +169,7 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
                         if (dirty) {
                             undoableUpdateModel(distModel);
                             kartePane.setDirty(true);
-                            logger.info("item number changed to {}", num);
+                            logger.debug("item number changed to {}", num);
                         }
                     }
                 } catch (NumberFormatException ex) {
@@ -183,7 +183,7 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
             dialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowDeactivated(WindowEvent e) {
-                    logger.info("dialog deactivated");
+                    logger.debug("dialog deactivated");
                     closeDialog.actionPerformed();
                 }
             });
@@ -233,6 +233,8 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
     /// @param map ActionMap
     @Override
     public void exit(ActionMap map) {
+        logger.debug("StampHolder exit");
+        super.exit(map);
         setSelected(false);
     }
 
@@ -465,10 +467,10 @@ public final class StampHolder extends AbstractComponentHolder<ModuleModel> {
 
         text = StringTool.toHankakuNumber(text);
         text = StringTool.toHankakuUpperLower(text);
-        text = text.replaceAll("　", " ");
-        text = text.replaceAll("．", ".");
+        text = text.replace("　", " ");
+        text = text.replace("．", ".");
         // グラムは全角で
-        text = text.replaceAll(">g<", ">ｇ<"); // ℊ
+        text = text.replace(">g<", ">ｇ<"); // ℊ
 
         // 検索語の attribute をセットする
         if (searchText != null) {

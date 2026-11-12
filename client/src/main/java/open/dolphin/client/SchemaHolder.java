@@ -189,6 +189,7 @@ public final class SchemaHolder extends AbstractComponentHolder<SchemaModel> {
     @Override
     public void exit(ActionMap map) {
         logger.debug("SchemaHolder exit");
+        super.exit(map);
         setSelected(false);
     }
 
