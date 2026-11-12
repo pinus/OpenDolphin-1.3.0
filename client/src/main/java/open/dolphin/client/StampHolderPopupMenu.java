@@ -484,7 +484,7 @@ public class StampHolderPopupMenu extends JPopupMenu {
      * 内服薬の用量を変更するアクション. 何倍にするかで指定する
      */
     private class DoseChangeAction2 extends AbstractAction {
-                private final double value;
+        private final double value;
 
         public DoseChangeAction2(String str) {
             value = stringToDouble(str);
