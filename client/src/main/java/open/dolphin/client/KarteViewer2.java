@@ -68,7 +68,7 @@ public class KarteViewer2 extends AbstractChartDocument implements Comparable<Ka
         }
 
         if (kartePanel == null) {
-            logger.debug("KartePanel cache miss");
+            logger.info("KartePanel cache miss");
             kartePanel = KartePanelFactory.createViewerPanel();
             KarteRenderer_2 renderer = new KarteRenderer_2(getSoaKartePane(), getPKartePane());
             renderer.render(document);

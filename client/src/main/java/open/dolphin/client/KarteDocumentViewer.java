@@ -37,7 +37,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     // このアプリケーションは文書履歴を複数選択することができる
     // このリストはそれに対応した KarteViewer(2号カルテ)を保持している
     // このリストの内容（KarteViewer)が一枚のパネルに並べて表示される
-    private List<KarteViewer2> karteViewerList;
+    private final List<KarteViewer2> karteViewerList = new ArrayList<>();
     // 上記パネル内でマウスで選択されているカルテ(karteViewer)
     // 前回処方を適用した新規カルテはこの選択されたカルテが元になる
     private KarteViewer2 selectedKarteViewer;
@@ -140,7 +140,6 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         // デフォルト値の設定は環境設定で行う.
         ascending = getContext().getDocumentHistory().isAscending();
         showModified = getContext().getDocumentHistory().isShowModified();
-        karteViewerList = new ArrayList<>();
         stateMgr = new StateMgr();
 
         // 保存されていない編集中カルテチェック
@@ -151,10 +150,11 @@ public class KarteDocumentViewer extends AbstractChartDocument {
 
     @Override
     public void stop() {
-        if (karteViewerList != null) {
-            karteViewerList.stream().forEach(KarteViewer2::stop);
-            karteViewerList.clear();
-        }
+        // to get rid of ConcurrentModificationException
+        List<KarteViewer2> snapshot = new ArrayList<>(karteViewerList);
+        snapshot.forEach(KarteViewer2::stop);
+        karteViewerList.clear();
+
         scrollerPanel.removeAll();
         if (scroller != null) {
             scroller.setViewportView(null);
@@ -212,7 +212,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     public KarteViewer2 getBaseKarte() {
         KarteViewer2 selected = getSelectedKarteViewer();
         if (selected == null) {
-            if (karteViewerList != null && !karteViewerList.isEmpty()) {
+            if (!karteViewerList.isEmpty()) {
                 selected = ascending ? karteViewerList.getLast() : karteViewerList.getFirst();
             }
         }
@@ -222,7 +222,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     /// 文書履歴の抽出期間が変更された場合，
     /// karteList を clear, 選択されている karteViewer を解除, sateMgr  NoKarte 状態に設定する.
     public void historyPeriodChanged() {
-        if (karteViewerList != null) {
+        synchronized (karteViewerList) {
             karteViewerList.forEach(KarteViewer2::stop);
             karteViewerList.clear();
         }

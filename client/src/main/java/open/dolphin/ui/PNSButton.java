@@ -56,10 +56,10 @@ public class PNSButton extends JButton {
     }
 
     public void removeNotify() {
-        if (Dolphin.forMac) {
+        if (parent != null) {
             parent.removeWindowListener(windowAdapter);
+            parent = null;
         }
-        parent = null;
         super.removeNotify();
     }
 

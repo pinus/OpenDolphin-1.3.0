@@ -263,7 +263,7 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
      * JSheet の表示位置を設定する.
      */
     private void locateSheet() {
-        if (!owner.isShowing()) { return; }
+        if (owner == null || !owner.isShowing()) { return; }
 
         Point loc = owner.getLocationOnScreen();
         Dimension ownerSize = owner.getSize();

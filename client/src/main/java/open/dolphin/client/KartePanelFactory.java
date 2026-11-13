@@ -87,6 +87,8 @@ public class KartePanelFactory {
         pKartePane = new KartePane(pTextPane);
         pKartePane.getTextPane().setTransferHandler(new KartePaneTransferHandler(pKartePane));
         pKartePane.setRole(IInfoModel.ROLE_P);
+        soaKartePane.getTextPane().setCaret(new MyCaret());
+        pKartePane.getTextPane().setCaret(new MyCaret());
 
         timeStampLabel = new JLabel() {
             @Override
@@ -117,11 +119,7 @@ public class KartePanelFactory {
         public ViewerPanel() {
             initComponents();
 
-            // workaround http://ron.shoutboot.com/2010/05/23/swing-jscrollpane-scrolls-to-bottom/
-            soaKartePane.getTextPane().setCaret(new MyCaret());
             soaKartePane.getTextPane().setEditable(false);
-
-            pKartePane.getTextPane().setCaret(new MyCaret());
             pKartePane.getTextPane().setEditable(false);
 
             textPanePanel.add(soaKartePane.getTextPane());

@@ -86,6 +86,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
                     DocumentModel dm = DocumentModelCache.get(test);
                     if (dm == null) {
                         // DocumentModel がキャッシュに無ければ取りに行く分のリストに追加
+                        logger.info("DocumentModel cache miss");
                         pkList.add(test);
                     } else {
                         logger.debug("DocumentModel cache hit");
@@ -153,12 +154,14 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
     }
 
     private void addKarteViewer(List<DocumentModel> models) {
-        updateKarteViewerList(models);
-
-        // karteViewerList の内容を scrollerPanel に反映する
         List<Component> currentViewerUIs = new ArrayList<>();
-        for (KarteViewer2 viewer : karteViewerList) {
-            currentViewerUIs.add(viewer.getUI());
+        synchronized (karteViewerList) {
+            updateKarteViewerList(models);
+
+            // karteViewerList の内容を scrollerPanel に反映する
+            for (KarteViewer2 viewer : karteViewerList) {
+                currentViewerUIs.add(viewer.getUI());
+            }
         }
         publish(currentViewerUIs);
     }

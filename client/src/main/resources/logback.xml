@@ -9,11 +9,11 @@
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
-    <logger name="open.dolphin.client.Autosave" level="DEBUG" />
-    <logger name="open.dolphin.client.KarteDocumentViewerWorker" level="DEBUG" />
-    <logger name="open.dolphin.client.KarteDocumentViewer" level="DEBUG" />
-    <logger name="open.dolphin.client.KarteViewer2" level="DEBUG" />
-    <logger name="open.dolphin.client.DocumentModelCache" level="DEBUG" />
+    <logger name="open.dolphin.client.Autosave" level="INFO" />
+    <logger name="open.dolphin.client.KarteDocumentViewerWorker" level="INFO" />
+    <logger name="open.dolphin.client.KarteDocumentViewer" level="INFO" />
+    <logger name="open.dolphin.client.KarteViewer2" level="INFO" />
+    <logger name="open.dolphin.client.DocumentModelCache" level="INFO" />
     <logger name="open.dolphin.client.StampHolder" level="INFO" />
     <logger name="open.dolphin.client.SchemaHolder" level="INFO" />
     <logger name="open.dolphin.client.KarteRenderer_2" level="INFO" />
