@@ -133,16 +133,6 @@ public class PatientInspector {
             tabbedPane.addTab(ins.getTitle(), ins.getPanel());
             ins.addBadgeListener(tabbedPane::setBadge, tabbedPane.getTabCount() - 1);
         });
-
-        // update
-        update();
-    }
-
-    /**
-     * すべてのインスペクタをアップデートする.
-     */
-    public void update() {
-        inspectorMap.values().forEach(IInspector::update);
     }
 
     /**

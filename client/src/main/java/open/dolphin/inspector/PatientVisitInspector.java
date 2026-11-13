@@ -35,6 +35,7 @@ public class PatientVisitInspector implements IInspector {
     public PatientVisitInspector(PatientInspector parent) {
         context = parent.getContext();
         initComponent();
+        update();
     }
 
     /**

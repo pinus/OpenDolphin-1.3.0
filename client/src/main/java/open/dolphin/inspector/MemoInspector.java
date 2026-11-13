@@ -72,6 +72,7 @@ public class MemoInspector implements IInspector {
         logger = LoggerFactory.getLogger(MemoInspector.class);
         path = FileInspector.getDocumentPath(context.getKarte().getPatient().getPatientId());
         initComponents();
+        update();
     }
 
     /**

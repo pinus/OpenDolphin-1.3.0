@@ -48,6 +48,7 @@ public class FileInspector implements IInspector {
         context = parent.getContext();
         logger = LoggerFactory.getLogger(FileInspector.class);
         initComponents();
+        update();
     }
 
     /**
@@ -245,12 +246,7 @@ public class FileInspector implements IInspector {
          * @return product
          */
         private String adjustDigit(String str, int n) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = n; i > str.length(); i--) {
-                sb.append('0');
-            }
-            sb.append(str);
-            return sb.toString();
+            return "0".repeat(Math.max(0, n - str.length())) + str;
         }
     }
 

@@ -55,6 +55,7 @@ public class AllergyInspector implements IInspector, TableModelListener {
     public AllergyInspector(PatientInspector parent) {
         context = parent.getContext();
         initComponents();
+        update();
     }
 
     /**
@@ -291,7 +292,7 @@ public class AllergyInspector implements IInspector, TableModelListener {
                 @Override
                 protected Long doInBackground() {
                     List<Long> ids = delegater.addObservations(observations);
-                    return ids.get(0);
+                    return ids.getFirst();
                 }
 
                 @Override

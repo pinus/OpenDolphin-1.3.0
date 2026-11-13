@@ -61,6 +61,7 @@ public class DiagnosisInspector implements IInspector {
     public DiagnosisInspector(PatientInspector parent) {
         context = parent.getContext();
         initComponents();
+        update();
     }
 
     /**

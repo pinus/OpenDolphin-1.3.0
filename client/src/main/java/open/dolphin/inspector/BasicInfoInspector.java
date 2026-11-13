@@ -57,6 +57,7 @@ public class BasicInfoInspector implements IInspector {
     public BasicInfoInspector(PatientInspector parent) {
         context = parent.getContext();
         initComponent();
+        update();
     }
 
     /**

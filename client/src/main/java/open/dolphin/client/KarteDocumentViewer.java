@@ -241,16 +241,6 @@ public class KarteDocumentViewer extends AbstractChartDocument {
         scroller.setViewportView(scrollerPanel);
         if (selected == null || selected.length == 0) { return; }
 
-        // 選択が変化していなければ帰る
-        Set<Long> selectedIds = new HashSet<>();
-        for (DocInfoModel df : selected) {
-            selectedIds.add(df.getDocPk());
-        }
-        if (selectedHistoryMap.keySet().equals(selectedIds)) {
-            logger.debug("selection unchanged");
-            return;
-        }
-
         // 選択された History の DocId をキーとした HashMap を作成
         selectedHistoryMap = new HashMap<>();
         for (DocInfoModel model : selected) {

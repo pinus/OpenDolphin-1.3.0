@@ -57,6 +57,7 @@ public class PhysicalInspector implements IInspector, TableModelListener {
     public PhysicalInspector(PatientInspector parent) {
         context = parent.getContext();
         initComponents();
+        update();
     }
 
     /**
