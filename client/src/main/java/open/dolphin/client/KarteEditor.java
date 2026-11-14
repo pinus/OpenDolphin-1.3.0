@@ -474,7 +474,7 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel {
                         }
                     }
                     // 文書履歴の更新を通知する
-                    chart.getDocumentHistory().update(docInfo.getFirstConfirmDateTrimTime());
+                    chart.getDocumentHistory().update(docInfo.getDocId());
                     // EditorFrame#stop() を呼ぶ
                     completionListener.completed();
 

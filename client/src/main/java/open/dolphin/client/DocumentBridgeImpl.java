@@ -3,6 +3,8 @@ package open.dolphin.client;
 import open.dolphin.infomodel.DocInfoModel;
 import open.dolphin.inspector.DocumentHistory;
 import open.dolphin.ui.PNSScrollPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,8 +21,8 @@ import java.awt.event.MouseEvent;
  * @author pns
  */
 public class DocumentBridgeImpl extends AbstractChartDocument {
-
     private static final String TITLE = "参 照";
+    private final Logger logger = LoggerFactory.getLogger(DocumentBridgeImpl.class);
 
     // 文書表示クラスのインターフェイス
     private KarteDocumentViewer karteDocumentViewer;
@@ -28,8 +30,8 @@ public class DocumentBridgeImpl extends AbstractChartDocument {
     private PNSScrollPane scroller;
     // 何も文書がないときは blank panel を出す
     private JPanel blankPanel;
-    // エディタで編集した直後に呼ばれた場合，その日付を入れる
-    private String editDate;
+    // エディタで編集した直後に呼ばれた場合，その docId を入れる
+    private String editedDocId;
 
     public DocumentBridgeImpl() {
         initComponents();
@@ -94,26 +96,9 @@ public class DocumentBridgeImpl extends AbstractChartDocument {
         }
     }
 
-    /**
-     * Bridge 機能を提供する.
-     * KarteDocumentViewer に scroller を渡して表示してもらう.
-     *
-     * @param docs 表示する文書の DocInfo 配列
-     */
-    public void showDocuments(DocInfoModel[] docs) {
-        if (docs == null || docs.length == 0) {
-            return;
-        }
-
-        if (karteDocumentViewer != null) {
-            karteDocumentViewer.showDocuments(docs, scroller);
-        }
-    }
-
-    public void documentHistoryUpdated(String date) {
-        // 編集直後に来た場合は，編集カルテの editDate が入っている.
-        // select histories したときに editDate がセットされていたら，その editDate の対応カルテを表示するのに使いたい
-        editDate = date;
+    public void documentHistoryUpdated(String docId) {
+        // 編集直後に来た場合は，編集カルテの docId が入っている.
+        editedDocId = docId;
         // 文書履歴の抽出期間が変更された場合
         if (karteDocumentViewer != null) {
             karteDocumentViewer.historyPeriodChanged();
@@ -121,19 +106,16 @@ public class DocumentBridgeImpl extends AbstractChartDocument {
         scroller.setViewportView(blankPanel);
     }
 
-    public void documentHistorySelected(DocInfoModel[] model) {
-        // TODO 編集直後に来た場合は，できれば editDate の該当カルテを viewwer で表示するようにしたい.
-        // 現時点では，先頭を表示する.
-        if (editDate != null) {
-            SwingUtilities.invokeLater(() -> scroller.getViewport().setViewPosition(new java.awt.Point(0, 0)));
-            editDate = null;
-        }
+    public void documentHistorySelected(DocInfoModel[] models) {
         // 文書履歴の選択変更処理
-        showDocuments(model);
+        if (models == null || models.length == 0) { return; }
+        if (karteDocumentViewer != null) {
+            karteDocumentViewer.showDocuments(models, editedDocId, scroller);
+        }
     }
 
     public KarteViewer2 getBaseKarte() {
-        if (karteDocumentViewer != null && karteDocumentViewer instanceof KarteDocumentViewer) {
+        if (karteDocumentViewer != null) {
             return karteDocumentViewer.getBaseKarte();
         }
         return null;

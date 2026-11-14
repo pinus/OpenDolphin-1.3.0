@@ -144,12 +144,12 @@ public class DocumentModelCache {
         models.forEach(DocumentModelCache::add);
     }
 
-    /// docId に対応する DocumentModel をキャッシュから取得する. なければ null を返す.
+    /// docPk に対応する DocumentModel をキャッシュから取得する. なければ null を返す.
     public static DocumentModel get(long docPk) {
         return cache.get(docPk);
     }
 
-    /// docId に対応する DocumentModel がキャッシュに存在するかを返す.
+    /// docPk に対応する DocumentModel がキャッシュに存在するかを返す.
     public static boolean contains(long docPk) {
         return cache.containsKey(docPk);
     }

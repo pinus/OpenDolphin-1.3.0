@@ -14,6 +14,8 @@
     <logger name="open.dolphin.client.KarteDocumentViewer" level="INFO" />
     <logger name="open.dolphin.client.KarteViewer2" level="INFO" />
     <logger name="open.dolphin.client.DocumentModelCache" level="INFO" />
+    <logger name="open.dolphin.client.DocumentBridgeImpl" level="INFO" />
+    <logger name="open.dolphin.inspector.DocumentHistory" level="INFO" />
     <logger name="open.dolphin.client.StampHolder" level="INFO" />
     <logger name="open.dolphin.client.SchemaHolder" level="INFO" />
     <logger name="open.dolphin.client.KarteRenderer_2" level="INFO" />

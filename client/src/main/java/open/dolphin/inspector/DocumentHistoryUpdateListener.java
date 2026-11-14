@@ -7,5 +7,5 @@ import java.util.EventListener;
  */
 public interface DocumentHistoryUpdateListener extends EventListener {
 
-    public void updated(String editDate);
+    void updated(String docId);
 }

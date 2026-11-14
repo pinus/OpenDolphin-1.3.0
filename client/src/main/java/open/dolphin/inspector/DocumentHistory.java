@@ -62,8 +62,8 @@ public class DocumentHistory implements IInspector {
     private boolean showModified;
     // Key入力をブロックするリスナ
     private BlockKeyListener blockKeyListener;
-    // 編集終了したカルテの日付を保存する. 編集終了した時に必ず選択するために使う
-    private String editDate = null;
+    // 編集終了したカルテの docId - 編集終了した時に必ず選択するために使う
+    private String editedDocId = null;
     // ロガー
     private final Logger logger = LoggerFactory.getLogger(DocumentHistory.class);
 
@@ -336,11 +336,11 @@ public class DocumentHistory implements IInspector {
      * KarteEditor が編集終了したときはここで更新するようにする.
      * 編集したカルテを必ず選択するため.
      *
-     * @param date ISO_DATE
+     * @param docId docId
      */
-    public void update(String date) {
+    public void update(String docId) {
         // 選択状態にすべきカルテを editDate に入れてから update()
-        editDate = date;
+        editedDocId = docId;
         update();
     }
 
@@ -350,9 +350,8 @@ public class DocumentHistory implements IInspector {
      * update() -> DocInfoTask から呼ばれる.
      */
     private void updateHistory(List<DocInfoModel> newHistory) {
-
         // ソーティングする
-        if (newHistory != null && !newHistory.isEmpty()) {
+        if (!newHistory.isEmpty()) {
             if (ascending) {
                 newHistory.sort(Comparator.naturalOrder());
             } else {
@@ -365,35 +364,44 @@ public class DocumentHistory implements IInspector {
         List<String> oldSelection = new ArrayList<>();
         for (int r : table.getSelectedRows()) {
             int row = table.convertRowIndexToModel(r);
-            String date = tableModel.getObject(row).getFirstConfirmDateTrimTime();
-            oldSelection.add(date);
+            String docId = tableModel.getObject(row).getDocId();
+            oldSelection.add(docId);
         }
 
         // 文書履歴テーブルにデータを設定する
         tableModel.setObjectList(newHistory);
         // 束縛プロパティの通知を行う -> DocumetnBridgeImpl
-        updateListener.updated(editDate);
+        updateListener.updated(editedDocId);
 
-        if (newHistory != null && !newHistory.isEmpty()) {
+        if (!newHistory.isEmpty()) {
             int historySize = newHistory.size();
             countField.setText(historySize + " 件");
             int fetchCount = Math.min(autoFetchCount, historySize);
 
             ListSelectionModel selectionModel = table.getSelectionModel();
 
-            // 編集終了後に呼ばれた場合（editDate != null）は，そのカルテを必ず選択状態にする
-            if (editDate != null) {
-                oldSelection.add(editDate);
-                editDate = null;
+            // 編集終了後に呼ばれた場合（docId != null）は, そのカルテを必ず選択状態に加える
+            // さらにその行を editedRow に設定
+            int editedRow = -1;
+            if (editedDocId != null) {
+                oldSelection.add(editedDocId);
+                for (int i = 0; i < newHistory.size(); i++) {
+                    String docId = newHistory.get(i).getDocId();
+                    if (docId.equals(editedDocId)) {
+                        editedRow = table.convertRowIndexToView(i);
+                        break;
+                    }
+                }
+                editedDocId = null;
             }
 
             // oldSelection を復元する
             selectionModel.setValueIsAdjusting(true);
 
-            oldSelection.forEach(oldDate -> {
+            oldSelection.forEach(oldId -> {
                 for (int i = 0; i < newHistory.size(); i++) {
-                    String date = newHistory.get(i).getFirstConfirmDateTrimTime();
-                    if (date.equals(oldDate)) {
+                    String docId = newHistory.get(i).getDocId();
+                    if (docId.equals(oldId)) {
                         int row = table.convertRowIndexToView(i);
                         selectionModel.addSelectionInterval(row, row);
                     }
@@ -410,7 +418,13 @@ public class DocumentHistory implements IInspector {
                 // 選択
                 selectionModel.addSelectionInterval(first, last);
                 // 選択した行が表示されるようにスクロールする
-                Rectangle r = table.getCellRect(first, last, true);
+                Rectangle r = table.getCellRect(ascending? last : first, 0, true);
+                table.scrollRectToVisible(r);
+            }
+
+            // 編集後で入ってきて editedDocId が設定されている場合はそれを表示する
+            if (editedRow != -1) {
+                Rectangle r = table.getCellRect(editedRow, 0, true);
                 table.scrollRectToVisible(r);
             }
 

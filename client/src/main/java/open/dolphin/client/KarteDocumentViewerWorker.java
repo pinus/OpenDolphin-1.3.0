@@ -26,6 +26,8 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
     private List<KarteViewer2> karteViewerList;
     // 選択された History の DocPk (DocumentModel#id) をキーとした Map
     private Map<Long, DocInfoModel> selectedHistoryMap;
+    // scrollerRectToVisible する文書の DocId
+    private String docIdToVisible;
     // karteViewer を並べるパネル
     private JPanel scrollerPanel;
     private JProgressBar progressBar;
@@ -33,12 +35,13 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
     private final Logger logger = LoggerFactory.getLogger(KarteDocumentViewerWorker.class);
     private long lap;
 
-    public KarteDocumentViewerWorker(KarteDocumentViewer context, List<KarteViewer2> karteViewerList, Map<Long, DocInfoModel> selectedHistoryMap, JPanel scrollerPanel) {
+    public KarteDocumentViewerWorker(KarteDocumentViewer context, List<KarteViewer2> karteViewerList, Map<Long, DocInfoModel> selectedHistoryMap, String docIdToVisible, JPanel scrollerPanel) {
         this.context = context;
         this.chart = context.getContext();
         this.scrollerPanel = scrollerPanel;
         this.karteViewerList = karteViewerList;
         this.selectedHistoryMap = selectedHistoryMap;
+        this.docIdToVisible = docIdToVisible;
 
         progressBar = chart.getStatusPanel().getProgressBar();
         progressBar.setMinimum(0);
@@ -141,13 +144,29 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
         if (!karteViewerList.isEmpty()) {
             context.setSelectedKarteViewer(karteViewerList.getFirst());
         }
-        SwingUtilities.invokeLater(() -> logger.debug("lap time: {}", (System.nanoTime() - lap)/1000000));
+
+        // 編集して保存した場合, docIdToVisible が設定されているので, その文書を表示する
+        SwingUtilities.invokeLater(() -> {
+            if (docIdToVisible != null) {
+                logger.debug("docIdToVisible: {}", docIdToVisible);
+                for (Component comp : scrollerPanel.getComponents()) {
+                    if (comp instanceof KartePanel kp) {
+                        if (kp.getDocId().equals(docIdToVisible)) {
+                            logger.debug("scrolling to visible: {}, bounds: {}", kp.getDocId(), kp.getBounds());
+                            scrollerPanel.scrollRectToVisible(kp.getBounds());
+                            break;
+                        }
+                    }
+                }
+            }
+            scrollerPanel = null;
+            logger.debug("lap time: {}", (System.nanoTime() - lap) / 1000000);
+        });
 
         // リソース開放 - SwingWorker は最終的に done() で終了する
         removePropertyChangeListener(this);
         context = null;
         chart = null;
-        scrollerPanel = null;
         karteViewerList = null;
         selectedHistoryMap = null;
         progressBar = null;

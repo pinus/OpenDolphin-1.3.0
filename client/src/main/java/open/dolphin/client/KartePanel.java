@@ -43,6 +43,10 @@ public abstract class KartePanel extends PrintablePanel {
         getPKartePane().setDocId(id);
     }
 
+    public String getDocId() {
+        return docId;
+    }
+
     ///  If the listener is null, no exception is thrown and no action is performed.
     public void setupMouseListener(MouseListener newListener) {
         getSoaKartePane().getTextPane().removeMouseListener(mouseListener);

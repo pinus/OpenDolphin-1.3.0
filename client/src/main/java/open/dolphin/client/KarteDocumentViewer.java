@@ -233,8 +233,9 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     /// DocumentBridgeImpl から呼ばれる. KarteDocumentViewerWorker を呼び出して, カルテ表示を行う.
     ///
     /// @param selected 選択された文書情報 DocInfo 配列
+    /// @param docIdToVisible scrollerRectToVisible する文書の DocId
     /// @param scroller PNSScrollPane
-    public void showDocuments(DocInfoModel[] selected, final PNSScrollPane scroller) {
+    public void showDocuments(DocInfoModel[] selected, String docIdToVisible, final PNSScrollPane scroller) {
         getContext().showDocument(0);  // Chart のカルテ参照タブの選択
         this.scroller = scroller;
 
@@ -252,7 +253,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
             // 実行中のタスクがあればキャンセル
             currentTask.cancel(true);
         }
-        currentTask = new KarteDocumentViewerWorker(this, karteViewerList, selectedHistoryMap, scrollerPanel);
+        currentTask = new KarteDocumentViewerWorker(this, karteViewerList, selectedHistoryMap, docIdToVisible, scrollerPanel);
         currentTask.execute();
     }
 
