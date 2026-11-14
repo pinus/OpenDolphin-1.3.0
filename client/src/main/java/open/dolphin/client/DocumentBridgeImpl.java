@@ -23,7 +23,7 @@ public class DocumentBridgeImpl extends AbstractChartDocument {
     private static final String TITLE = "参 照";
 
     // 文書表示クラスのインターフェイス
-    private KarteDocumentViewer karteViewer;
+    private KarteDocumentViewer karteDocumentViewer;
     // Scroller
     private PNSScrollPane scroller;
     // 何も文書がないときは blank panel を出す
@@ -72,23 +72,23 @@ public class DocumentBridgeImpl extends AbstractChartDocument {
         // 選択変更したとき
         h.addDocumentHistorySelectionListener(this::documentHistorySelected);
 
-        karteViewer = new KarteDocumentViewer();
-        karteViewer.setContext(getContext());
-        karteViewer.start();
+        karteDocumentViewer = new KarteDocumentViewer();
+        karteDocumentViewer.setContext(getContext());
+        karteDocumentViewer.start();
     }
 
     @Override
     public void stop() {
-        if (karteViewer != null) {
-            karteViewer.stop();
+        if (karteDocumentViewer != null) {
+            karteDocumentViewer.stop();
         }
     }
 
     @Override
     public void enter() {
-        if (karteViewer != null) {
+        if (karteDocumentViewer != null) {
             // これによりメニューは viewer で制御される
-            karteViewer.enter();
+            karteDocumentViewer.enter();
         } else {
             super.enter();
         }
@@ -105,8 +105,8 @@ public class DocumentBridgeImpl extends AbstractChartDocument {
             return;
         }
 
-        if (karteViewer != null) {
-            karteViewer.showDocuments(docs, scroller);
+        if (karteDocumentViewer != null) {
+            karteDocumentViewer.showDocuments(docs, scroller);
         }
     }
 
@@ -115,8 +115,8 @@ public class DocumentBridgeImpl extends AbstractChartDocument {
         // select histories したときに editDate がセットされていたら，その editDate の対応カルテを表示するのに使いたい
         editDate = date;
         // 文書履歴の抽出期間が変更された場合
-        if (karteViewer != null) {
-            karteViewer.historyPeriodChanged();
+        if (karteDocumentViewer != null) {
+            karteDocumentViewer.historyPeriodChanged();
         }   // null の代わりに blankPanel を出す
         scroller.setViewportView(blankPanel);
     }
@@ -133,8 +133,8 @@ public class DocumentBridgeImpl extends AbstractChartDocument {
     }
 
     public KarteViewer2 getBaseKarte() {
-        if (karteViewer != null && karteViewer instanceof KarteDocumentViewer) {
-            return karteViewer.getBaseKarte();
+        if (karteDocumentViewer != null && karteDocumentViewer instanceof KarteDocumentViewer) {
+            return karteDocumentViewer.getBaseKarte();
         }
         return null;
     }

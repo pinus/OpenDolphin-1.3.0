@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
@@ -254,6 +256,10 @@ public class LoginDialog {
         //
         // フィールドにリスナを登録する
         //
+        addFocusListener(view.getHostField());
+        addFocusListener(view.getUserIdField());
+        addFocusListener(view.getPasswordField());
+
         // User ID Field
         JTextField userIdField = view.getUserIdField();
         userIdField.getDocument().addDocumentListener((ProxyDocumentListener) e -> checkButtons());
@@ -291,6 +297,20 @@ public class LoginDialog {
                     // UserId に有効な値が設定されていればパスワードフィールドにフォーカスする
                     requestFocus(view.getPasswordField());
                 }
+            }
+        });
+    }
+
+    /**
+     * フォーカスを取ったら select all する.
+     *
+     * @param tf
+     */
+    private void addFocusListener(JTextField tf) {
+        tf.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                tf.selectAll();
             }
         });
     }
