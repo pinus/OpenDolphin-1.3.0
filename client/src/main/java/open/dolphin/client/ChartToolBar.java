@@ -56,7 +56,8 @@ public class ChartToolBar extends JToolBar {
     }
 
     /// リソース開放
-    public void dispose() {
+    @Override
+    public void removeNotify() {
         soaTextPane.removeCaretListener(caretListener);
         pTextPane.removeCaretListener(caretListener);
         soaTextPane.getDocument().removeDocumentListener(documentListener);
@@ -71,6 +72,7 @@ public class ChartToolBar extends JToolBar {
         focusListener = null;
         editorFrame = null;
         mediator = null;
+        super.removeNotify();
     }
 
     /// コンポネントの組み立て.

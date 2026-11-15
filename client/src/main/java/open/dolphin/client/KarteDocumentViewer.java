@@ -235,7 +235,7 @@ public class KarteDocumentViewer extends AbstractChartDocument {
     /// @param selected 選択された文書情報 DocInfo 配列
     /// @param docIdToVisible scrollerRectToVisible する文書の DocId
     /// @param scroller PNSScrollPane
-    public void showDocuments(DocInfoModel[] selected, String docIdToVisible, final PNSScrollPane scroller) {
+    public void showDocuments(DocInfoModel[] selected, final String docIdToVisible, final PNSScrollPane scroller) {
         getContext().showDocument(0);  // Chart のカルテ参照タブの選択
         this.scroller = scroller;
 

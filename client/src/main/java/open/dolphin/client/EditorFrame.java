@@ -548,7 +548,7 @@ public class EditorFrame extends AbstractMainTool implements Chart, WindowListen
         mediator.dispose();
         editor.stop();
         windowSupport.dispose();
-        chartToolBar.dispose();
+        //chartToolBar.dispose();
 
         realChart = null;
         setContext(null);

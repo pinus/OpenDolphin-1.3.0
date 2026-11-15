@@ -27,7 +27,7 @@ public class KarteDocumentViewerWorker extends SwingWorker<Integer, List<Compone
     // 選択された History の DocPk (DocumentModel#id) をキーとした Map
     private Map<Long, DocInfoModel> selectedHistoryMap;
     // scrollerRectToVisible する文書の DocId
-    private String docIdToVisible;
+    private final String docIdToVisible;
     // karteViewer を並べるパネル
     private JPanel scrollerPanel;
     private JProgressBar progressBar;

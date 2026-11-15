@@ -539,12 +539,27 @@ public class JSheet extends JWindow implements ActionListener, MouseListener {
                     content.removeAll();
                     super.setVisible(false);
                     sourceDialog.dispose();
-                    sourceDialog = null;
-                    owner = null;
                     dispose();
+
+                    // set null to all the field values
+                    glassPane = null;
+                    sourceDialog = null;
+                    content = null;
+                    sheetKeyEventDispatcher = null;
+                    secondaryLoop = null;
+                    animatingSheet = null;
+                    animationTimer = null;
+                    sheetListener = null;
                 }
             }
         }
+    }
+
+    @Override
+    public void removeNotify() {
+        owner = null;
+        focusOwner = null;
+        super.removeNotify();
     }
 
     @Override

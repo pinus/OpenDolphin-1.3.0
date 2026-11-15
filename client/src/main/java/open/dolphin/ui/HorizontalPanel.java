@@ -6,32 +6,23 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
-/**
- * Command Panel，Status Panel のベースになるパネル.
- * 横長のパネルで，左から要素を詰めていく
- * Window のタイトルバーと連続するように active/deactive に合わせて Background 色を変える
- *
- * @author pns
- */
+/// Command Panel，Status Panel のベースになるパネル.
+/// 横長のパネルで，左から要素を詰めていく
+/// Window のタイトルバーと連続するように active/deactive に合わせて Background 色を変える
+///
+/// @author pns
 public class HorizontalPanel extends JPanel {
-        private static final int SEPARATOR_WIDTH = 16;
+    private static final int SEPARATOR_WIDTH = 16;
     private static final int DEFAULT_PANEL_HEIGHT = 24;
-    /**
-     * 文字列を挿入した場合は，後からそこに setText できるようにする
-     */
+
+    /// 文字列を挿入した場合は，後からそこに setText できるようにする
     private final HashMap<String, JLabel> labelMap = new HashMap<>();
-    /**
-     * パネルの高さ
-     */
+    /// パネルの高さ
     private int panelHeight = DEFAULT_PANEL_HEIGHT;
-    /**
-     * フォントサイズ
-     */
+    /// フォントサイズ
     private int fontSize = 0;
-    /**
-     * 親の Window
-     */
-    private Window parent = null;
+    /// このパネルをマウスで動かせるようにする MouseListener
+    private MouseAdapter mouseListener;
 
     public HorizontalPanel() {
         initComponent();
@@ -42,52 +33,51 @@ public class HorizontalPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     }
 
-    /**
-     * 左右のマージンを入れる. 必ず最後に呼ぶ.
-     *
-     * @param margin
-     */
+    /// 左右のマージンを入れる. 必ず最後に呼ぶ.
+    ///
+    /// @param margin
     public void setMargin(int margin) {
         this.add(Box.createHorizontalStrut(margin), 0);
         this.add(Box.createHorizontalStrut(margin));
     }
 
-    /**
-     * 組み込まれるときに addNotify が呼ばれるのを利用して parent に WindowAdapter を付ける.
-     */
+    /// 組み込まれるときに addNotify が呼ばれるのを利用して MouseListener を付ける.
     @Override
     public void addNotify() {
         super.addNotify();
 
-        if (parent == null) {
-            parent = SwingUtilities.windowForComponent(this);
-            // このパネルをつかんで移動できるようにする
-            MouseAdapter ma = new MouseAdapter() {
-                private final Point startPt = new Point();
-                private final Point windowPt = new Point();
+        Window parent = SwingUtilities.windowForComponent(this);
+        // このパネルをつかんで移動できるようにする
+        mouseListener = new MouseAdapter() {
+            private final Point startPt = new Point();
+            private final Point windowPt = new Point();
 
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    startPt.setLocation(e.getLocationOnScreen());
-                    windowPt.setLocation(parent.getLocation());
-                }
+            @Override
+            public void mousePressed(MouseEvent e) {
+                startPt.setLocation(e.getLocationOnScreen());
+                windowPt.setLocation(parent.getLocation());
+            }
 
-                @Override
-                public void mouseDragged(MouseEvent e) {
-                    Point pt = e.getLocationOnScreen();
-                    parent.setLocation(windowPt.x + pt.x - startPt.x, windowPt.y + pt.y - startPt.y);
-                }
-            };
-            addMouseListener(ma);
-            addMouseMotionListener(ma);
-        }
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Point pt = e.getLocationOnScreen();
+                parent.setLocation(windowPt.x + pt.x - startPt.x, windowPt.y + pt.y - startPt.y);
+            }
+        };
+        addMouseListener(mouseListener);
+        addMouseMotionListener(mouseListener);
     }
 
-    /**
-     * パネルの高さをセットする
-     *
-     * @param height
-     */
+    @Override
+    public void removeNotify() {
+        removeMouseListener(mouseListener);
+        removeMouseMotionListener(mouseListener);
+        super.removeNotify();
+    }
+
+    /// パネルの高さをセットする
+    ///
+    /// @param height
     public void setPanelHeight(int height) {
         panelHeight = height;
         this.setPreferredSize(new Dimension(100, height));
@@ -95,35 +85,27 @@ public class HorizontalPanel extends JPanel {
         this.setMinimumSize(new Dimension(0, height));
     }
 
-    /**
-     * BoxLayout 部分に縦線のセパレーターを入れる.
-     */
+    /// BoxLayout 部分に縦線のセパレーターを入れる.
     public void addSeparator() {
         add(new SeparatorPanel());
     }
 
-    /**
-     * BoxLayout 部分に透明なグルーを入れる.
-     */
+    /// BoxLayout 部分に透明なグルーを入れる.
     public void addGlue() {
         add(Box.createGlue());
     }
 
-    /**
-     * 隙間を入れる.
-     *
-     * @param witdh
-     */
+    /// 隙間を入れる.
+    ///
+    /// @param witdh
     public void addSpace(int witdh) {
         add(Box.createHorizontalStrut(witdh));
     }
 
-    /**
-     * BoxLayout 部分にコンポネントを加える.
-     *
-     * @param c
-     * @return
-     */
+    /// BoxLayout 部分にコンポネントを加える.
+    ///
+    /// @param c
+    /// @return
     @Override
     public Component add(Component c) {
         // statusPanel でフォントサイズを小さくしたかった
@@ -136,24 +118,20 @@ public class HorizontalPanel extends JPanel {
         return super.add(c);
     }
 
-    /**
-     * BoxLayout の場合，index オプションで NORTH または SOUTH に他の Panel を加える.
-     * FlowLayout の場合は，挿入位置を指定.
-     *
-     * @param c
-     * @param index
-     */
+    /// BoxLayout の場合，index オプションで NORTH または SOUTH に他の Panel を加える.
+    /// FlowLayout の場合は，挿入位置を指定.
+    ///
+    /// @param c
+    /// @param index
     public void add(JComponent c, int index) {
         super.add(c, index);
     }
 
-    /**
-     * String を add した場合は，JLabel として挿入.
-     * あとから，setText(String key) でその JLabel の文字列をセットできる.
-     *
-     * @param text
-     * @param key
-     */
+    /// String を add した場合は，JLabel として挿入.
+    /// あとから，setText(String key) でその JLabel の文字列をセットできる.
+    ///
+    /// @param text
+    /// @param key
     public void add(String text, String key) {
         JLabel label = new JLabel(text);
         if (text != null && !text.isEmpty()) {
@@ -163,11 +141,9 @@ public class HorizontalPanel extends JPanel {
         labelMap.put(key, label);
     }
 
-    /**
-     * String の add で key を省略した場合は，ラベルの順番（0〜）をストリングにしたキーとなる.
-     *
-     * @param text
-     */
+    /// String の add で key を省略した場合は，ラベルの順番（0〜）をストリングにしたキーとなる.
+    ///
+    /// @param text
     public void add(String text) {
         int count = 0;
         for (Component c : this.getComponents()) {
@@ -178,12 +154,10 @@ public class HorizontalPanel extends JPanel {
         this.add(text, String.valueOf(count));
     }
 
-    /**
-     * 後から挿入したラベルのテキストを変更する.
-     *
-     * @param text
-     * @param key
-     */
+    /// 後から挿入したラベルのテキストを変更する.
+    ///
+    /// @param text
+    /// @param key
     public void setText(String text, String key) {
         JLabel label = labelMap.get(key);
         if (text != null && !text.isEmpty()) {
@@ -196,18 +170,14 @@ public class HorizontalPanel extends JPanel {
         }
     }
 
-    /**
-     * BoxLayout 部分のフォントサイズをセットする.
-     *
-     * @param size
-     */
+    /// BoxLayout 部分のフォントサイズをセットする.
+    ///
+    /// @param size
     public void setFontSize(int size) {
         fontSize = size;
     }
 
-    /**
-     * 縦線のセパレーターパネル
-     */
+    /// 縦線のセパレーターパネル
     private class SeparatorPanel extends JPanel {
         private final Color leftColor = Color.GRAY;
         private final Color rightColor = Color.WHITE;
