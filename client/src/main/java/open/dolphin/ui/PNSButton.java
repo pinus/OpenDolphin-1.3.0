@@ -35,6 +35,7 @@ public class PNSButton extends JButton {
     }
 
     public void addNotify() {
+        super.addNotify();
         if (Dolphin.forMac) {
             parent = SwingUtilities.getWindowAncestor(this);
             windowAdapter = new WindowAdapter() {
@@ -52,7 +53,6 @@ public class PNSButton extends JButton {
             parent.addWindowListener(windowAdapter);
 
         }
-        super.addNotify();
     }
 
     public void removeNotify() {

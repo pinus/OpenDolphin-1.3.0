@@ -85,17 +85,27 @@ public class CompletableJTextField extends JTextField
 
     @Override
     public void addNotify() {
-        parentFrame = SwingUtilities.getWindowAncestor(this);
-        parentFrame.addComponentListener(this);
         super.addNotify();
+
+        Window window = SwingUtilities.getWindowAncestor(this);
+        if (window != null && window != parentFrame) {
+            if (parentFrame != null) {
+                parentFrame.removeComponentListener(this);
+            }
+            parentFrame = window;
+            parentFrame.addComponentListener(this);
+        }
     }
 
     @Override
     public void removeNotify() {
-        parentFrame.removeComponentListener(this);
+        if (parentFrame != null) {
+            parentFrame.removeComponentListener(this);
+            parentFrame = null;
+        }
         listWindow.dispose();
         completer.stop();
-        parentFrame = null;
+
         super.removeNotify();
     }
 

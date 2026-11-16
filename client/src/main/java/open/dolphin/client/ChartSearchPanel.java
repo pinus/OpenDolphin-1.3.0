@@ -95,8 +95,8 @@ public class ChartSearchPanel extends JPanel {
 
     @Override
     public void removeNotify() {
-        super.removeNotify();
         scrollerPanel = null;
+        super.removeNotify();
     }
 
     /**
