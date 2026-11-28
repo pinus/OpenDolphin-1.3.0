@@ -2,6 +2,11 @@ package open.dolphin.infomodel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 
 /// SchemaModel.
@@ -14,8 +19,14 @@ public class SchemaModel extends KarteEntryBean<SchemaModel> {
     @Embedded
     private ExtRefModel extRef;
 
-    @Lob
-    @Column(nullable = false)
+    // @Lob
+    // @Column(nullable = false)
+    // masuda-sensei
+    // oid(Large Object) 列を lo_get / lo_from_bytea で bytea として読み書きする。
+    // JDBC の Blob 読み出し(lo_open/loread の往復)を避けるため。列の型は oid のまま
+    @JdbcTypeCode(SqlTypes.VARBINARY)
+    @ColumnTransformer(read = "lo_get(jpegByte)", write = "lo_from_bytea(0, ?)")
+    @Column(nullable = false, columnDefinition = "oid")
     private byte[] jpegByte;
 
     @ManyToOne
@@ -96,7 +107,7 @@ public class SchemaModel extends KarteEntryBean<SchemaModel> {
      * @return 比較結果
      */
     @Override
-    public int compareTo(SchemaModel other) {
+    public int compareTo(@NotNull SchemaModel other) {
         int result = super.compareTo(other);
         if (result == 0) {
             // primitive なので比較はOK

@@ -224,7 +224,7 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
      */
     @Override
     public List<DocumentModel> getDocumentList(List<Long> ids) {
-        //long t = System.currentTimeMillis();
+        //long t = System.nanoTime();
         // まとめて query
         List<ModuleModel> mods = em.createQuery("select m from ModuleModel m where m.document.id in (:ids) order by m.id", ModuleModel.class)
                 .setParameter("ids", ids)
@@ -275,7 +275,7 @@ public class KarteServiceImpl extends DolphinService implements KarteService {
 
                 }).collect(Collectors.toList());
 
-        //System.out.println("---- lap= " + (System.currentTimeMillis() - t));
+        //IO.println("---- lap= " + (System.nanoTime() - t)/1000000);
         return ret;
     }
 
